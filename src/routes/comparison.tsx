@@ -61,7 +61,7 @@ function ComparisonPage() {
               <XAxis type="number" dataKey="time" name="Tiempo (s)" tick={{ fontSize: 10, fill: "oklch(0.65 0.02 250)" }} label={{ value: "Tiempo (s)", position: "insideBottom", offset: -5, fontSize: 10, fill: "oklch(0.5 0.02 250)" }} />
               <YAxis type="number" dataKey="accuracy" name="F1-Score" tick={{ fontSize: 10, fill: "oklch(0.65 0.02 250)" }} domain={[0.85, 1]} label={{ value: "F1-Score", angle: -90, position: "insideLeft", fontSize: 10, fill: "oklch(0.5 0.02 250)" }} />
               <ZAxis range={[200, 200]} />
-              <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => value.toFixed(3)} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(value: unknown) => typeof value === 'number' ? value.toFixed(3) : value} />
               <Scatter data={scatterData} name="Modelos">
                 {scatterData.map((entry, i) => (
                   <Cell key={i} fill={entry.model.startsWith("LSTM") ? "oklch(0.85 0.18 195)" : "oklch(0.55 0.2 290)"} />
