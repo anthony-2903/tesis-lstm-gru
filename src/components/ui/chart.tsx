@@ -116,6 +116,7 @@ const ChartTooltipContent = React.forwardRef<
       active,
       payload,
       className,
+      // @ts-ignore - recharts type mismatch
       indicator = "dot",
       hideLabel = false,
       hideIndicator = false,
