@@ -1,5 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Database, GitCompare, History, Lightbulb, Brain } from "lucide-react";
+import {
+  Home,
+  Database,
+  GitCompare,
+  History,
+  Lightbulb,
+  Brain,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -20,8 +27,12 @@ export function DashboardSidebar() {
           <Brain className="h-5 w-5 text-cyan-foreground" />
         </div>
         <div>
-          <h1 className="text-sm font-bold text-foreground tracking-tight">LSTM vs GRU</h1>
-          <p className="text-[10px] text-muted-foreground">Detección de Anomalías</p>
+          <h1 className="text-sm font-bold text-foreground tracking-tight">
+            LSTM vs GRU
+          </h1>
+          <p className="text-[10px] text-muted-foreground">
+            Detección de Anomalías
+          </p>
         </div>
       </div>
 
@@ -36,10 +47,12 @@ export function DashboardSidebar() {
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
                   ? "bg-primary/15 text-primary card-glow"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <item.icon className={cn("h-4 w-4", isActive && "text-primary")} />
+              <item.icon
+                className={cn("h-4 w-4", isActive && "text-primary")}
+              />
               <span>{item.title}</span>
             </Link>
           );
@@ -48,7 +61,7 @@ export function DashboardSidebar() {
 
       <div className="border-t border-border px-4 py-4">
         <p className="text-[10px] text-muted-foreground text-center">
-          Tesis de Ingeniería — 2024
+          Tesis de Ingeniería — 2026
         </p>
       </div>
     </aside>
