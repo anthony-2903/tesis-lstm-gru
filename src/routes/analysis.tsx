@@ -12,6 +12,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, ScatterChart, Scatter, Cell
 } from "recharts";
+import { AiAnalysis } from "@/components/AiAnalysis";
 
 export const Route = createFileRoute("/analysis")({
   head: () => ({
@@ -177,8 +178,10 @@ function AnalysisPage() {
               <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-anomaly" /><span className="text-[10px] text-muted-foreground">Anomalía</span></div>
             </div>
           </ChartCard>
+          <AiAnalysis type="opsd" />
         </motion.div>
       )}
+      {tab === "phishtank" && <AiAnalysis type="phishtank" />}
     </div>
   );
 }

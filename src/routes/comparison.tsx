@@ -7,6 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   ScatterChart, Scatter, Cell, ZAxis
 } from "recharts";
+import { AiAnalysis } from "@/components/AiAnalysis";
 
 export const Route = createFileRoute("/comparison")({
   head: () => ({
@@ -126,6 +127,8 @@ function ComparisonPage() {
           </table>
         </div>
       </ChartCard>
+
+      <AiAnalysis type="general" />
     </div>
   );
 }
