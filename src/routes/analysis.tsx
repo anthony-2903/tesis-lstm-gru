@@ -83,12 +83,15 @@ function AnalysisPage() {
             <ChartCard title="Detecciones por Modelo" delay={0.2}>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={phishtankBarData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.28 0.02 260)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.65 0.02 250)" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "oklch(0.65 0.02 250)" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "oklch(0.18 0.02 260)", border: "1px solid oklch(0.28 0.02 260)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.95 0.01 250)" }} />
-                  <Bar dataKey="LSTM" fill="oklch(0.85 0.18 195)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="GRU" fill="oklch(0.55 0.2 290)" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "12px" }}
+                    itemStyle={{ fontSize: "12px", fontWeight: "bold" }}
+                  />
+                  <Bar dataKey="LSTM" fill="var(--chart-1)" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="GRU" fill="var(--chart-2)" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -107,35 +110,35 @@ function AnalysisPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-2 px-3 text-muted-foreground font-medium">URL</th>
-                    <th className="text-center py-2 px-3 text-muted-foreground font-medium">Real</th>
-                    <th className="text-center py-2 px-3 text-muted-foreground font-medium">LSTM</th>
-                    <th className="text-center py-2 px-3 text-muted-foreground font-medium">GRU</th>
-                    <th className="text-center py-2 px-3 text-muted-foreground font-medium">Anomalía</th>
+                  <tr className="border-b border-border bg-muted/20">
+                    <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">URL</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Real</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">LSTM</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">GRU</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Anomalía</th>
                   </tr>
                 </thead>
                 <tbody>
                   {phishtankUrls.map((row) => (
-                    <tr key={row.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                      <td className="py-2 px-3 font-data text-foreground truncate max-w-[300px]">{row.url}</td>
-                      <td className="py-2 px-3 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${row.real === "phishing" ? "bg-anomaly/20 text-anomaly" : "bg-success/20 text-success"}`}>
+                    <tr key={row.id} className="border-b border-border hover:bg-muted/10 transition-colors">
+                      <td className="py-2.5 px-4 font-data text-foreground/80 truncate max-w-[300px]">{row.url}</td>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.real === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
                           {row.real}
                         </span>
                       </td>
-                      <td className="py-2 px-3 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${row.lstm === "phishing" ? "bg-anomaly/20 text-anomaly" : "bg-success/20 text-success"}`}>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.lstm === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
                           {row.lstm}
                         </span>
                       </td>
-                      <td className="py-2 px-3 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${row.gru === "phishing" ? "bg-anomaly/20 text-anomaly" : "bg-success/20 text-success"}`}>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.gru === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
                           {row.gru}
                         </span>
                       </td>
-                      <td className="py-2 px-3 text-center">
-                        {row.anomaly ? <AlertCircle className="inline h-4 w-4 text-anomaly" /> : <span className="text-muted-foreground">—</span>}
+                      <td className="py-2.5 px-4 text-center">
+                        {row.anomaly ? <AlertCircle className="inline h-3.5 w-3.5 text-anomaly" /> : <span className="text-muted-foreground">—</span>}
                       </td>
                     </tr>
                   ))}
@@ -156,26 +159,26 @@ function AnalysisPage() {
           <ChartCard title="Consumo Eléctrico — Real vs Predicción" subtitle="Primeros 90 días del período de prueba" delay={0.2}>
             <ResponsiveContainer width="100%" height={350}>
               <LineChart data={filteredTS}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.28 0.02 260)" />
-                <XAxis dataKey="date" tick={{ fontSize: 9, fill: "oklch(0.65 0.02 250)" }} interval={14} />
-                <YAxis tick={{ fontSize: 10, fill: "oklch(0.65 0.02 250)" }} />
-                <Tooltip contentStyle={{ backgroundColor: "oklch(0.18 0.02 260)", border: "1px solid oklch(0.28 0.02 260)", borderRadius: "8px", fontSize: "11px", color: "oklch(0.95 0.01 250)" }} />
-                <Line type="monotone" dataKey="actual" stroke="oklch(0.65 0.02 250)" strokeWidth={1.5} dot={false} name="Real" />
-                <Line type="monotone" dataKey="lstm" stroke="oklch(0.85 0.18 195)" strokeWidth={2} dot={false} name="LSTM" />
-                <Line type="monotone" dataKey="gru" stroke="oklch(0.55 0.2 290)" strokeWidth={2} dot={false} name="GRU" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--color-muted-foreground)" }} interval={14} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "11px" }} />
+                <Line type="monotone" dataKey="actual" stroke="var(--color-muted-foreground)" strokeWidth={1.5} dot={false} name="Real" />
+                <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={2} dot={false} name="LSTM" />
+                <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={2} dot={false} name="GRU" />
                 <Scatter
                   dataKey="actual"
                   data={filteredTS.filter(d => d.anomaly)}
-                  fill="oklch(0.65 0.25 25)"
+                  fill="var(--color-anomaly)"
                   name="Anomalía"
                 />
               </LineChart>
             </ResponsiveContainer>
-            <div className="flex gap-4 justify-center mt-2">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-muted-foreground" /><span className="text-[10px] text-muted-foreground">Real</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-primary" /><span className="text-[10px] text-muted-foreground">LSTM</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-secondary" /><span className="text-[10px] text-muted-foreground">GRU</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-anomaly" /><span className="text-[10px] text-muted-foreground">Anomalía</span></div>
+            <div className="flex gap-4 justify-center mt-4">
+              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-muted-foreground" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Real</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-primary" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">LSTM</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-secondary" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">GRU</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-anomaly" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Anomalía</span></div>
             </div>
           </ChartCard>
           <AiAnalysis type="opsd" />

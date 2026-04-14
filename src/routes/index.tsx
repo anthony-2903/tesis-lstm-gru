@@ -18,8 +18,8 @@ export const Route = createFileRoute("/")({
 });
 
 const domainDistribution = [
-  { name: "PhishTank", value: 12722, color: "oklch(0.85 0.18 195)" },
-  { name: "OPSD", value: 12131, color: "oklch(0.55 0.2 290)" },
+  { name: "PhishTank", value: 12722, color: "var(--chart-1)" },
+  { name: "OPSD", value: 12131, color: "var(--chart-2)" },
 ];
 
 const recentActivity = [
@@ -111,7 +111,7 @@ function HomePage() {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ backgroundColor: "oklch(0.18 0.02 260)", border: "1px solid oklch(0.28 0.02 260)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.95 0.01 250)" }}
+                contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "12px" }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -133,12 +133,14 @@ function HomePage() {
               { metric: "Velocidad", LSTM: 0.72, GRU: 0.89 },
               { metric: "Memoria", LSTM: 0.65, GRU: 0.82 },
             ]}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.28 0.02 260)" />
-              <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "oklch(0.65 0.02 250)" }} />
-              <YAxis tick={{ fontSize: 11, fill: "oklch(0.65 0.02 250)" }} />
-              <Tooltip contentStyle={{ backgroundColor: "oklch(0.18 0.02 260)", border: "1px solid oklch(0.28 0.02 260)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.95 0.01 250)" }} />
-              <Bar dataKey="LSTM" fill="oklch(0.85 0.18 195)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="GRU" fill="oklch(0.55 0.2 290)" radius={[4, 4, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+              <XAxis dataKey="metric" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "12px" }}
+              />
+              <Bar dataKey="LSTM" fill="var(--chart-1)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="GRU" fill="var(--chart-2)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

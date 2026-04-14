@@ -51,64 +51,68 @@ function HistoryPage() {
       </motion.div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap gap-6 border-b border-border pb-6">
+        <div className="flex items-center gap-3">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">Dominio:</span>
-          {(["all", "PhishTank", "OPSD"] as const).map((d) => (
-            <button key={d} onClick={() => setDomainFilter(d)} className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${domainFilter === d ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-              {d === "all" ? "Todos" : d}
-            </button>
-          ))}
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dominio:</span>
+          <div className="flex gap-1">
+            {(["all", "PhishTank", "OPSD"] as const).map((d) => (
+              <button key={d} onClick={() => setDomainFilter(d)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${domainFilter === d ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
+                {d === "all" ? "Todos" : d}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Modelo:</span>
-          {(["all", "LSTM", "GRU"] as const).map((m) => (
-            <button key={m} onClick={() => setModelFilter(m)} className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${modelFilter === m ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"}`}>
-              {m === "all" ? "Todos" : m}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Modelo:</span>
+          <div className="flex gap-1">
+            {(["all", "LSTM", "GRU"] as const).map((m) => (
+              <button key={m} onClick={() => setModelFilter(m)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${modelFilter === m ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
+                {m === "all" ? "Todos" : m}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Timeline */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filtered.map((item, i) => (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="flex gap-4 rounded-xl border border-border bg-card p-4 hover:border-primary/30 transition-colors"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.03 }}
+            className="flex gap-6 card-formal p-5 group"
           >
-            <div className="flex flex-col items-center">
-              <div className={`w-3 h-3 rounded-full ${item.domain === "PhishTank" ? "bg-primary" : "bg-secondary"}`} />
-              {i < filtered.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
+            <div className="flex flex-col items-center pt-1.5">
+              <div className={`w-2.5 h-2.5 rounded-sm rotate-45 ${item.domain === "PhishTank" ? "bg-primary" : "bg-secondary"}`} />
+              {i < filtered.length - 1 && <div className="w-px flex-1 bg-border mt-3 group-hover:bg-primary/20 transition-colors" />}
             </div>
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-2 items-center">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-6 items-center">
               <div>
-                <p className="text-[10px] text-muted-foreground">Fecha</p>
-                <p className="text-xs font-data text-foreground">{item.date}</p>
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Fecha de Registro</p>
+                <p className="text-xs font-data text-foreground font-medium">{item.date}</p>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground">Dominio</p>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${item.domain === "PhishTank" ? "bg-primary/15 text-primary" : "bg-secondary/15 text-secondary"}`}>
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Dataset</p>
+                <span className={`text-[9px] px-2 py-0.5 rounded-sm font-bold uppercase border ${item.domain === "PhishTank" ? "bg-primary/5 text-primary border-primary/20" : "bg-secondary/5 text-secondary border-secondary/20"}`}>
                   {item.domain}
                 </span>
               </div>
               <div className="md:col-span-2">
-                <p className="text-[10px] text-muted-foreground">Dato</p>
-                <p className="text-xs font-data text-foreground truncate">{item.data}</p>
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Dato de Entrada</p>
+                <p className="text-xs font-data text-foreground/80 truncate font-medium">{item.data}</p>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground">Modelo / Confianza</p>
-                <p className="text-xs font-data text-foreground">{item.model} — <span className="text-primary">{item.confidence}%</span></p>
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Inferencia / Conf.</p>
+                <p className="text-[11px] font-data text-foreground">{item.model} — <span className="text-primary font-bold">{item.confidence}%</span></p>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground">Real → Pred</p>
-                <p className="text-xs font-data">
-                  <span className="text-foreground">{item.realLabel}</span>
-                  <span className="text-muted-foreground"> → </span>
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Evaluación</p>
+                <p className="text-[11px] font-data font-bold">
+                  <span className="text-foreground/70">{item.realLabel}</span>
+                  <span className="text-muted-foreground font-normal"> → </span>
                   <span className={item.realLabel === item.predicted ? "text-success" : "text-anomaly"}>{item.predicted}</span>
                 </p>
               </div>

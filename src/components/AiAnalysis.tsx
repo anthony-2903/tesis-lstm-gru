@@ -84,37 +84,33 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
   };
 
   return (
-    <Card className="relative overflow-hidden border-primary/20 bg-card/50 backdrop-blur-xl shadow-2xl">
-      <div className="absolute top-0 right-0 p-8 opacity-5">
-        <Brain className="h-32 w-32 text-primary" />
-      </div>
-      
-      <CardHeader>
+    <Card className="relative overflow-hidden border border-border bg-card shadow-sm">
+      <CardHeader className="border-b border-border bg-muted/20">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-                <Brain className="h-5 w-5" />
+            <CardTitle className="text-lg flex items-center gap-2 font-bold tracking-tight">
+              <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+                <Brain className="h-4 w-4" />
               </div>
-              Asistente de Análisis IA
+              Reporte de Análisis Técnico (IA)
             </CardTitle>
-            <CardDescription>
-              Interpretación experta de resultados del modelo {type === 'general' ? 'completo' : type}
+            <CardDescription className="text-xs">
+              Síntesis analítica de resultados para el modelo {type === 'general' ? 'completo' : type.toUpperCase()}
             </CardDescription>
           </div>
           {!analysis && !isAnalyzing && (
             <Button 
               onClick={startAnalysis}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all hover:scale-105"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-9"
             >
-              <Send className="mr-2 h-4 w-4" />
+              <Send className="mr-2 h-3.5 w-3.5" />
               Generar Análisis
             </Button>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="min-h-[100px] relative">
+      <CardContent className="min-h-[100px] p-6 relative">
         <AnimatePresence mode="wait">
           {isAnalyzing ? (
             <motion.div 
@@ -126,18 +122,20 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
             >
               <Loader2 className="h-8 w-8 text-primary animate-spin" />
               <div className="text-sm text-muted-foreground animate-pulse font-medium">
-                Sintetizando métricas de {type}...
+                Sintetizando métricas y resultados técnicos...
               </div>
             </motion.div>
           ) : analysis ? (
             <motion.div 
               key="content"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="prose prose-invert max-w-none"
+              className="max-w-none"
             >
-              <div className="bg-muted/30 rounded-xl p-6 border border-border/50">
-                {formatText(displayedText)}
+              <div className="rounded-lg">
+                <div className="space-y-1">
+                  {formatText(displayedText)}
+                </div>
                 {index < analysis.length && (
                   <motion.span
                     animate={{ opacity: [1, 0] }}
@@ -149,14 +147,14 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mt-8 pt-4 border-t border-border/50 flex items-center justify-between"
+                    className="mt-8 pt-6 border-t border-border flex items-center justify-between"
                   >
-                    <div className="flex items-center gap-2 text-xs text-success font-medium">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Análisis finalizado — Basado en datos del modelo
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                      <CheckCircle2 className="h-3 w-3 text-success" />
+                      Documento generado electrónicamente
                     </div>
-                    <Button variant="ghost" size="sm" onClick={startAnalysis} className="text-xs h-8">
-                      Recalcular
+                    <Button variant="outline" size="sm" onClick={startAnalysis} className="text-[10px] h-7 px-3">
+                      Regenerar Reporte
                     </Button>
                   </motion.div>
                 )}
@@ -167,10 +165,11 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
               key="empty"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-border/50 rounded-xl"
+              className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border/50 rounded-lg bg-muted/5"
             >
-              <Sparkles className="h-10 w-10 text-muted-foreground/30 mb-3" />
-              <p className="text-sm text-muted-foreground">Presiona el botón para iniciar el análisis profundo por IA</p>
+              <Sparkles className="h-8 w-8 text-muted-foreground/20 mb-3" />
+              <p className="text-sm text-muted-foreground font-medium">Análisis profundo pendiente de generación</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Haga clic en el botón superior para procesar los datos actuales.</p>
             </motion.div>
           )}
         </AnimatePresence>

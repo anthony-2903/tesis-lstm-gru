@@ -125,28 +125,28 @@ function SelectorPage() {
         {options.map((opt, oi) => (
           <motion.div
             key={opt.label}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: oi * 0.1 }}
-            className="rounded-xl border border-border bg-card p-5"
+            className="card-formal p-6"
           >
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 border-b border-border pb-3">
               <opt.icon className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold text-foreground">{opt.label}</h3>
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-widest">{opt.label}</h3>
             </div>
             <div className="space-y-2">
               {opt.choices.map((choice) => (
                 <button
                   key={choice.value}
                   onClick={() => opt.onSelect(choice.value as never)}
-                  className={`w-full text-left rounded-lg p-3 transition-all border ${
+                  className={`w-full text-left rounded-md p-3 transition-all border ${
                     opt.selected === choice.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-muted-foreground/30"
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border hover:bg-muted/30"
                   }`}
                 >
-                  <p className={`text-sm font-medium ${opt.selected === choice.value ? "text-primary" : "text-foreground"}`}>{choice.label}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{choice.desc}</p>
+                  <p className={`text-[13px] font-bold ${opt.selected === choice.value ? "text-primary" : "text-foreground"}`}>{choice.label}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 font-medium">{choice.desc}</p>
                 </button>
               ))}
             </div>
@@ -154,44 +154,48 @@ function SelectorPage() {
         ))}
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center py-4">
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className={`px-8 py-3 rounded-xl text-sm font-semibold transition-all ${
+          className={`px-10 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
             canSubmit
-              ? "gradient-cyan text-cyan-foreground hover:opacity-90 card-glow"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
+              ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/95 active:scale-95"
+              : "bg-muted text-muted-foreground cursor-not-allowed border border-border"
           }`}
         >
           <Scale className="inline h-4 w-4 mr-2" />
-          Obtener Recomendación
+          Generar Recomendación Técnica
         </button>
       </div>
 
       {result && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className={`rounded-xl border p-6 ${result.model === "LSTM" ? "border-primary/40 card-glow bg-primary/5" : "border-secondary/40 card-glow-violet bg-secondary/5"}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card-formal p-8 border-l-4 border-l-primary"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${result.model === "LSTM" ? "gradient-cyan" : "gradient-violet"}`}>
-              <Brain className={`h-6 w-6 ${result.model === "LSTM" ? "text-cyan-foreground" : "text-violet-foreground"}`} />
+          <div className="flex items-start gap-4 mb-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+              <Brain className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Modelo Recomendado</p>
-              <p className={`text-2xl font-bold ${result.model === "LSTM" ? "text-primary" : "text-secondary"}`}>{result.model}</p>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Modelo Recomendado</p>
+              <h2 className="text-3xl font-bold text-foreground">
+                Arquitectura <span className="text-primary">{result.model}</span>
+              </h2>
             </div>
           </div>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-foreground mb-2">Justificación:</p>
-            {result.reasons.map((r, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${result.model === "LSTM" ? "bg-primary" : "bg-secondary"}`} />
-                <p className="text-xs text-muted-foreground">{r}</p>
-              </div>
-            ))}
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold text-foreground uppercase tracking-wider border-b border-border pb-2">Justificación Técnica Experimental:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {result.reasons.map((r, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-md bg-muted/30 border border-border/50">
+                  <div className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-primary" />
+                  <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">{r}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
       )}

@@ -14,7 +14,7 @@ export function ChartCard({ title, subtitle, children, delay = 0 }: ChartCardPro
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="rounded-xl border border-border bg-card p-5"
+      className="card-formal p-6"
     >
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>

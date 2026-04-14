@@ -14,33 +14,23 @@ interface KpiCardProps {
 export function KpiCard({ title, value, subtitle, icon: Icon, variant = "default", delay = 0 }: KpiCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className={cn(
-        "rounded-xl border border-border bg-card p-5 transition-shadow duration-300",
-        variant === "cyan" && "card-glow",
-        variant === "violet" && "card-glow-violet"
-      )}
+      transition={{ duration: 0.3, delay }}
+      className="card-formal p-5"
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
-          <p className="mt-2 text-2xl font-bold font-data text-foreground">{value}</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</p>
+          <div className="flex items-baseline gap-1 mt-1">
+            <p className="text-3xl font-bold font-data text-foreground">{value}</p>
+          </div>
           {subtitle && <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>}
         </div>
         <div className={cn(
-          "flex h-10 w-10 items-center justify-center rounded-lg",
-          variant === "cyan" && "gradient-cyan",
-          variant === "violet" && "gradient-violet",
-          variant === "default" && "bg-muted"
+          "flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted/30",
         )}>
-          <Icon className={cn(
-            "h-5 w-5",
-            variant === "cyan" && "text-cyan-foreground",
-            variant === "violet" && "text-violet-foreground",
-            variant === "default" && "text-muted-foreground"
-          )} />
+          <Icon className="h-5 w-5 text-primary" />
         </div>
       </div>
     </motion.div>
