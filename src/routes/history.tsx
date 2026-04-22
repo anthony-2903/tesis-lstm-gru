@@ -39,23 +39,23 @@ function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start justify-between">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Historial de Anomalías</h1>
           <p className="text-sm text-muted-foreground mt-1">Timeline de todas las anomalías detectadas</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
+        <button onClick={exportCSV} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
           <Download className="h-3.5 w-3.5" />
           Exportar CSV
         </button>
       </motion.div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-6 border-b border-border pb-6">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 border-b border-border pb-6">
         <div className="flex items-center gap-3">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dominio:</span>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {(["all", "PhishTank", "OPSD"] as const).map((d) => (
               <button key={d} onClick={() => setDomainFilter(d)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${domainFilter === d ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
                 {d === "all" ? "Todos" : d}
@@ -65,7 +65,7 @@ function HistoryPage() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Modelo:</span>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {(["all", "LSTM", "GRU"] as const).map((m) => (
               <button key={m} onClick={() => setModelFilter(m)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${modelFilter === m ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
                 {m === "all" ? "Todos" : m}

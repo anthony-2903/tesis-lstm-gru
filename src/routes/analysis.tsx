@@ -98,7 +98,7 @@ function AnalysisPage() {
 
             {/* Confusion matrices */}
             <ChartCard title="Matrices de Confusión" delay={0.3}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <ConfusionMatrixViz title="LSTM" matrix={confusionMatrix.lstm} />
                 <ConfusionMatrixViz title="GRU" matrix={confusionMatrix.gru} />
               </div>
@@ -107,8 +107,8 @@ function AnalysisPage() {
 
           {/* URL table */}
           <ChartCard title="URLs Analizadas (Muestra)" delay={0.4}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+            <div className="overflow-x-auto -mx-6 px-6">
+              <table className="w-full text-xs min-w-[600px]">
                 <thead>
                   <tr className="border-b border-border bg-muted/20">
                     <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">URL</th>
@@ -121,7 +121,7 @@ function AnalysisPage() {
                 <tbody>
                   {phishtankUrls.map((row) => (
                     <tr key={row.id} className="border-b border-border hover:bg-muted/10 transition-colors">
-                      <td className="py-2.5 px-4 font-data text-foreground/80 truncate max-w-[300px]">{row.url}</td>
+                      <td className="py-2.5 px-4 font-data text-foreground/80 truncate max-w-[200px] sm:max-w-[300px]">{row.url}</td>
                       <td className="py-2.5 px-4 text-center">
                         <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.real === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
                           {row.real}

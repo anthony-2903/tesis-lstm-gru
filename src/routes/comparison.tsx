@@ -95,8 +95,8 @@ function ComparisonPage() {
 
       {/* Comparison table */}
       <ChartCard title="Tabla Comparativa Final" subtitle="El color indica el modelo ganador por criterio" delay={0.4}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+        <div className="overflow-x-auto -mx-6 px-6">
+          <table className="w-full text-xs min-w-[500px]">
             <thead>
               <tr className="border-b border-border bg-muted/20">
                 <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Métrica</th>

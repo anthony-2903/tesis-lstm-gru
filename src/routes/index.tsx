@@ -40,7 +40,7 @@ function HomePage() {
       </motion.div>
 
       {/* Domain selector */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(["all", "phishtank", "opsd"] as const).map((d) => (
           <button
             key={d}

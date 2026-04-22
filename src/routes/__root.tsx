@@ -1,5 +1,8 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
+import { useLocation } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 
@@ -52,10 +55,43 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Close sidebar on navigation (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
   return (
-    <div className="flex min-h-screen gradient-bg">
-      <DashboardSidebar />
-      <main className="ml-64 flex-1 p-6 overflow-auto">
+    <div className="flex min-h-screen gradient-bg relative overflow-x-hidden">
+      {/* Mobile Header */}
+      <header className="fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md md:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded bg-primary/10 text-primary">
+            <Menu className="h-4 w-4" />
+          </div>
+          <span className="text-xs font-bold tracking-tight text-foreground uppercase">LSTM <span className="text-primary">vs</span> GRU</span>
+        </div>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </header>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
+      <main className="flex-1 p-4 md:p-6 mt-14 md:mt-0 md:ml-64 transition-all duration-300 overflow-x-hidden">
         <Outlet />
       </main>
     </div>
