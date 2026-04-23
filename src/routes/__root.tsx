@@ -3,6 +3,7 @@ import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useLocation } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 import appCss from "../styles.css?url";
 
@@ -56,6 +57,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
   // Close sidebar on navigation (mobile)
@@ -89,9 +91,17 @@ function RootComponent() {
         />
       )}
 
-      <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <DashboardSidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        isCollapsed={isCollapsed}
+        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+      />
       
-      <main className="flex-1 p-4 md:p-6 mt-14 md:mt-0 md:ml-64 transition-all duration-300 overflow-x-hidden">
+      <main className={cn(
+        "flex-1 p-4 md:p-6 mt-14 md:mt-0 transition-all duration-300 overflow-x-hidden",
+        isCollapsed ? "md:ml-20" : "md:ml-64"
+      )}>
         <Outlet />
       </main>
     </div>

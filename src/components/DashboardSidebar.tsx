@@ -1,4 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   Home,
   Database,
@@ -7,6 +8,8 @@ import {
   Lightbulb,
   Brain,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,41 +24,60 @@ const navItems = [
 interface DashboardSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
+export function DashboardSidebar({ 
+  isOpen, 
+  onClose, 
+  isCollapsed, 
+  onToggleCollapse 
+}: DashboardSidebarProps) {
   const location = useLocation();
 
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar shadow-sm transition-transform duration-300 ease-in-out md:translate-x-0",
+        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border bg-sidebar shadow-sm transition-all duration-300 ease-in-out md:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full",
+        isCollapsed ? "w-20" : "w-64"
       )}
     >
-      <div className="flex items-center justify-between px-6 py-8 border-b border-border/50 mb-4 bg-muted/5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+      <div className={cn(
+        "flex items-center border-b border-border/50 mb-4 bg-muted/5 transition-all duration-300",
+        isCollapsed ? "px-4 py-8 justify-center" : "px-6 py-8 justify-between"
+      )}>
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
             <Brain className="h-5 w-5" />
           </div>
-          <div>
-            <h1 className="text-xs font-bold text-foreground tracking-widest uppercase">
-              LSTM <span className="text-primary">vs</span> GRU
-            </h1>
-            <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">
-              Plataforma de Investigación
-            </p>
-          </div>
+          {!isCollapsed && (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }} 
+              animate={{ opacity: 1, x: 0 }}
+              className="flex flex-col whitespace-nowrap"
+            >
+              <h1 className="text-xs font-bold text-foreground tracking-widest uppercase">
+                LSTM <span className="text-primary">vs</span> GRU
+              </h1>
+              <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">
+                Plataforma de Investigación
+              </p>
+            </motion.div>
+          )}
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted md:hidden"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {!isCollapsed && (
+          <button
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted md:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      <nav className="flex-1 px-4 py-2 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 py-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -63,25 +85,42 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-semibold transition-all duration-200",
+                "flex items-center rounded-md px-3 py-2.5 text-[13px] font-semibold transition-all duration-200 group",
+                isCollapsed ? "justify-center" : "gap-3",
                 isActive
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               <item.icon
-                className={cn("h-4 w-4", isActive ? "text-primary-foreground" : "text-muted-foreground/70")}
+                className={cn("h-4 w-4 shrink-0", isActive ? "text-primary-foreground" : "text-muted-foreground/70 group-hover:text-foreground")}
               />
-              <span>{item.title}</span>
+              {!isCollapsed && (
+                <motion.span 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="whitespace-nowrap"
+                >
+                  {item.title}
+                </motion.span>
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-border px-4 py-4">
-        <p className="text-[10px] text-muted-foreground text-center">
-          Tesis de Ingeniería — 2026
-        </p>
+      <div className="border-t border-border px-4 py-4 flex flex-col items-center gap-4">
+        {!isCollapsed && (
+          <p className="text-[10px] text-muted-foreground text-center whitespace-nowrap">
+            Tesis de Ingeniería — 2026
+          </p>
+        )}
+        <button
+          onClick={onToggleCollapse}
+          className="hidden md:flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
       </div>
     </aside>
   );
