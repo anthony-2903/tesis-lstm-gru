@@ -60,7 +60,7 @@ function HomePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <KpiCard
           title="Registros Analizados"
-          value={kpiData.totalRecords.toLocaleString()}
+          value={kpiData.totalRecords.toLocaleString("es-ES")}
           subtitle="En ambos dominios"
           icon={Database}
           variant="cyan"
@@ -68,7 +68,7 @@ function HomePage() {
         />
         <KpiCard
           title="Anomalías Detectadas"
-          value={(kpiData.totalAnomalies.phishtank + kpiData.totalAnomalies.opsd).toLocaleString()}
+          value={(kpiData.totalAnomalies.phishtank + kpiData.totalAnomalies.opsd).toLocaleString("es-ES")}
           subtitle={`PhishTank: ${kpiData.totalAnomalies.phishtank} | OPSD: ${kpiData.totalAnomalies.opsd}`}
           icon={AlertTriangle}
           variant="violet"
@@ -119,7 +119,7 @@ function HomePage() {
             {domainDistribution.map((d) => (
               <div key={d.name} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-xs text-muted-foreground">{d.name}: {d.value.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">{d.name}: {d.value.toLocaleString("es-ES")}</span>
               </div>
             ))}
           </div>

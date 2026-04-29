@@ -39,7 +39,7 @@ function ConfusionMatrixViz({ title, matrix }: { title: string; matrix: { tp: nu
         {cells.map((c) => (
           <div key={c.label} className={`rounded-lg p-3 text-center ${c.color}`}>
             <p className="text-[10px] uppercase tracking-wider opacity-70">{c.label}</p>
-            <p className="text-lg font-bold font-data">{c.value.toLocaleString()}</p>
+            <p className="text-lg font-bold font-data">{c.value.toLocaleString("es-ES")}</p>
           </div>
         ))}
       </div>
@@ -181,6 +181,48 @@ function AnalysisPage() {
               <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-anomaly" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Anomalía</span></div>
             </div>
           </ChartCard>
+
+          <ChartCard title="Registro de Puntos Anómalos" subtitle="Identificación exacta de las fechas con comportamiento atípico en la serie temporal" delay={0.3}>
+            <div className="overflow-x-auto -mx-6 px-6">
+              <table className="w-full text-xs min-w-[600px]">
+                <thead>
+                  <tr className="border-b border-border bg-muted/20">
+                    <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Fecha del Evento</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Valor Real</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Esperado (LSTM)</th>
+                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Est. Desviación</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTS.filter(d => d.anomaly).map((row, idx) => (
+                    <tr key={idx} className="border-b border-border hover:bg-muted/10 transition-colors">
+                      <td className="py-2.5 px-4 font-data text-foreground/80 flex items-center gap-2">
+                        <AlertCircle className="h-3.5 w-3.5 text-anomaly" />
+                        {row.date}
+                      </td>
+                      <td className="py-2.5 px-4 text-center font-bold text-anomaly">
+                        {row.actual.toLocaleString("es-ES")} MWh
+                      </td>
+                      <td className="py-2.5 px-4 text-center text-muted-foreground">
+                        {row.lstm.toLocaleString("es-ES")} MWh
+                      </td>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className="px-2 py-0.5 rounded-sm lg bg-anomaly/10 text-anomaly border border-anomaly/20 font-bold">
+                          + {Math.abs(row.actual - row.lstm).toFixed(1)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredTS.filter(d => d.anomaly).length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="py-6 text-center text-muted-foreground">Ninguna anomalía detectada en el periodo visible.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </ChartCard>
+
           <AiAnalysis type="opsd" />
         </motion.div>
       )}
