@@ -4,42 +4,44 @@ import { motion } from "framer-motion";
 import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
 import {
-  phishtankUrls, phishtankMetrics, phishtankBarData, confusionMatrix,
-  generateTimeSeriesData, opsdMetrics
+  phishtankMetrics, phishtankBarData, phishtankConfusionMatrix, phishtankUrls,
+  energyMetrics, energyBarData, energyConfusionMatrix, energySamples,
+  financeMetrics, financeBarData, financeConfusionMatrix, financeTransactions,
+  generateTimeSeriesData, generatePhishTankTimeline, generateFinanceTimeline
 } from "@/lib/mock-data";
-import { Shield, Zap, TrendingUp, AlertCircle } from "lucide-react";
+import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Clock, Activity, BarChart3 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, ScatterChart, Scatter, Cell
+  LineChart, Line, AreaChart, Area, Legend, Scatter
 } from "recharts";
 import { AiAnalysis } from "@/components/AiAnalysis";
 
 export const Route = createFileRoute("/analysis")({
   head: () => ({
     meta: [
-      { title: "Análisis por Dominio — LSTM vs GRU" },
-      { name: "description", content: "Análisis detallado de PhishTank y Open Power System Data" },
+      { title: "Análisis Detallado de Anomalías — LSTM vs GRU vs CNN" },
+      { name: "description", content: "Evaluación profunda de modelos en PhishTank, Energía y Finanzas" },
     ],
   }),
   component: AnalysisPage,
 });
 
-function ConfusionMatrixViz({ title, matrix }: { title: string; matrix: { tp: number; fp: number; fn: number; tn: number } }) {
+function ConfusionMatrixViz({ title, matrix, colorClass }: { title: string; matrix: { tp: number; fp: number; fn: number; tn: number }; colorClass: string }) {
   const cells = [
-    { label: "VP", value: matrix.tp, row: 0, col: 0, color: "bg-success/20 text-success" },
-    { label: "FP", value: matrix.fp, row: 0, col: 1, color: "bg-anomaly/20 text-anomaly" },
-    { label: "FN", value: matrix.fn, row: 1, col: 0, color: "bg-warning/20 text-warning" },
-    { label: "VN", value: matrix.tn, row: 1, col: 1, color: "bg-primary/20 text-primary" },
+    { label: "VP", value: matrix.tp, color: "bg-success/20 text-success" },
+    { label: "FP", value: matrix.fp, color: "bg-anomaly/20 text-anomaly" },
+    { label: "FN", value: matrix.fn, color: "bg-warning/20 text-warning" },
+    { label: "VN", value: matrix.tn, color: colorClass },
   ];
 
   return (
-    <div>
-      <p className="text-xs font-semibold text-foreground mb-2">{title}</p>
+    <div className="flex-1">
+      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 text-center">{title}</p>
       <div className="grid grid-cols-2 gap-1">
         {cells.map((c) => (
-          <div key={c.label} className={`rounded-lg p-3 text-center ${c.color}`}>
-            <p className="text-[10px] uppercase tracking-wider opacity-70">{c.label}</p>
-            <p className="text-lg font-bold font-data">{c.value.toLocaleString("es-ES")}</p>
+          <div key={c.label} className={`rounded p-2 text-center ${c.color}`}>
+            <p className="text-[8px] uppercase tracking-wider opacity-70">{c.label}</p>
+            <p className="text-sm font-bold font-data">{c.value.toLocaleString()}</p>
           </div>
         ))}
       </div>
@@ -48,97 +50,184 @@ function ConfusionMatrixViz({ title, matrix }: { title: string; matrix: { tp: nu
 }
 
 function AnalysisPage() {
-  const [tab, setTab] = useState<"phishtank" | "opsd">("phishtank");
-  const timeSeriesData = useMemo(() => generateTimeSeriesData(), []);
-  const filteredTS = timeSeriesData.slice(0, 90); // show 3 months
+  const [tab, setTab] = useState<"phishtank" | "energia" | "finanzas">("phishtank");
+  
+  const phishtankTimeline = useMemo(() => generatePhishTankTimeline(), []);
+  const energyData = useMemo(() => generateTimeSeriesData(), []);
+  const financeTimeline = useMemo(() => generateFinanceTimeline(), []);
 
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-2xl font-bold text-foreground">Análisis por Dominio</h1>
-        <p className="text-sm text-muted-foreground mt-1">Resultados detallados por modelo y dominio</p>
+        <h1 className="text-2xl font-bold text-foreground">Análisis de Anomalías</h1>
+        <p className="text-sm text-muted-foreground mt-1">Evaluación técnica y comparativa de arquitecturas neuronales</p>
       </motion.div>
 
-      <div className="flex gap-2">
-        <button onClick={() => setTab("phishtank")} className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${tab === "phishtank" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+      {/* Domain Selector */}
+      <div className="flex flex-wrap gap-2 bg-muted/30 p-1 rounded-xl w-fit border border-border">
+        <button onClick={() => setTab("phishtank")} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${tab === "phishtank" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          <Shield className="h-3.5 w-3.5" />
           PhishTank (URLs)
         </button>
-        <button onClick={() => setTab("opsd")} className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${tab === "opsd" ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"}`}>
-          Open Power System
+        <button onClick={() => setTab("energia")} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${tab === "energia" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          <Zap className="h-3.5 w-3.5" />
+          Energía (Series)
+        </button>
+        <button onClick={() => setTab("finanzas")} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${tab === "finanzas" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          <Landmark className="h-3.5 w-3.5" />
+          Finanzas (Fraude)
         </button>
       </div>
 
-      {tab === "phishtank" ? (
-        <motion.div key="phishtank" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-          {/* Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard title="Precision LSTM" value={phishtankMetrics.lstm.precision.toFixed(3)} icon={Shield} variant="cyan" />
-            <KpiCard title="Recall LSTM" value={phishtankMetrics.lstm.recall.toFixed(3)} icon={TrendingUp} variant="cyan" delay={0.05} />
-            <KpiCard title="Precision GRU" value={phishtankMetrics.gru.precision.toFixed(3)} icon={Shield} variant="violet" delay={0.1} />
-            <KpiCard title="Recall GRU" value={phishtankMetrics.gru.recall.toFixed(3)} icon={TrendingUp} variant="violet" delay={0.15} />
+      {/* --- PHISHTANK SECTION --- */}
+      {tab === "phishtank" && (
+        <motion.div key="phishtank" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <KpiCard title="F1-Score (Promedio)" value="0.950" icon={Activity} variant="cyan" />
+            <KpiCard title="Precisión Phishing" value="95.7%" icon={Shield} variant="violet" delay={0.1} />
+            <KpiCard title="Recall Phishing" value="97.1%" icon={TrendingUp} variant="default" delay={0.2} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Bar chart */}
-            <ChartCard title="Detecciones por Modelo" delay={0.2}>
-              <ResponsiveContainer width="100%" height={280}>
+            <ChartCard title="Frecuencia Temporal de Ataques" subtitle="Detecciones diarias identificadas" delay={0.3}>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={phishtankTimeline}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                  <XAxis dataKey="date" hide />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px" }} />
+                  <Area type="monotone" dataKey="lstm" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.1} strokeWidth={2} name="LSTM" />
+                  <Area type="monotone" dataKey="gru" stroke="var(--chart-2)" fill="var(--chart-2)" fillOpacity={0.1} strokeWidth={2} name="GRU" />
+                  <Area type="monotone" dataKey="cnn" stroke="var(--chart-3)" fill="var(--chart-3)" fillOpacity={0.1} strokeWidth={2} name="CNN" />
+                  <Scatter name="Anomalías Reales" dataKey="anomalies" fill="var(--anomaly)" shape="star" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Eficacia de Detección (Total)" subtitle="Anomalías reales vs. detectadas" delay={0.4}>
+              <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={phishtankBarData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "12px" }}
-                    itemStyle={{ fontSize: "12px", fontWeight: "bold" }}
-                  />
-                  <Bar dataKey="LSTM" fill="var(--chart-1)" radius={[2, 2, 0, 0]} />
-                  <Bar dataKey="GRU" fill="var(--chart-2)" radius={[2, 2, 0, 0]} />
+                  <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip cursor={{ fill: 'var(--color-muted/10)' }} />
+                  <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+
+          <ChartCard title="Análisis de Matrices de Confusión" delay={0.5}>
+            <div className="flex flex-col md:flex-row gap-8">
+              <ConfusionMatrixViz title="LSTM (Superior)" matrix={phishtankConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
+              <ConfusionMatrixViz title="GRU" matrix={phishtankConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
+              <ConfusionMatrixViz title="CNN (Rápido)" matrix={phishtankConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
+            </div>
+          </ChartCard>
+
+          <ChartCard title="Muestreo de Clasificación de URLs" delay={0.6}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border bg-muted/20 text-muted-foreground">
+                    <th className="text-left py-3 px-4 uppercase font-bold tracking-wider">Dirección URL</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">Estado Real</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">LSTM</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">GRU</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">CNN</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {phishtankUrls.map((r) => (
+                    <tr key={r.id} className="border-b border-border hover:bg-muted/10 transition-colors">
+                      <td className="py-2.5 px-4 font-data text-foreground/70 truncate max-w-[300px]">{r.url}</td>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-sm font-bold uppercase text-[9px] ${r.real === 'phishing' ? 'bg-anomaly/10 text-anomaly' : 'bg-success/10 text-success'}`}>{r.real}</span>
+                      </td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.lstm === r.real ? 'text-success' : 'text-anomaly'}`}>{r.lstm}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.gru === r.real ? 'text-success' : 'text-anomaly'}`}>{r.gru}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.cnn === r.real ? 'text-success' : 'text-anomaly'}`}>{r.cnn}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ChartCard>
+        </motion.div>
+      )}
+
+      {/* --- ENERGY SECTION --- */}
+      {tab === "energia" && (
+        <motion.div key="energia" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <KpiCard title="Error RMSE (GRU)" value="16.95" icon={BarChart3} variant="cyan" />
+            <KpiCard title="Precisión de Anomalía" value="92.5%" icon={Zap} variant="violet" delay={0.1} />
+            <KpiCard title="Detecciones Reales" value="355/389" icon={Activity} variant="default" delay={0.2} />
+          </div>
+
+          <ChartCard title="Predicción y Desviación de Consumo" subtitle="Detección de picos anómalos" delay={0.3}>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart data={energyData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={10} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                <Line type="monotone" dataKey="actual" stroke="var(--foreground)" strokeWidth={1.5} dot={false} name="Consumo Real" />
+                <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={2} dot={false} name="LSTM" />
+                <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={2} dot={false} name="GRU" />
+                <Line type="monotone" dataKey="cnn" stroke="var(--chart-3)" strokeWidth={2} dot={false} name="CNN" />
+                <Scatter name="Anomalía Detectada" data={energyData.filter(d => d.anomaly)} fill="var(--anomaly)" shape="circle" />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Distribución de Anomalías Energéticas" delay={0.4}>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={energyBarData}>
+                  <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="var(--secondary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            {/* Confusion matrices */}
-            <ChartCard title="Matrices de Confusión" delay={0.3}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <ConfusionMatrixViz title="LSTM" matrix={confusionMatrix.lstm} />
-                <ConfusionMatrixViz title="GRU" matrix={confusionMatrix.gru} />
+            <ChartCard title="Matrices de Validación (Energía)" delay={0.5}>
+              <div className="flex flex-col gap-4">
+                <ConfusionMatrixViz title="GRU (Líder en Series)" matrix={energyConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
+                <div className="flex gap-4">
+                  <ConfusionMatrixViz title="LSTM" matrix={energyConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
+                  <ConfusionMatrixViz title="CNN" matrix={energyConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
+                </div>
               </div>
             </ChartCard>
           </div>
 
-          {/* URL table */}
-          <ChartCard title="URLs Analizadas (Muestra)" delay={0.4}>
-            <div className="overflow-x-auto -mx-6 px-6">
-              <table className="w-full text-xs min-w-[600px]">
+          <ChartCard title="Registro de Mediciones Anómalas" delay={0.6}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-border bg-muted/20">
-                    <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">URL</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Real</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">LSTM</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">GRU</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Anomalía</th>
+                  <tr className="border-b border-border bg-muted/20 text-muted-foreground">
+                    <th className="text-left py-3 px-4 uppercase font-bold">Timestamp</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Valor (kW)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Real</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">GRU (Best)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Alerta</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {phishtankUrls.map((row) => (
-                    <tr key={row.id} className="border-b border-border hover:bg-muted/10 transition-colors">
-                      <td className="py-2.5 px-4 font-data text-foreground/80 truncate max-w-[200px] sm:max-w-[300px]">{row.url}</td>
+                  {energySamples.map((s) => (
+                    <tr key={s.id} className="border-b border-border hover:bg-muted/10 transition-colors">
+                      <td className="py-2.5 px-4 font-data">{s.date}</td>
+                      <td className="py-2.5 px-4 text-center font-bold text-foreground">{s.value}</td>
                       <td className="py-2.5 px-4 text-center">
-                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.real === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
-                          {row.real}
-                        </span>
+                        <span className={`px-2 py-0.5 rounded-sm font-bold uppercase text-[9px] ${s.real === 'anomalía' ? 'bg-anomaly/10 text-anomaly' : 'bg-success/10 text-success'}`}>{s.real}</span>
                       </td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${s.gru === s.real ? 'text-success' : 'text-anomaly'}`}>{s.gru}</td>
                       <td className="py-2.5 px-4 text-center">
-                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.lstm === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
-                          {row.lstm}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 text-center">
-                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${row.gru === "phishing" ? "bg-anomaly/10 text-anomaly border border-anomaly/20" : "bg-success/10 text-success border border-success/20"}`}>
-                          {row.gru}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 text-center">
-                        {row.anomaly ? <AlertCircle className="inline h-3.5 w-3.5 text-anomaly" /> : <span className="text-muted-foreground">—</span>}
+                        {s.anomaly && <AlertCircle className="h-4 w-4 text-anomaly inline" />}
                       </td>
                     </tr>
                   ))}
@@ -146,87 +235,87 @@ function AnalysisPage() {
               </table>
             </div>
           </ChartCard>
-        </motion.div>
-      ) : (
-        <motion.div key="opsd" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard title="RMSE LSTM" value={opsdMetrics.lstm.rmse.toFixed(2)} icon={Zap} variant="cyan" />
-            <KpiCard title="MAE LSTM" value={opsdMetrics.lstm.mae.toFixed(2)} icon={TrendingUp} variant="cyan" delay={0.05} />
-            <KpiCard title="RMSE GRU" value={opsdMetrics.gru.rmse.toFixed(2)} icon={Zap} variant="violet" delay={0.1} />
-            <KpiCard title="MAE GRU" value={opsdMetrics.gru.mae.toFixed(2)} icon={TrendingUp} variant="violet" delay={0.15} />
-          </div>
-
-          <ChartCard title="Consumo Eléctrico — Real vs Predicción" subtitle="Primeros 90 días del período de prueba" delay={0.2}>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={filteredTS}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-                <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--color-muted-foreground)" }} interval={14} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "4px", fontSize: "11px" }} />
-                <Line type="monotone" dataKey="actual" stroke="var(--color-muted-foreground)" strokeWidth={1.5} dot={false} name="Real" />
-                <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={2} dot={false} name="LSTM" />
-                <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={2} dot={false} name="GRU" />
-                <Scatter
-                  dataKey="actual"
-                  data={filteredTS.filter(d => d.anomaly)}
-                  fill="var(--color-anomaly)"
-                  name="Anomalía"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-            <div className="flex gap-4 justify-center mt-4">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-muted-foreground" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Real</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-primary" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">LSTM</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-secondary" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">GRU</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-anomaly" /><span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Anomalía</span></div>
-            </div>
-          </ChartCard>
-
-          <ChartCard title="Registro de Puntos Anómalos" subtitle="Identificación exacta de las fechas con comportamiento atípico en la serie temporal" delay={0.3}>
-            <div className="overflow-x-auto -mx-6 px-6">
-              <table className="w-full text-xs min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-border bg-muted/20">
-                    <th className="text-left py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Fecha del Evento</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Valor Real</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Esperado (LSTM)</th>
-                    <th className="text-center py-3 px-4 text-muted-foreground font-bold uppercase tracking-wider">Est. Desviación</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTS.filter(d => d.anomaly).map((row, idx) => (
-                    <tr key={idx} className="border-b border-border hover:bg-muted/10 transition-colors">
-                      <td className="py-2.5 px-4 font-data text-foreground/80 flex items-center gap-2">
-                        <AlertCircle className="h-3.5 w-3.5 text-anomaly" />
-                        {row.date}
-                      </td>
-                      <td className="py-2.5 px-4 text-center font-bold text-anomaly">
-                        {row.actual.toLocaleString("es-ES")} MWh
-                      </td>
-                      <td className="py-2.5 px-4 text-center text-muted-foreground">
-                        {row.lstm.toLocaleString("es-ES")} MWh
-                      </td>
-                      <td className="py-2.5 px-4 text-center">
-                        <span className="px-2 py-0.5 rounded-sm lg bg-anomaly/10 text-anomaly border border-anomaly/20 font-bold">
-                          + {Math.abs(row.actual - row.lstm).toFixed(1)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredTS.filter(d => d.anomaly).length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-center text-muted-foreground">Ninguna anomalía detectada en el periodo visible.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </ChartCard>
-
-          <AiAnalysis type="opsd" />
         </motion.div>
       )}
-      {tab === "phishtank" && <AiAnalysis type="phishtank" />}
+
+      {/* --- FINANCE SECTION --- */}
+      {tab === "finanzas" && (
+        <motion.div key="finanzas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <KpiCard title="F1-Score (CNN)" value="0.952" icon={Landmark} variant="cyan" />
+            <KpiCard title="Fraude Detectado" value="802/842" icon={TrendingUp} variant="violet" delay={0.1} />
+            <KpiCard title="Falsos Positivos" value="70 (Bajo)" icon={AlertCircle} variant="default" delay={0.2} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Timeline de Riesgo de Fraude" subtitle="Variación del score de anomalía" delay={0.3}>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={financeTimeline}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                  <XAxis dataKey="date" hide />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip />
+                  <Line type="stepAfter" dataKey="cnn" stroke="var(--chart-3)" strokeWidth={3} dot={false} name="Score CNN" />
+                  <Line type="stepAfter" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={1} dot={false} strokeDasharray="5 5" name="Score LSTM" />
+                  <Scatter name="Fraude Detectado" data={financeTimeline.filter(d => d.anomaly)} fill="var(--anomaly)" shape="diamond" />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Volumen de Fraude Clasificado" subtitle="Comparativa de eficiencia arquitectónica" delay={0.4}>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={financeBarData}>
+                  <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+
+          <ChartCard title="Matrices de Confusión (Fraude Financiero)" delay={0.5}>
+            <div className="flex flex-col md:flex-row gap-8">
+              <ConfusionMatrixViz title="CNN (Especialista)" matrix={financeConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
+              <ConfusionMatrixViz title="GRU" matrix={financeConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
+              <ConfusionMatrixViz title="LSTM" matrix={financeConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
+            </div>
+          </ChartCard>
+
+          <ChartCard title="Detección de Transacciones Fraudulentas" delay={0.6}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border bg-muted/20 text-muted-foreground">
+                    <th className="text-left py-3 px-4 uppercase font-bold">ID Transacción</th>
+                    <th className="text-right py-3 px-4 uppercase font-bold">Monto ($)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Real</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">CNN (Best)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Impacto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {financeTransactions.map((t) => (
+                    <tr key={t.id} className="border-b border-border hover:bg-muted/10 transition-colors">
+                      <td className="py-2.5 px-4 font-data">{t.txn}</td>
+                      <td className="py-2.5 px-4 text-right font-bold text-foreground">{t.amount.toFixed(2)}</td>
+                      <td className="py-2.5 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-sm font-bold uppercase text-[9px] ${t.real === 'fraude' ? 'bg-anomaly/10 text-anomaly border border-anomaly/20' : 'bg-success/10 text-success border border-success/20'}`}>{t.real}</span>
+                      </td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${t.cnn === t.real ? 'text-success' : 'text-anomaly'}`}>{t.cnn}</td>
+                      <td className="py-2.5 px-4 text-center">
+                        {t.real === 'fraude' ? <span className="text-anomaly font-bold">ALTO</span> : <span className="text-muted-foreground opacity-30">BAJO</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ChartCard>
+        </motion.div>
+      )}
+
+      <AiAnalysis type={tab} />
     </div>
   );
 }

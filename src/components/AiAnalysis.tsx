@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 interface AiAnalysisProps {
-  type: "general" | "phishtank" | "opsd";
+  type: "general" | "phishtank" | "energia" | "finanzas";
 }
 
 export function AiAnalysis({ type }: AiAnalysisProps) {

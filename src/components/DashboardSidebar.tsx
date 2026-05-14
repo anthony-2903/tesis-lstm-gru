@@ -59,7 +59,7 @@ export function DashboardSidebar({
               className="flex flex-col whitespace-nowrap"
             >
               <h1 className="text-xs font-bold text-foreground tracking-widest uppercase">
-                LSTM <span className="text-primary">vs</span> GRU
+                LSTM <span className="text-primary">vs</span> GRU <span className="text-primary">vs</span> CNN
               </h1>
               <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">
                 Plataforma de Investigación
