@@ -58,8 +58,8 @@ export function DashboardSidebar({
               animate={{ opacity: 1, x: 0 }}
               className="flex flex-col whitespace-nowrap"
             >
-              <h1 className="text-xs font-bold text-foreground tracking-widest uppercase">
-                LSTM <span className="text-primary">vs</span> GRU <span className="text-primary">vs</span> CNN
+              <h1 className="text-[10px] font-bold text-foreground tracking-tighter uppercase">
+                LSTM | GRU | TRF | TCN
               </h1>
               <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">
                 Plataforma de Investigación

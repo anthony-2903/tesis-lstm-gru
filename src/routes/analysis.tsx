@@ -19,7 +19,7 @@ import { AiAnalysis } from "@/components/AiAnalysis";
 export const Route = createFileRoute("/analysis")({
   head: () => ({
     meta: [
-      { title: "Análisis Detallado de Anomalías — LSTM vs GRU vs CNN" },
+      { title: "Análisis Detallado — LSTM vs GRU vs Transformer vs TCN" },
       { name: "description", content: "Evaluación profunda de modelos en PhishTank, Energía y Finanzas" },
     ],
   }),
@@ -83,9 +83,9 @@ function AnalysisPage() {
       {tab === "phishtank" && (
         <motion.div key="phishtank" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <KpiCard title="F1-Score (Promedio)" value="0.950" icon={Activity} variant="cyan" />
-            <KpiCard title="Precisión Phishing" value="95.7%" icon={Shield} variant="violet" delay={0.1} />
-            <KpiCard title="Recall Phishing" value="97.1%" icon={TrendingUp} variant="default" delay={0.2} />
+            <KpiCard title="F1-Score (Transformer)" value="0.978" icon={Activity} variant="cyan" />
+            <KpiCard title="Precisión Phishing" value="97.5%" icon={Shield} variant="violet" delay={0.1} />
+            <KpiCard title="Recall Phishing" value="98.2%" icon={TrendingUp} variant="default" delay={0.2} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -98,7 +98,8 @@ function AnalysisPage() {
                   <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px" }} />
                   <Area type="monotone" dataKey="lstm" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.1} strokeWidth={2} name="LSTM" />
                   <Area type="monotone" dataKey="gru" stroke="var(--chart-2)" fill="var(--chart-2)" fillOpacity={0.1} strokeWidth={2} name="GRU" />
-                  <Area type="monotone" dataKey="cnn" stroke="var(--chart-3)" fill="var(--chart-3)" fillOpacity={0.1} strokeWidth={2} name="CNN" />
+                  <Area type="monotone" dataKey="transformer" stroke="var(--chart-4)" fill="var(--chart-4)" fillOpacity={0.1} strokeWidth={2} name="Transformer" />
+                  <Area type="monotone" dataKey="tcn" stroke="var(--chart-5)" fill="var(--chart-5)" fillOpacity={0.1} strokeWidth={2} name="TCN" />
                   <Scatter name="Anomalías Reales" dataKey="anomalies" fill="var(--anomaly)" shape="star" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -118,10 +119,11 @@ function AnalysisPage() {
           </div>
 
           <ChartCard title="Análisis de Matrices de Confusión" delay={0.5}>
-            <div className="flex flex-col md:flex-row gap-8">
-              <ConfusionMatrixViz title="LSTM (Superior)" matrix={phishtankConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <ConfusionMatrixViz title="LSTM" matrix={phishtankConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
               <ConfusionMatrixViz title="GRU" matrix={phishtankConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
-              <ConfusionMatrixViz title="CNN (Rápido)" matrix={phishtankConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
+              <ConfusionMatrixViz title="Transformer (Best)" matrix={phishtankConfusionMatrix.transformer} colorClass="bg-chart-4/20 text-chart-4" />
+              <ConfusionMatrixViz title="TCN" matrix={phishtankConfusionMatrix.tcn} colorClass="bg-chart-5/20 text-chart-5" />
             </div>
           </ChartCard>
 
@@ -134,7 +136,8 @@ function AnalysisPage() {
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">Estado Real</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">LSTM</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">GRU</th>
-                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">CNN</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">Transformer</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">TCN</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,7 +149,8 @@ function AnalysisPage() {
                       </td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.lstm === r.real ? 'text-success' : 'text-anomaly'}`}>{r.lstm}</td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.gru === r.real ? 'text-success' : 'text-anomaly'}`}>{r.gru}</td>
-                      <td className={`py-2.5 px-4 text-center font-bold ${r.cnn === r.real ? 'text-success' : 'text-anomaly'}`}>{r.cnn}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.transformer === r.real ? 'text-success' : 'text-anomaly'}`}>{r.transformer}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.tcn === r.real ? 'text-success' : 'text-anomaly'}`}>{r.tcn}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -160,9 +164,9 @@ function AnalysisPage() {
       {tab === "energia" && (
         <motion.div key="energia" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <KpiCard title="Error RMSE (GRU)" value="16.95" icon={BarChart3} variant="cyan" />
-            <KpiCard title="Precisión de Anomalía" value="92.5%" icon={Zap} variant="violet" delay={0.1} />
-            <KpiCard title="Detecciones Reales" value="355/389" icon={Activity} variant="default" delay={0.2} />
+            <KpiCard title="Error RMSE (TCN)" value="14.80" icon={BarChart3} variant="cyan" />
+            <KpiCard title="Precisión de Anomalía" value="95.2%" icon={Zap} variant="violet" delay={0.1} />
+            <KpiCard title="Detecciones Reales" value="365/389" icon={Activity} variant="default" delay={0.2} />
           </div>
 
           <ChartCard title="Predicción y Desviación de Consumo" subtitle="Detección de picos anómalos" delay={0.3}>
@@ -176,7 +180,8 @@ function AnalysisPage() {
                 <Line type="monotone" dataKey="actual" stroke="var(--foreground)" strokeWidth={1.5} dot={false} name="Consumo Real" />
                 <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={2} dot={false} name="LSTM" />
                 <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={2} dot={false} name="GRU" />
-                <Line type="monotone" dataKey="cnn" stroke="var(--chart-3)" strokeWidth={2} dot={false} name="CNN" />
+                <Line type="monotone" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={2} dot={false} name="Transformer" />
+                <Line type="monotone" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={2} dot={false} name="TCN" />
                 <Scatter name="Anomalía Detectada" data={energyData.filter(d => d.anomaly)} fill="var(--anomaly)" shape="circle" />
               </LineChart>
             </ResponsiveContainer>
@@ -195,12 +200,11 @@ function AnalysisPage() {
             </ChartCard>
 
             <ChartCard title="Matrices de Validación (Energía)" delay={0.5}>
-              <div className="flex flex-col gap-4">
-                <ConfusionMatrixViz title="GRU (Líder en Series)" matrix={energyConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
-                <div className="flex gap-4">
-                  <ConfusionMatrixViz title="LSTM" matrix={energyConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
-                  <ConfusionMatrixViz title="CNN" matrix={energyConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                <ConfusionMatrixViz title="TCN (Mejor)" matrix={energyConfusionMatrix.tcn} colorClass="bg-chart-5/20 text-chart-5" />
+                <ConfusionMatrixViz title="Transformer" matrix={energyConfusionMatrix.transformer} colorClass="bg-chart-4/20 text-chart-4" />
+                <ConfusionMatrixViz title="GRU" matrix={energyConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
+                <ConfusionMatrixViz title="LSTM" matrix={energyConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
               </div>
             </ChartCard>
           </div>
@@ -213,7 +217,7 @@ function AnalysisPage() {
                     <th className="text-left py-3 px-4 uppercase font-bold">Timestamp</th>
                     <th className="text-center py-3 px-4 uppercase font-bold">Valor (kW)</th>
                     <th className="text-center py-3 px-4 uppercase font-bold">Real</th>
-                    <th className="text-center py-3 px-4 uppercase font-bold">GRU (Best)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">TCN (Best)</th>
                     <th className="text-center py-3 px-4 uppercase font-bold">Alerta</th>
                   </tr>
                 </thead>
@@ -225,7 +229,7 @@ function AnalysisPage() {
                       <td className="py-2.5 px-4 text-center">
                         <span className={`px-2 py-0.5 rounded-sm font-bold uppercase text-[9px] ${s.real === 'anomalía' ? 'bg-anomaly/10 text-anomaly' : 'bg-success/10 text-success'}`}>{s.real}</span>
                       </td>
-                      <td className={`py-2.5 px-4 text-center font-bold ${s.gru === s.real ? 'text-success' : 'text-anomaly'}`}>{s.gru}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${s.tcn === s.real ? 'text-success' : 'text-anomaly'}`}>{s.tcn}</td>
                       <td className="py-2.5 px-4 text-center">
                         {s.anomaly && <AlertCircle className="h-4 w-4 text-anomaly inline" />}
                       </td>
@@ -242,9 +246,9 @@ function AnalysisPage() {
       {tab === "finanzas" && (
         <motion.div key="finanzas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <KpiCard title="F1-Score (CNN)" value="0.952" icon={Landmark} variant="cyan" />
-            <KpiCard title="Fraude Detectado" value="802/842" icon={TrendingUp} variant="violet" delay={0.1} />
-            <KpiCard title="Falsos Positivos" value="70 (Bajo)" icon={AlertCircle} variant="default" delay={0.2} />
+            <KpiCard title="F1-Score (Transf.)" value="0.965" icon={Landmark} variant="cyan" />
+            <KpiCard title="Fraude Detectado" value="810/842" icon={TrendingUp} variant="violet" delay={0.1} />
+            <KpiCard title="Falsos Positivos" value="27 (Mínimo)" icon={AlertCircle} variant="default" delay={0.2} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -255,8 +259,8 @@ function AnalysisPage() {
                   <XAxis dataKey="date" hide />
                   <YAxis domain={[0, 100]} />
                   <Tooltip />
-                  <Line type="stepAfter" dataKey="cnn" stroke="var(--chart-3)" strokeWidth={3} dot={false} name="Score CNN" />
-                  <Line type="stepAfter" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={1} dot={false} strokeDasharray="5 5" name="Score LSTM" />
+                  <Line type="stepAfter" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={3} dot={false} name="Score Transf." />
+                  <Line type="stepAfter" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Score TCN" />
                   <Scatter name="Fraude Detectado" data={financeTimeline.filter(d => d.anomaly)} fill="var(--anomaly)" shape="diamond" />
                 </LineChart>
               </ResponsiveContainer>
@@ -275,8 +279,9 @@ function AnalysisPage() {
           </div>
 
           <ChartCard title="Matrices de Confusión (Fraude Financiero)" delay={0.5}>
-            <div className="flex flex-col md:flex-row gap-8">
-              <ConfusionMatrixViz title="CNN (Especialista)" matrix={financeConfusionMatrix.cnn} colorClass="bg-accent/20 text-accent" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <ConfusionMatrixViz title="Transformer" matrix={financeConfusionMatrix.transformer} colorClass="bg-chart-4/20 text-chart-4" />
+              <ConfusionMatrixViz title="TCN" matrix={financeConfusionMatrix.tcn} colorClass="bg-chart-5/20 text-chart-5" />
               <ConfusionMatrixViz title="GRU" matrix={financeConfusionMatrix.gru} colorClass="bg-secondary/20 text-secondary" />
               <ConfusionMatrixViz title="LSTM" matrix={financeConfusionMatrix.lstm} colorClass="bg-primary/20 text-primary" />
             </div>
@@ -290,7 +295,7 @@ function AnalysisPage() {
                     <th className="text-left py-3 px-4 uppercase font-bold">ID Transacción</th>
                     <th className="text-right py-3 px-4 uppercase font-bold">Monto ($)</th>
                     <th className="text-center py-3 px-4 uppercase font-bold">Real</th>
-                    <th className="text-center py-3 px-4 uppercase font-bold">CNN (Best)</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold">Transf. (Best)</th>
                     <th className="text-center py-3 px-4 uppercase font-bold">Impacto</th>
                   </tr>
                 </thead>
@@ -302,7 +307,7 @@ function AnalysisPage() {
                       <td className="py-2.5 px-4 text-center">
                         <span className={`px-2 py-0.5 rounded-sm font-bold uppercase text-[9px] ${t.real === 'fraude' ? 'bg-anomaly/10 text-anomaly border border-anomaly/20' : 'bg-success/10 text-success border border-success/20'}`}>{t.real}</span>
                       </td>
-                      <td className={`py-2.5 px-4 text-center font-bold ${t.cnn === t.real ? 'text-success' : 'text-anomaly'}`}>{t.cnn}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${t.transformer === t.real ? 'text-success' : 'text-anomaly'}`}>{t.transformer}</td>
                       <td className="py-2.5 px-4 text-center">
                         {t.real === 'fraude' ? <span className="text-anomaly font-bold">ALTO</span> : <span className="text-muted-foreground opacity-30">BAJO</span>}
                       </td>

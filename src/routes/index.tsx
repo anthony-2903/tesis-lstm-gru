@@ -10,8 +10,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — LSTM vs GRU vs CNN Detección de Anomalías" },
-      { name: "description", content: "Dashboard interactivo para comparar modelos LSTM, GRU y CNN en detección de anomalías" },
+      { title: "Dashboard — Comparativa LSTM vs GRU vs Transformer vs TCN" },
+      { name: "description", content: "Dashboard interactivo para comparar modelos avanzados en detección de anomalías" },
     ],
   }),
   component: HomePage,
@@ -31,7 +31,7 @@ function HomePage() {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
         <h1 className="text-2xl font-bold text-foreground">Resumen General</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Comparación de modelos LSTM, GRU y CNN para detección de anomalías en secuencias textuales, series temporales y transacciones
+          Comparación de modelos LSTM, GRU, Transformer y TCN para detección de anomalías en secuencias textuales, series temporales y transacciones
         </p>
       </motion.div>
 
@@ -81,7 +81,7 @@ function HomePage() {
         <KpiCard
           title="Inferencia Promedio"
           value={`${kpiData.avgInferenceTime} ms`}
-          subtitle="CNN optimizado — Global"
+          subtitle="TCN optimizado — Global"
           icon={Zap}
           variant="default"
           delay={0.3}
@@ -124,10 +124,10 @@ function HomePage() {
         <ChartCard title="Modelo Ganador por Métrica" delay={0.5}>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={[
-              { metric: "F1 (PT)", LSTM: 0.964, GRU: 0.934, CNN: 0.951 },
-              { metric: "F1 (FN)", LSTM: 0.903, GRU: 0.917, CNN: 0.952 },
-              { metric: "Velocidad", LSTM: 0.72, GRU: 0.89, CNN: 0.98 },
-              { metric: "Memoria", LSTM: 0.65, GRU: 0.82, CNN: 0.94 },
+              { metric: "F1 (PT)", LSTM: 0.964, GRU: 0.934, Transf: 0.978, TCN: 0.951 },
+              { metric: "F1 (FN)", LSTM: 0.903, GRU: 0.917, Transf: 0.965, TCN: 0.952 },
+              { metric: "Velocidad", LSTM: 0.62, GRU: 0.78, Transf: 0.45, TCN: 0.96 },
+              { metric: "Memoria", LSTM: 0.55, GRU: 0.72, Transf: 0.35, TCN: 0.92 },
             ]}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
               <XAxis dataKey="metric" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
@@ -137,7 +137,8 @@ function HomePage() {
               />
               <Bar dataKey="LSTM" fill="var(--chart-1)" radius={[2, 2, 0, 0]} />
               <Bar dataKey="GRU" fill="var(--chart-2)" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="CNN" fill="var(--chart-3)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="Transf" fill="var(--chart-4)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="TCN" fill="var(--chart-5)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
