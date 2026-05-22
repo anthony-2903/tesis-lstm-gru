@@ -1,4 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Home,
@@ -10,6 +11,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +39,23 @@ export function DashboardSidebar({
   onToggleCollapse 
 }: DashboardSidebarProps) {
   const location = useLocation();
+
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof document !== "undefined") {
+      return document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   return (
     <aside
@@ -116,12 +136,22 @@ export function DashboardSidebar({
             Tesis de Ingeniería — 2026
           </p>
         )}
-        <button
-          onClick={onToggleCollapse}
-          className="hidden md:flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm"
-        >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm"
+            title="Alternar tema claro/oscuro"
+          >
+            {isDark ? <Sun className="h-4 w-4 text-warning" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <button
+            onClick={onToggleCollapse}
+            className="hidden md:flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm"
+            title="Contraer barra lateral"
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
     </aside>
   );

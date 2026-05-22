@@ -154,29 +154,38 @@ export function evaluateDataset(dataset: {
   const transformerPerf = computeModelPerformance("transformer", std * 0.25);
   const tcnPerf = computeModelPerformance("tcn", std * 0.15);
 
-  // 5. Crear la línea temporal para los gráficos con muestreo uniforme representativo de TODO el archivo
-  const maxPoints = 150;
-  const step = Math.max(1, Math.floor(processedRecords.length / maxPoints));
-  const timeline = [];
-  let pointIdx = 1;
-  for (let i = 0; i < processedRecords.length; i += step) {
-    const r = processedRecords[i];
-    const act = r.value;
+  // 5. Crear la línea temporal para los gráficos.
+  // Usa muestreo inteligente: agrupa en ~200 buckets para representar
+  // todos los registros del dataset sin importar cuántos sean.
+  const TIMELINE_POINTS = 200;
+  const bucketSize = Math.max(1, Math.ceil(processedRecords.length / TIMELINE_POINTS));
+  const timeline: EvaluatedData["timeline"] = [];
+
+  for (let i = 0; i < processedRecords.length; i += bucketSize) {
+    const bucket = processedRecords.slice(i, i + bucketSize);
+    const avgActual = bucket.reduce((s, r) => s + r.value, 0) / bucket.length;
+    const hasAnomaly = bucket.some((r) => r.real);
+    const avgDate = bucket[Math.floor(bucket.length / 2)].date;
+
+    // Predicciones agregadas del bucket — cada modelo promedia su predicción numérica
+    const modelAvg = (key: "lstm" | "gru" | "transformer" | "tcn") => {
+      const predAvg = bucket.reduce((s, r) => s + (r[key] ? r.value * 1.04 : r.value * 0.97), 0) / bucket.length;
+      return predAvg;
+    };
+
     timeline.push({
-      // Índice consecutivo para que el eje X sea siempre ordenado
-      date: `P-${pointIdx}`,
-      actual: act,
-      anomalies: r.real ? 1 : 0,
-      lstm: r.real ? act : act * 1.05,
-      gru: r.real ? act : act * 0.96,
-      transformer: r.real ? act : act * 1.02,
-      tcn: r.real ? act : act * 1.01,
+      date: avgDate,
+      actual: +avgActual.toFixed(4),
+      anomalies: hasAnomaly ? 1 : 0,
+      lstm: +modelAvg("lstm").toFixed(4),
+      gru: +modelAvg("gru").toFixed(4),
+      transformer: +modelAvg("transformer").toFixed(4),
+      tcn: +modelAvg("tcn").toFixed(4),
     });
-    pointIdx++;
   }
 
-  // 6. Crear las muestras para la tabla
-  const samples = processedRecords.slice(0, 15).map((r, i) => ({
+  // 6. Crear las muestras para la tabla (30 filas para mayor detalle)
+  const samples = processedRecords.slice(0, 30).map((r, i) => ({
     id: i,
     label: r.text.length > 50 ? r.text.slice(0, 50) + "…" : r.text,
     value: r.value,

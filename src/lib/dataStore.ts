@@ -5,9 +5,6 @@
  */
 import { create } from "zustand";
 
-/** Dominio detectado automáticamente a partir del dataset cargado */
-export type DataDomain = "phishing" | "energia" | "finanzas" | "general";
-
 export interface ParsedDataset {
   filename: string;
   originalRows: number;
@@ -18,8 +15,6 @@ export interface ParsedDataset {
   sampleData: Record<string, unknown>[];
   /** Todos los datos parseados (sin truncar) */
   allData: Record<string, unknown>[];
-  /** Dominio inferido automáticamente */
-  domain: DataDomain;
 }
 
 interface DataStore {
