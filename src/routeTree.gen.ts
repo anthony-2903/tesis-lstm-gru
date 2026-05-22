@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UploadRouteImport } from './routes/upload'
 import { Route as SelectorRouteImport } from './routes/selector'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SelectorRoute = SelectorRouteImport.update({
   id: '/selector',
   path: '/selector',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/comparison': typeof ComparisonRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/comparison': typeof ComparisonRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,27 @@ export interface FileRoutesById {
   '/comparison': typeof ComparisonRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analysis' | '/comparison' | '/history' | '/selector'
+  fullPaths:
+    | '/'
+    | '/analysis'
+    | '/comparison'
+    | '/history'
+    | '/selector'
+    | '/upload'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analysis' | '/comparison' | '/history' | '/selector'
-  id: '__root__' | '/' | '/analysis' | '/comparison' | '/history' | '/selector'
+  to: '/' | '/analysis' | '/comparison' | '/history' | '/selector' | '/upload'
+  id:
+    | '__root__'
+    | '/'
+    | '/analysis'
+    | '/comparison'
+    | '/history'
+    | '/selector'
+    | '/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,10 +99,18 @@ export interface RootRouteChildren {
   ComparisonRoute: typeof ComparisonRoute
   HistoryRoute: typeof HistoryRoute
   SelectorRoute: typeof SelectorRoute
+  UploadRoute: typeof UploadRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/selector': {
       id: '/selector'
       path: '/selector'
@@ -125,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComparisonRoute: ComparisonRoute,
   HistoryRoute: HistoryRoute,
   SelectorRoute: SelectorRoute,
+  UploadRoute: UploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

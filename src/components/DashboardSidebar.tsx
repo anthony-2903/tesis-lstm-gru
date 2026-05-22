@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Resumen", path: "/", icon: Home },
+  { title: "Subir Datos", path: "/upload", icon: Database },
   { title: "Análisis", path: "/analysis", icon: Database },
   { title: "Comparativa", path: "/comparison", icon: GitCompare },
   { title: "Historial", path: "/history", icon: History },
