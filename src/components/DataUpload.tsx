@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Upload, FileType, CheckCircle2, AlertCircle, BarChart2, Trash2 } from "lucide-react";
+import { Upload, FileType, CheckCircle2, AlertCircle, BarChart2, Trash2, HardDrive, Cloud } from "lucide-react";
 import { toast } from "sonner";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -7,6 +7,7 @@ import { useDataStore, type ParsedDataset } from "@/lib/dataStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { uploadFileToR2 } from "@/lib/r2";
+import { isGoogleDriveConfigured, requestGoogleDriveAccess, uploadFileToGoogleDrive } from "@/lib/googleDrive";
 
 // ─────────────────────────────────────────────────────────
 // Helpers
@@ -66,6 +67,7 @@ export function DataUpload() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
+  const [isDriveConnected, setIsDriveConnected] = useState(false);
 
   const processFile = useCallback(async (selectedFile: File) => {
     setIsProcessing(true);
@@ -92,15 +94,29 @@ export function DataUpload() {
         return;
       }
 
+      const columns = Object.keys(allRows[0]);
+      const cleaned = cleanRows(allRows);
+      const dataTypes = buildDataTypes(cleaned, columns);
+      const timestamp = new Date().getTime();
+      const safeName = selectedFile.name.replace(/\s+/g, '_');
+      const storageFilename = `${timestamp}_${safeName}`;
+
+      if (isGoogleDriveConfigured) {
+        try {
+          const driveFile = await uploadFileToGoogleDrive(selectedFile, storageFilename);
+          console.log("Archivo enviado a Google Drive:", driveFile);
+          toast.success("Archivo enviado a Google Drive para Colab.");
+        } catch (err) {
+          console.error("Error al subir a Google Drive:", err);
+          toast.warning("Se procesó localmente, pero no se pudo subir a Google Drive.");
+        }
+      }
+
       // ARQUITECTURA: 1. Subir a Cloudflare R2 (Almacenamiento Puro)
       let fileUrl = "";
       try {
-        const timestamp = new Date().getTime();
-        const safeName = selectedFile.name.replace(/\s+/g, '_');
-        const filename = `${timestamp}_${safeName}`;
-        
         // Subimos el archivo directamente a R2
-        fileUrl = await uploadFileToR2(selectedFile, filename);
+        fileUrl = await uploadFileToR2(selectedFile, storageFilename);
         console.log("Archivo respaldado en Cloudflare R2:", fileUrl);
 
         // ARQUITECTURA: 2. Guardar referencia (metadata) en Supabase
@@ -128,15 +144,11 @@ export function DataUpload() {
         console.error("Excepción en almacenamiento Cloudflare/Supabase:", err);
         // Fallback visual si el usuario aún no configuró las credenciales en .env
         if (String(err).includes("Credenciales de R2 no configuradas")) {
-           toast.error("Configura las credenciales de R2 en el archivo .env.local");
+           toast.warning("R2 no configurado; el archivo se mantiene en Drive/local.");
         } else {
            toast.warning("Se procesó localmente, pero falló la subida a la nube.");
         }
       }
-
-      const columns = Object.keys(allRows[0]);
-      const cleaned = cleanRows(allRows);
-      const dataTypes = buildDataTypes(cleaned, columns);
 
       const ds: ParsedDataset = {
         filename: selectedFile.name,
@@ -168,6 +180,17 @@ export function DataUpload() {
     }
   }, [setDataset]);
 
+  const handleConnectDrive = async () => {
+    try {
+      await requestGoogleDriveAccess();
+      setIsDriveConnected(true);
+      toast.success("Google Drive conectado. Las próximas cargas irán a la carpeta de Colab.");
+    } catch (err) {
+      console.error(err);
+      toast.error("No se pudo conectar Google Drive. Revisa la configuración OAuth.");
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) { setFile(selected); processFile(selected); }
@@ -195,6 +218,33 @@ export function DataUpload() {
           <BarChart2 className="w-5 h-5 text-primary" />
           Carga de Dataset
         </h2>
+
+        <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-muted/20 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <HardDrive className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Google Drive para Colab</p>
+              <p className="text-xs text-muted-foreground">
+                {isGoogleDriveConfigured
+                  ? isDriveConnected
+                    ? "Conectado: los archivos subidos se copiarán a Drive."
+                    : "Conecta tu cuenta antes de subir el dataset."
+                  : "Configura VITE_GOOGLE_CLIENT_ID y VITE_GOOGLE_DRIVE_FOLDER_ID."}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleConnectDrive}
+            disabled={!isGoogleDriveConfigured || isDriveConnected || isProcessing}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-bold text-foreground shadow-sm transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Cloud className="h-3.5 w-3.5" />
+            {isDriveConnected ? "Drive conectado" : "Conectar Drive"}
+          </button>
+        </div>
 
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}

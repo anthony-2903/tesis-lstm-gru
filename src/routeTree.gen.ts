@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as XaiRouteImport } from './routes/xai'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as SelectorRouteImport } from './routes/selector'
 import { Route as HistoryRouteImport } from './routes/history'
@@ -16,6 +17,11 @@ import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as IndexRouteImport } from './routes/index'
 
+const XaiRoute = XaiRouteImport.update({
+  id: '/xai',
+  path: '/xai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UploadRoute = UploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
+  '/xai': typeof XaiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
+  '/xai': typeof XaiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
+  '/xai': typeof XaiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +90,16 @@ export interface FileRouteTypes {
     | '/history'
     | '/selector'
     | '/upload'
+    | '/xai'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analysis' | '/comparison' | '/history' | '/selector' | '/upload'
+  to:
+    | '/'
+    | '/analysis'
+    | '/comparison'
+    | '/history'
+    | '/selector'
+    | '/upload'
+    | '/xai'
   id:
     | '__root__'
     | '/'
@@ -91,6 +108,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/selector'
     | '/upload'
+    | '/xai'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,10 +118,18 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   SelectorRoute: typeof SelectorRoute
   UploadRoute: typeof UploadRoute
+  XaiRoute: typeof XaiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/xai': {
+      id: '/xai'
+      path: '/xai'
+      fullPath: '/xai'
+      preLoaderRoute: typeof XaiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/upload': {
       id: '/upload'
       path: '/upload'
@@ -156,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   SelectorRoute: SelectorRoute,
   UploadRoute: UploadRoute,
+  XaiRoute: XaiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
