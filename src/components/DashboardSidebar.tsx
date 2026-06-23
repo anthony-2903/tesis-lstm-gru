@@ -22,7 +22,7 @@ const navItems = [
   { title: "Datos", path: "/upload", icon: Database },
   { title: "Análisis", path: "/analysis", icon: Database },
   { title: "Comparativa", path: "/comparison", icon: GitCompare },
-  { title: "XAI SHAP", path: "/xai", icon: BrainCircuit },
+  { title: "XAI", path: "/xai", icon: BrainCircuit },
   { title: "Historial", path: "/history", icon: History },
   { title: "Selector", path: "/selector", icon: Lightbulb },
 ];

@@ -22,8 +22,8 @@ import { useApiData } from "@/hooks/useApiData";
 export const Route = createFileRoute("/xai")({
   head: () => ({
     meta: [
-      { title: "XAI SHAP - Interpretabilidad de Modelos" },
-      { name: "description", content: "Interpretacion XAI mediante SHAP temporal para modelos de anomalias" },
+      { title: "XAI - Interpretabilidad de Modelos" },
+      { name: "description", content: "Interpretacion XAI mediante permutacion y sensibilidad temporal" },
     ],
   }),
   component: XaiPage,
@@ -75,7 +75,7 @@ function XaiPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h1 className="text-2xl font-bold text-foreground">XAI con SHAP Temporal</h1>
+          <h1 className="text-2xl font-bold text-foreground">XAI con Permutacion y Sensibilidad Temporal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Dataset interpretado: <span className="font-semibold text-foreground">{report.dataset}</span>
           </p>
@@ -105,7 +105,7 @@ function XaiPage() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que mas alteran la probabilidad de anomalia" delay={0.3}>
+        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que mas alteran la prediccion del modelo" delay={0.3}>
           <ResponsiveContainer width="100%" height={470}>
             <BarChart data={temporalData} margin={{ top: 10, right: 28, left: 10, bottom: 35 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />

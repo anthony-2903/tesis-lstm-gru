@@ -140,39 +140,6 @@ def build_history(filename: str, records: list[dict[str, object]]) -> dict[str, 
     return {"filename": filename, "items": items}
 
 
-def build_xai(filename: str, columns: list[str]) -> dict[str, object]:
-    features = columns[:12] or ["url_length", "entropy", "load_window"]
-    feature_importance = [
-        {"feature": feature, "importance": round(1.0 / (idx + 1), 4)}
-        for idx, feature in enumerate(features)
-    ]
-    temporal = [{"step": f"t-{idx}", "importance": round(1.0 / (idx + 1), 4)} for idx in range(1, 13)]
-    models = {}
-    comparison = []
-    for key, label in MODEL_LABELS.items():
-        models[key] = {
-            "model_key": key,
-            "model": label,
-            "method": "permutation_importance_proxy",
-            "description": "Importancia aproximada generada por el pipeline local.",
-            "top_feature": feature_importance[0]["feature"],
-            "top_step": temporal[0]["step"],
-            "feature_importance": feature_importance[:8],
-            "temporal_importance": temporal[:8],
-        }
-        comparison.append({"model_key": key, "model": label, "top_feature": feature_importance[0]["feature"], "top_step": temporal[0]["step"]})
-    return {
-        "dataset": filename,
-        "method": "local_permutation_proxy",
-        "feature_count": len(features),
-        "sequence_length": 12,
-        "global_feature_importance": feature_importance,
-        "global_temporal_importance": temporal,
-        "model_comparison": comparison,
-        "models": models,
-    }
-
-
 def build_ai_analysis(filename: str, analysis: dict[str, object]) -> dict[str, str]:
     total = int(analysis.get("totalRows", 0))
     anomalies = int(analysis.get("realAnomaliesCount", 0))
@@ -182,6 +149,7 @@ def build_ai_analysis(filename: str, analysis: dict[str, object]) -> dict[str, s
             f"Dataset procesado: **{filename}** con **{total}** registros evaluados.\n"
             f"- Anomalias reales detectadas en evaluacion: **{anomalies}**.\n"
             "- El backend ejecuta ingesta, limpieza, preparacion de features, entrenamiento y generacion de metricas.\n"
+            "- El modulo XAI calcula importancia por permutacion e importancia temporal sobre datos de validacion.\n"
             "- La comparativa queda lista para el frontend en los endpoints `/api/analysis` y `/api/comparison`."
         ),
         "phishtank": "### PhishTank\nEl flujo de URLs normaliza texto, extrae rasgos de dominio/ruta y entrena clasificadores para deteccion de phishing.",

@@ -7,9 +7,10 @@ from app.cleaning.text_cleaner import clean_phishtank
 from app.cleaning.timeseries_cleaner import clean_opsd
 from app.config import GOLD_DIR, RAW_DIR, RESULTS_DIR, SILVER_DIR, ensure_dirs
 from app.ingestion.sources import fetch_mef_brechas, fetch_mef_operadores, fetch_opsd, fetch_phishtank
-from app.reports import build_ai_analysis, build_analysis, build_comparison, build_dashboard, build_history, build_xai
+from app.reports import build_ai_analysis, build_analysis, build_comparison, build_dashboard, build_history
 from app.training.trainers import train_timeseries_models, train_url_models
 from app.utils import write_json
+from app.xai.explainer import build_xai_report
 
 
 def run_pipeline(mode: str = "sample") -> dict[str, object]:
@@ -64,7 +65,7 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
     dashboard = build_dashboard(filename, [phishtank, operadores, brechas, opsd])
     comparison = build_comparison(filename, merged_models)
     history = build_history(filename, analysis["processedRecords"])
-    xai = build_xai(filename, dashboard["dataset"]["columns"])
+    xai = build_xai_report(filename, url_result.xai, ts_result.xai)
     ai_analysis = build_ai_analysis(filename, analysis)
 
     artifacts = {

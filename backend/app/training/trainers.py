@@ -15,6 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from app.cleaning.text_cleaner import build_url_features, make_benign_urls
 from app.cleaning.timeseries_cleaner import build_windows, pick_target_column
 from app.training.metrics import classification_metrics, regression_metrics
+from app.xai.explainer import explain_classifier, explain_regressor_temporal
 
 
 @dataclass
@@ -25,6 +26,7 @@ class TrainResult:
     processed_records: list[dict[str, object]]
     real_anomalies_count: int
     total_rows: int
+    xai: dict[str, list[dict[str, object]]]
 
 
 def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
@@ -46,6 +48,7 @@ def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
     models: dict[str, dict[str, object]] = {}
     predictions: dict[str, np.ndarray] = {}
     train_times: dict[str, float] = {}
+    xai: dict[str, list[dict[str, object]]] = {}
     for key, estimator in estimators.items():
         started = time.perf_counter()
         estimator.fit(x_train, y_train)
@@ -55,6 +58,7 @@ def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
         metrics = classification_metrics(y_test, pred)
         metrics["trainTime"] = float(train_times[key])
         models[key] = metrics
+        xai[key] = explain_classifier(estimator, x_test, y_test)
 
     processed = []
     samples = []
@@ -94,6 +98,7 @@ def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
         processed_records=processed,
         real_anomalies_count=int(y_test.sum()),
         total_rows=int(len(data)),
+        xai=xai,
     )
 
 
@@ -116,6 +121,7 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
     }
     preds: dict[str, np.ndarray] = {}
     models: dict[str, dict[str, object]] = {}
+    xai: dict[str, list[dict[str, object]]] = {}
     errors_by_tcn = None
     for key, estimator in estimators.items():
         estimator.fit(x_train, y_train)
@@ -132,6 +138,7 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
         class_metrics = classification_metrics(real.astype(int), anomaly_pred.astype(int))
         class_metrics["rmse"] = rmse
         models[key] = class_metrics
+        xai[key] = explain_regressor_temporal(estimator, x_test, y_test)
 
     real = np.abs(y_test - np.mean(y_train)) > float(np.abs(y_test - np.mean(y_train)).mean() + np.std(y_train))
     samples = []
@@ -168,4 +175,5 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
         processed_records=samples,
         real_anomalies_count=int(real.sum()),
         total_rows=int(len(frame)),
+        xai=xai,
     )
