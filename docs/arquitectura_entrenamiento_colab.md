@@ -15,6 +15,7 @@ CSV/XLSX
   -> entrenamiento en Google Colab
        - LSTM
        - GRU
+       - BRNN
        - Transformer
        - TCN
   -> evaluacion
@@ -74,6 +75,27 @@ Input(secuencia)
 
 Uso recomendado: comparar rendimiento similar a LSTM con menor costo de
 entrenamiento e inferencia.
+
+### BRNN
+
+Modelo recurrente bidireccional que procesa la secuencia en sentido directo e
+inverso para capturar dependencias anteriores y posteriores dentro de una
+ventana temporal.
+
+```text
+Input(secuencia)
+  -> Masking
+  -> Bidirectional(LSTM(96, return_sequences=True))
+  -> BatchNormalization
+  -> Bidirectional(GRU(48))
+  -> Dense(64, relu)
+  -> Dropout(0.30)
+  -> Dense(1, sigmoid)
+```
+
+Uso recomendado: datos donde el contexto completo de la ventana ayuda a
+identificar anomalías, fraudes o patrones sospechosos con dependencias
+temporales en ambas direcciones.
 
 ### Transformer
 
@@ -144,6 +166,8 @@ training_outputs/
   lstm_predictions.csv
   gru_model.keras
   gru_predictions.csv
+  brnn_model.keras
+  brnn_predictions.csv
   transformer_model.keras
   transformer_predictions.csv
   tcn_model.keras

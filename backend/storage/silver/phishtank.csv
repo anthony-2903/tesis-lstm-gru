@@ -1,0 +1,11 @@
+phish_id,url,verified,online,target,label
+1,https://secure-login-paypal.verify-user-alert.com/session,yes,yes,sample,1
+2,http://banco-cliente-pe.actualizar-datos.click/login,yes,yes,sample,1
+3,https://office365-security-check.example-phish.net/auth,yes,yes,sample,1
+4,http://facturacion-sunat-validacion.xyz/consulta,yes,yes,sample,1
+5,https://wallet-verify-airdrop.claim-now.top,yes,yes,sample,1
+100,https://www.gob.pe/mef,no,yes,benign,0
+101,https://www.google.com/search?q=inversion+publica,no,yes,benign,0
+102,https://datosabiertos.mef.gob.pe,no,yes,benign,0
+103,https://open-power-system-data.org,no,yes,benign,0
+104,https://www.wikipedia.org,no,yes,benign,0

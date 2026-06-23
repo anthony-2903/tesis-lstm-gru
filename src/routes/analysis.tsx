@@ -1,30 +1,38 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
-import { useDataStore } from "@/lib/dataStore";
-import { evaluateDataset } from "@/lib/evaluator";
-import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, UploadCloud, Download } from "lucide-react";
-import Papa from "papaparse";
+import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, Download } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, AreaChart, Area, Legend, Scatter
 } from "recharts";
 import { AiAnalysis } from "@/components/AiAnalysis";
+import { BackendState } from "@/components/BackendState";
+import { fetchAnalysisData } from "@/lib/api";
+import { useApiData } from "@/hooks/useApiData";
+
+function toCsv(rows: Record<string, unknown>[]) {
+  if (!rows.length) return "";
+  const headers = Array.from(rows.reduce((set, row) => {
+    Object.keys(row).forEach((key) => set.add(key));
+    return set;
+  }, new Set<string>()));
+  const escapeCell = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+  return [headers.join(","), ...rows.map((row) => headers.map((header) => escapeCell(row[header])).join(","))].join("\n");
+}
 
 export const Route = createFileRoute("/analysis")({
   head: () => ({
     meta: [
-      { title: "Análisis Detallado — LSTM vs GRU vs Transformer vs TCN" },
+      { title: "Análisis Detallado — LSTM vs GRU vs BRNN vs Transformer vs TCN" },
       { name: "description", content: "Evaluación profunda de modelos sobre el dataset cargado" },
     ],
   }),
   component: AnalysisPage,
 });
 
-// ─────────────────────────────────────────────────────────
-// Componente de Matriz de Confusión
 // ─────────────────────────────────────────────────────────
 function ConfusionMatrixViz({
   title,
@@ -44,14 +52,12 @@ function ConfusionMatrixViz({
 
   return (
     <div className="flex-1">
-      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 text-center">
-        {title}
-      </p>
+      <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{title}</p>
       <div className="grid grid-cols-2 gap-1">
         {cells.map((c) => (
           <div key={c.label} className={`rounded p-2 text-center ${c.color}`}>
             <p className="text-[8px] uppercase tracking-wider opacity-70">{c.label}</p>
-            <p className="text-sm font-bold font-data">{c.value.toLocaleString("es-ES")}</p>
+            <p className="font-data text-sm font-bold">{c.value.toLocaleString("es-ES")}</p>
           </div>
         ))}
       </div>
@@ -59,52 +65,12 @@ function ConfusionMatrixViz({
   );
 }
 
-// ─────────────────────────────────────────────────────────
-// Estado vacío (sin dataset cargado)
-// ─────────────────────────────────────────────────────────
-function EmptyState() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6"
-    >
-      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-        <UploadCloud className="w-10 h-10 text-primary" />
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">No hay datos cargados</h2>
-        <p className="text-muted-foreground max-w-md">
-          Sube un archivo CSV o Excel desde la sección de{" "}
-          <strong>Gestión de Datos</strong> para ejecutar el análisis comparativo de modelos con tu dataset.
-        </p>
-      </div>
-      <Link
-        to="/upload"
-        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-      >
-        <UploadCloud className="w-4 h-4" />
-        Cargar dataset
-      </Link>
-    </motion.div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────
-// Página principal de análisis
-// ─────────────────────────────────────────────────────────
 function AnalysisPage() {
-  const { dataset } = useDataStore();
   const [tab, setTab] = useState<"phishtank" | "energia" | "finanzas">("phishtank");
+  const { data: evaluated, error, isLoading, reload } = useApiData(fetchAnalysisData);
 
-  // Evaluación puramente matemática del dataset cargado
-  const evaluated = useMemo(() => {
-    if (!dataset) return null;
-    return evaluateDataset(dataset);
-  }, [dataset]);
-
-  if (!dataset || !evaluated) return <EmptyState />;
+  if (isLoading) return <BackendState isLoading />;
+  if (error || !evaluated) return <BackendState error={error} onRetry={reload} />;
 
   const { models, timeline, samples, realAnomaliesCount } = evaluated;
 
@@ -113,6 +79,7 @@ function AnalysisPage() {
     { name: "Anomalías (Reales)", count: realAnomaliesCount },
     { name: "Detectado LSTM", count: models.lstm.detectedCount },
     { name: "Detectado GRU", count: models.gru.detectedCount },
+    { name: "Detectado BRNN", count: models.brnn.detectedCount },
     { name: "Detectado Transf.", count: models.transformer.detectedCount },
     { name: "Detectado TCN", count: models.tcn.detectedCount },
   ];
@@ -123,18 +90,19 @@ function AnalysisPage() {
     anomalies: t.anomalies,
     lstm: t.lstm > t.actual ? 1 : 0,
     gru: t.gru > t.actual ? 1 : 0,
+    brnn: t.brnn > t.actual ? 1 : 0,
     transformer: t.transformer > t.actual ? 1 : 0,
     tcn: t.tcn > t.actual ? 1 : 0,
   }));
 
   const handleExport = () => {
     if (!evaluated) return;
-    const csvContent = Papa.unparse(evaluated.processedRecords);
+    const csvContent = toCsv((evaluated.processedRecords || evaluated.samples) as Record<string, unknown>[]);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `resultados_entrenamiento_${dataset?.filename || "dataset"}.csv`);
+    link.setAttribute("download", `resultados_entrenamiento_${evaluated.filename || "dataset"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -147,7 +115,7 @@ function AnalysisPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <h1 className="text-2xl font-bold text-foreground">Análisis de Anomalías y Resultados</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Dataset Evaluado: <span className="font-semibold text-foreground">{dataset.filename}</span>
+            Dataset Evaluado: <span className="font-semibold text-foreground">{evaluated.filename}</span>
           </p>
         </motion.div>
         
@@ -213,6 +181,7 @@ function AnalysisPage() {
                 <Legend verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
                 <Area type="monotone" dataKey="lstm" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.12} strokeWidth={2} name="LSTM" />
                 <Area type="monotone" dataKey="gru" stroke="var(--chart-2)" fill="var(--chart-2)" fillOpacity={0.12} strokeWidth={2} name="GRU" />
+                <Area type="monotone" dataKey="brnn" stroke="var(--chart-3)" fill="var(--chart-3)" fillOpacity={0.12} strokeWidth={2} name="BRNN" />
                 <Area type="monotone" dataKey="transformer" stroke="var(--chart-4)" fill="var(--chart-4)" fillOpacity={0.12} strokeWidth={2} name="Transformer" />
                 <Area type="monotone" dataKey="tcn" stroke="var(--chart-5)" fill="var(--chart-5)" fillOpacity={0.12} strokeWidth={2} name="TCN" />
               </AreaChart>
@@ -232,9 +201,10 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Análisis de Matrices de Confusión" subtitle="VP=Verdadero Positivo · FP=Falso Positivo · FN=Falso Negativo · VN=Verdadero Negativo" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 py-4">
               <ConfusionMatrixViz title="LSTM" matrix={models.lstm.confusionMatrix} colorClass="bg-primary/20 text-primary" />
               <ConfusionMatrixViz title="GRU" matrix={models.gru.confusionMatrix} colorClass="bg-secondary/20 text-secondary" />
+              <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
               <ConfusionMatrixViz title="Transformer (Best)" matrix={models.transformer.confusionMatrix} colorClass="bg-chart-4/20 text-chart-4" />
               <ConfusionMatrixViz title="TCN" matrix={models.tcn.confusionMatrix} colorClass="bg-chart-5/20 text-chart-5" />
             </div>
@@ -249,6 +219,7 @@ function AnalysisPage() {
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">Estado Real</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">LSTM</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">GRU</th>
+                    <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">BRNN</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">Transformer</th>
                     <th className="text-center py-3 px-4 uppercase font-bold tracking-wider">TCN</th>
                   </tr>
@@ -264,6 +235,7 @@ function AnalysisPage() {
                       </td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.lstm === r.real ? "text-success" : "text-anomaly"}`}>{r.lstm}</td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.gru === r.real ? "text-success" : "text-anomaly"}`}>{r.gru}</td>
+                      <td className={`py-2.5 px-4 text-center font-bold ${r.brnn === r.real ? "text-success" : "text-anomaly"}`}>{r.brnn}</td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.transformer === r.real ? "text-success" : "text-anomaly"}`}>{r.transformer}</td>
                       <td className={`py-2.5 px-4 text-center font-bold ${r.tcn === r.real ? "text-success" : "text-anomaly"}`}>{r.tcn}</td>
                     </tr>
@@ -295,6 +267,7 @@ function AnalysisPage() {
                 <Line type="monotone" dataKey="actual" stroke="var(--foreground)" strokeWidth={2} dot={false} name="Valor Real" />
                 <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={1.5} dot={false} name="LSTM" />
                 <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={1.5} dot={false} name="GRU" />
+                <Line type="monotone" dataKey="brnn" stroke="var(--chart-3)" strokeWidth={1.5} dot={false} name="BRNN" />
                 <Line type="monotone" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={1.5} dot={false} name="Transformer" />
                 <Line type="monotone" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} name="TCN" />
               </LineChart>
@@ -314,9 +287,10 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Matrices de Validación" subtitle="VP · FP · FN · VN por cada arquitectura" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 py-4">
               <ConfusionMatrixViz title="TCN (Mejor)" matrix={models.tcn.confusionMatrix} colorClass="bg-chart-5/20 text-chart-5" />
               <ConfusionMatrixViz title="Transformer" matrix={models.transformer.confusionMatrix} colorClass="bg-chart-4/20 text-chart-4" />
+              <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
               <ConfusionMatrixViz title="GRU" matrix={models.gru.confusionMatrix} colorClass="bg-secondary/20 text-secondary" />
               <ConfusionMatrixViz title="LSTM" matrix={models.lstm.confusionMatrix} colorClass="bg-primary/20 text-primary" />
             </div>
@@ -375,6 +349,7 @@ function AnalysisPage() {
                 <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", fontSize: "11px" }} />
                 <Legend verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
                 <Line type="stepAfter" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={2.5} dot={false} name="Score Transf." />
+                <Line type="stepAfter" dataKey="brnn" stroke="var(--chart-3)" strokeWidth={2} dot={false} name="Score BRNN" />
                 <Line type="stepAfter" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Score TCN" />
               </LineChart>
             </ResponsiveContainer>
@@ -393,8 +368,9 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Matrices de Confusión (Fraude Financiero)" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <ConfusionMatrixViz title="Transformer" matrix={models.transformer.confusionMatrix} colorClass="bg-chart-4/20 text-chart-4" />
+              <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
               <ConfusionMatrixViz title="TCN" matrix={models.tcn.confusionMatrix} colorClass="bg-chart-5/20 text-chart-5" />
               <ConfusionMatrixViz title="GRU" matrix={models.gru.confusionMatrix} colorClass="bg-secondary/20 text-secondary" />
               <ConfusionMatrixViz title="LSTM" matrix={models.lstm.confusionMatrix} colorClass="bg-primary/20 text-primary" />
@@ -440,3 +416,5 @@ function AnalysisPage() {
     </div>
   );
 }
+
+

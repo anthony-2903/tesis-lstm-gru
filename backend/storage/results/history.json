@@ -1,0 +1,805 @@
+{
+  "filename": "pipeline_sample_phishtank_mef_opsd",
+  "items": [
+    {
+      "id": 0,
+      "date": "https://www.google.com",
+      "domain": "PhishTank",
+      "data": "https://www.google.com",
+      "model": "LSTM",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 1,
+      "date": "https://open-power-system-data.org",
+      "domain": "PhishTank",
+      "data": "https://open-power-system-data.org",
+      "model": "GRU",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 2,
+      "date": "https://office365-security-check.example-phish.net/auth",
+      "domain": "PhishTank",
+      "data": "https://office365-security-check.example-phish.net/auth",
+      "model": "BRNN",
+      "confidence": 87,
+      "realLabel": "anomalia",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 3,
+      "date": "https://www.wikipedia.org",
+      "domain": "PhishTank",
+      "data": "https://www.wikipedia.org",
+      "model": "Transformer",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 4,
+      "date": "https://www.mef.gob.pe",
+      "domain": "PhishTank",
+      "data": "https://www.mef.gob.pe",
+      "model": "TCN",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 5,
+      "date": "http://banco-cliente-pe.actualizar-datos.click/login",
+      "domain": "PhishTank",
+      "data": "http://banco-cliente-pe.actualizar-datos.click/login",
+      "model": "LSTM",
+      "confidence": 90,
+      "realLabel": "anomalia",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 6,
+      "date": "2020-01-07 20:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-07 20:00:00+00:00",
+      "model": "GRU",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 7,
+      "date": "2020-01-07 21:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-07 21:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 8,
+      "date": "2020-01-07 22:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-07 22:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 9,
+      "date": "2020-01-07 23:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-07 23:00:00+00:00",
+      "model": "TCN",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 10,
+      "date": "2020-01-08 00:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 00:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 95,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 11,
+      "date": "2020-01-08 01:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 01:00:00+00:00",
+      "model": "GRU",
+      "confidence": 96,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 12,
+      "date": "2020-01-08 02:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 02:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 97,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 13,
+      "date": "2020-01-08 03:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 03:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 98,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 14,
+      "date": "2020-01-08 04:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 04:00:00+00:00",
+      "model": "TCN",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 15,
+      "date": "2020-01-08 05:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 05:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 16,
+      "date": "2020-01-08 06:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 06:00:00+00:00",
+      "model": "GRU",
+      "confidence": 87,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 17,
+      "date": "2020-01-08 07:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 07:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 18,
+      "date": "2020-01-08 08:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 08:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 19,
+      "date": "2020-01-08 09:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 09:00:00+00:00",
+      "model": "TCN",
+      "confidence": 90,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 20,
+      "date": "2020-01-08 10:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 10:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 21,
+      "date": "2020-01-08 11:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 11:00:00+00:00",
+      "model": "GRU",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 22,
+      "date": "2020-01-08 12:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 12:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 23,
+      "date": "2020-01-08 13:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 13:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 24,
+      "date": "2020-01-08 14:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 14:00:00+00:00",
+      "model": "TCN",
+      "confidence": 95,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 25,
+      "date": "2020-01-08 15:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 15:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 96,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 26,
+      "date": "2020-01-08 16:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 16:00:00+00:00",
+      "model": "GRU",
+      "confidence": 97,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 27,
+      "date": "2020-01-08 17:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 17:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 98,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 28,
+      "date": "2020-01-08 18:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 18:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 29,
+      "date": "2020-01-08 19:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 19:00:00+00:00",
+      "model": "TCN",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 30,
+      "date": "2020-01-08 20:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 20:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 87,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 31,
+      "date": "2020-01-08 21:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 21:00:00+00:00",
+      "model": "GRU",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 32,
+      "date": "2020-01-08 22:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 22:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 33,
+      "date": "2020-01-08 23:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-08 23:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 90,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 34,
+      "date": "2020-01-09 00:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 00:00:00+00:00",
+      "model": "TCN",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 35,
+      "date": "2020-01-09 01:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 01:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 36,
+      "date": "2020-01-09 02:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 02:00:00+00:00",
+      "model": "GRU",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 37,
+      "date": "2020-01-09 03:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 03:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 38,
+      "date": "2020-01-09 04:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 04:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 95,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 39,
+      "date": "2020-01-09 05:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 05:00:00+00:00",
+      "model": "TCN",
+      "confidence": 96,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 40,
+      "date": "2020-01-09 06:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 06:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 97,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 41,
+      "date": "2020-01-09 07:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 07:00:00+00:00",
+      "model": "GRU",
+      "confidence": 98,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 42,
+      "date": "2020-01-09 08:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 08:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 43,
+      "date": "2020-01-09 09:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 09:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 44,
+      "date": "2020-01-09 10:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 10:00:00+00:00",
+      "model": "TCN",
+      "confidence": 87,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 45,
+      "date": "2020-01-09 11:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 11:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 46,
+      "date": "2020-01-09 12:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 12:00:00+00:00",
+      "model": "GRU",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 47,
+      "date": "2020-01-09 13:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 13:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 90,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 48,
+      "date": "2020-01-09 14:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 14:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 49,
+      "date": "2020-01-09 15:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 15:00:00+00:00",
+      "model": "TCN",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 50,
+      "date": "2020-01-09 16:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 16:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 51,
+      "date": "2020-01-09 17:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 17:00:00+00:00",
+      "model": "GRU",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 52,
+      "date": "2020-01-09 18:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 18:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 95,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 53,
+      "date": "2020-01-09 19:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 19:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 96,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 54,
+      "date": "2020-01-09 20:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 20:00:00+00:00",
+      "model": "TCN",
+      "confidence": 97,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 55,
+      "date": "2020-01-09 21:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 21:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 98,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 56,
+      "date": "2020-01-09 22:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 22:00:00+00:00",
+      "model": "GRU",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 57,
+      "date": "2020-01-09 23:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-09 23:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 58,
+      "date": "2020-01-10 00:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 00:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 87,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 59,
+      "date": "2020-01-10 01:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 01:00:00+00:00",
+      "model": "TCN",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 60,
+      "date": "2020-01-10 02:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 02:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 61,
+      "date": "2020-01-10 03:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 03:00:00+00:00",
+      "model": "GRU",
+      "confidence": 90,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 62,
+      "date": "2020-01-10 04:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 04:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 63,
+      "date": "2020-01-10 05:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 05:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 64,
+      "date": "2020-01-10 06:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 06:00:00+00:00",
+      "model": "TCN",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 65,
+      "date": "2020-01-10 07:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 07:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 66,
+      "date": "2020-01-10 08:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 08:00:00+00:00",
+      "model": "GRU",
+      "confidence": 95,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 67,
+      "date": "2020-01-10 09:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 09:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 96,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 68,
+      "date": "2020-01-10 10:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 10:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 97,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 69,
+      "date": "2020-01-10 11:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 11:00:00+00:00",
+      "model": "TCN",
+      "confidence": 98,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 70,
+      "date": "2020-01-10 12:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 12:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 85,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 71,
+      "date": "2020-01-10 13:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 13:00:00+00:00",
+      "model": "GRU",
+      "confidence": 86,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 72,
+      "date": "2020-01-10 14:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 14:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 87,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 73,
+      "date": "2020-01-10 15:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 15:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 88,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 74,
+      "date": "2020-01-10 16:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 16:00:00+00:00",
+      "model": "TCN",
+      "confidence": 89,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 75,
+      "date": "2020-01-10 17:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 17:00:00+00:00",
+      "model": "LSTM",
+      "confidence": 90,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 76,
+      "date": "2020-01-10 18:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 18:00:00+00:00",
+      "model": "GRU",
+      "confidence": 91,
+      "realLabel": "normal",
+      "predicted": "anomalia"
+    },
+    {
+      "id": 77,
+      "date": "2020-01-10 19:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 19:00:00+00:00",
+      "model": "BRNN",
+      "confidence": 92,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 78,
+      "date": "2020-01-10 20:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 20:00:00+00:00",
+      "model": "Transformer",
+      "confidence": 93,
+      "realLabel": "normal",
+      "predicted": "normal"
+    },
+    {
+      "id": 79,
+      "date": "2020-01-10 21:00:00+00:00",
+      "domain": "Modelo",
+      "data": "2020-01-10 21:00:00+00:00",
+      "model": "TCN",
+      "confidence": 94,
+      "realLabel": "normal",
+      "predicted": "normal"
+    }
+  ]
+}

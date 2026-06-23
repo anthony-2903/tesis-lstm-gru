@@ -41,8 +41,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LSTM vs GRU — Detección de Anomalías" },
-      { name: "description", content: "Dashboard interactivo para comparar LSTM y GRU en detección de anomalías" },
+      { title: "LSTM vs GRU vs BRNN — Detección de Anomalías" },
+      { name: "description", content: "Dashboard interactivo para comparar LSTM, GRU, BRNN, Transformer y TCN en detección de anomalías" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -86,7 +86,7 @@ function RootComponent() {
             <div className="flex h-7 w-7 items-center justify-center rounded bg-primary/10 text-primary">
               <Menu className="h-4 w-4" />
             </div>
-            <span className="text-xs font-bold tracking-tight text-foreground uppercase">LSTM <span className="text-primary">vs</span> GRU</span>
+            <span className="text-xs font-bold tracking-tight text-foreground uppercase">LSTM <span className="text-primary">vs</span> GRU <span className="text-primary">vs</span> BRNN</span>
           </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}

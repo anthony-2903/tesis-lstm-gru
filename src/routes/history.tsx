@@ -1,122 +1,36 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { useDataStore } from "@/lib/dataStore";
-import { evaluateDataset } from "@/lib/evaluator";
-import { Download, Filter, UploadCloud } from "lucide-react";
+import { BackendState } from "@/components/BackendState";
+import { fetchHistoryData } from "@/lib/api";
+import { useApiData } from "@/hooks/useApiData";
+import { Download, Filter } from "lucide-react";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Historial de Anomalías — LSTM vs GRU" },
-      { name: "description", content: "Timeline de anomalías detectadas con filtros" },
+      { title: "Historial de Anomalias - LSTM vs GRU vs BRNN" },
+      { name: "description", content: "Timeline de anomalias detectadas con filtros" },
     ],
   }),
   component: HistoryPage,
 });
 
-// ─────────────────────────────────────────────────────────
-// Estado vacío (sin dataset cargado)
-// ─────────────────────────────────────────────────────────
-function EmptyState() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6"
-    >
-      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-        <UploadCloud className="w-10 h-10 text-primary" />
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">No hay datos cargados</h2>
-        <p className="text-muted-foreground max-w-md">
-          Sube un archivo CSV o Excel desde la sección de{" "}
-          <strong>Gestión de Datos</strong> para auditar el historial detallado de anomalías detectadas.
-        </p>
-      </div>
-      <Link
-        to="/upload"
-        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-      >
-        <UploadCloud className="w-4 h-4" />
-        Cargar dataset
-      </Link>
-    </motion.div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────
-// Página de historial
-// ─────────────────────────────────────────────────────────
 function HistoryPage() {
-  const { dataset } = useDataStore();
-  const [domainFilter, setDomainFilter] = useState<"all" | "Texto" | "Series" | "Transacciones">("all");
-  const [modelFilter, setModelFilter] = useState<"all" | "LSTM" | "GRU" | "Transformer" | "TCN">("all");
+  const { data, error, isLoading, reload } = useApiData(fetchHistoryData);
+  const [domainFilter, setDomainFilter] = useState<string>("all");
+  const [modelFilter, setModelFilter] = useState<string>("all");
 
-  // Obtener evaluación real matemática sobre el dataset
-  const evaluated = useMemo(() => {
-    if (!dataset) return null;
-    return evaluateDataset(dataset);
-  }, [dataset]);
-
-  const anomalyHistory = useMemo(() => {
-    if (!dataset || !evaluated) return [];
-
-    const textCol = dataset.columns.find((c) => dataset.dataTypes[c] === "texto") || dataset.columns[0];
-    const numCol = dataset.columns.find((c) => dataset.dataTypes[c] === "número") || dataset.columns[0];
-    const dateCol = dataset.columns.find((c) => dataset.dataTypes[c] === "fecha") || dataset.columns[0];
-
-    // Mapear los registros reales de anomalías del dataset evaluado
-    return dataset.allData.slice(0, 50).map((r, i) => {
-      // Determinamos a qué dominio virtual pertenece la fila para visualización agrupada
-      const domains = ["Texto", "Series", "Transacciones"] as const;
-      const domain = domains[i % 3];
-      
-      const models = ["LSTM", "GRU", "Transformer", "TCN"] as const;
-      const model = models[i % 4];
-
-      const valText = String(r[textCol] || `Registro #${i + 1}`);
-      const valNum = Number(r[numCol]);
-      
-      // Formatear el contenido de la celda de datos
-      const dataContent = domain === "Series" && !isNaN(valNum) 
-        ? `Consumo: ${valNum.toFixed(2)} kW` 
-        : domain === "Transacciones" && !isNaN(valNum)
-        ? `TXN_${1000 + i} - Monto: $${Math.abs(valNum).toFixed(2)}`
-        : valText.length > 60 ? valText.slice(0, 60) + "…" : valText;
-
-      // Calcular si es anomalía real basándose en la lógica matemática de evaluator
-      const mean = dataset.allData.map(d => Number(d[numCol])).filter(v => !isNaN(v)).reduce((a, b) => a + b, 0) / (dataset.cleanedRows || 1);
-      const std = Math.sqrt(dataset.allData.map(d => Number(d[numCol])).filter(v => !isNaN(v)).map(v => Math.pow(v - mean, 2)).reduce((a, b) => a + b, 0) / (dataset.cleanedRows || 1)) || 1;
-      const isAnomaly = !isNaN(valNum) ? Math.abs(valNum - mean) > 1.7 * std : i % 5 === 0;
-
-      // Generar predicción determinista
-      const hash = Math.sin(i + (model === "LSTM" ? 1 : model === "GRU" ? 2 : model === "Transformer" ? 3 : 4)) * 10000;
-      const isPredicted = (hash - Math.floor(hash)) < 0.92 ? isAnomaly : !isAnomaly;
-
-      return {
-        id: i,
-        date: String(r[dateCol] || `2026-05-${String((i % 20) + 1).padStart(2, "0")}`),
-        domain,
-        data: dataContent,
-        model,
-        confidence: Math.round(85 + (hash % 14)), // Confianza dinámica
-        realLabel: isAnomaly ? "anomalía" : "normal",
-        predicted: isPredicted ? "anomalía" : "normal",
-      };
-    });
-
-  }, [dataset, evaluated]);
+  const domains = useMemo(() => ["all", ...Array.from(new Set((data?.items || []).map((item) => item.domain)))], [data]);
+  const models = useMemo(() => ["all", ...Array.from(new Set((data?.items || []).map((item) => item.model)))], [data]);
 
   const filtered = useMemo(() => {
-    return anomalyHistory.filter((item) => {
+    return (data?.items || []).filter((item) => {
       if (domainFilter !== "all" && item.domain !== domainFilter) return false;
       if (modelFilter !== "all" && item.model !== modelFilter) return false;
       return true;
     });
-  }, [anomalyHistory, domainFilter, modelFilter]);
+  }, [data, domainFilter, modelFilter]);
 
   const exportCSV = () => {
     if (!filtered.length) return;
@@ -128,58 +42,57 @@ function HistoryPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `historial_anomalias_${dataset?.filename || "dataset"}.csv`;
+    a.download = `historial_anomalias_${data?.filename || "dataset"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  if (!dataset) return <EmptyState />;
+  if (isLoading) return <BackendState isLoading />;
+  if (error || !data) return <BackendState error={error} onRetry={reload} />;
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Historial de Anomalías</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Timeline de anomalías identificadas en <span className="font-semibold text-foreground">{dataset.filename}</span>
+          <h1 className="text-2xl font-bold text-foreground">Historial de Anomalias</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Timeline de anomalias identificadas en <span className="font-semibold text-foreground">{data.filename}</span>
           </p>
         </div>
-        <button onClick={exportCSV} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
+        <button onClick={exportCSV} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto">
           <Download className="h-3.5 w-3.5" />
           Exportar CSV
         </button>
       </motion.div>
 
-      {/* Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 border-b border-border pb-6">
+      <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:gap-8">
         <div className="flex items-center gap-3">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dominio:</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dominio:</span>
           <div className="flex flex-wrap gap-1">
-            {(["all", "Texto", "Series", "Transacciones"] as const).map((d) => (
-              <button key={d} onClick={() => setDomainFilter(d)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${domainFilter === d ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
-                {d === "all" ? "Todos" : d}
+            {domains.map((domain) => (
+              <button key={domain} onClick={() => setDomainFilter(domain)} className={`rounded-md px-3 py-1 text-[10px] font-bold transition-all ${domainFilter === domain ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
+                {domain === "all" ? "Todos" : domain}
               </button>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Modelo:</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Modelo:</span>
           <div className="flex flex-wrap gap-1">
-            {(["all", "LSTM", "GRU", "Transformer", "TCN"] as const).map((m) => (
-              <button key={m} onClick={() => setModelFilter(m)} className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${modelFilter === m ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
-                {m === "all" ? "Todos" : m}
+            {models.map((model) => (
+              <button key={model} onClick={() => setModelFilter(model)} className={`rounded-md px-3 py-1 text-[10px] font-bold transition-all ${modelFilter === model ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
+                {model === "all" ? "Todos" : model}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="space-y-4">
         {filtered.length === 0 ? (
-          <div className="p-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-muted/5">
-            Ninguna anomalía detectada coincide con los filtros aplicados.
+          <div className="rounded-lg border-2 border-dashed bg-muted/5 p-12 text-center text-muted-foreground">
+            Ninguna anomalia coincide con los filtros aplicados.
           </div>
         ) : (
           filtered.map((item, i) => (
@@ -188,43 +101,33 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.02, 0.4) }}
-              className="flex gap-6 card-formal p-5 group"
+              className="card-formal group flex gap-6 p-5"
             >
               <div className="flex flex-col items-center pt-1.5 font-sans">
-                <div className={`w-2.5 h-2.5 rounded-sm rotate-45 ${
-                  item.domain === "Texto" ? "bg-primary" : 
-                  item.domain === "Series" ? "bg-secondary" : 
-                  "bg-accent"
-                }`} />
-                {i < filtered.length - 1 && <div className="w-px flex-1 bg-border mt-3 group-hover:bg-primary/20 transition-colors" />}
+                <div className="h-2.5 w-2.5 rotate-45 rounded-sm bg-primary" />
+                {i < filtered.length - 1 && <div className="mt-3 w-px flex-1 bg-border transition-colors group-hover:bg-primary/20" />}
               </div>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-6 items-center">
+              <div className="grid flex-1 grid-cols-1 items-center gap-6 md:grid-cols-6">
                 <div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Registro / Fecha</p>
-                  <p className="text-xs font-data text-foreground font-medium">{item.date}</p>
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Registro / Fecha</p>
+                  <p className="font-data text-xs font-medium text-foreground">{item.date}</p>
                 </div>
                 <div>
-                  <span className={`text-[9px] px-2 py-0.5 rounded-sm font-bold uppercase border ${
-                    item.domain === "Texto" ? "bg-primary/5 text-primary border-primary/20" : 
-                    item.domain === "Series" ? "bg-secondary/5 text-secondary border-secondary/20" : 
-                    "bg-accent/5 text-accent border-accent/20"
-                  }`}>
-                    {item.domain}
-                  </span>
+                  <span className="rounded-sm border border-primary/20 bg-primary/5 px-2 py-0.5 text-[9px] font-bold uppercase text-primary">{item.domain}</span>
                 </div>
                 <div className="md:col-span-2">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Dato de Entrada</p>
-                  <p className="text-xs font-data text-foreground/80 truncate font-medium" title={item.data}>{item.data}</p>
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Dato de Entrada</p>
+                  <p className="truncate font-data text-xs font-medium text-foreground/80" title={item.data}>{item.data}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Modelo / Conf.</p>
-                  <p className="text-[11px] font-data text-foreground">{item.model} — <span className="text-primary font-bold">{item.confidence}%</span></p>
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Modelo / Conf.</p>
+                  <p className="font-data text-[11px] text-foreground">{item.model} - <span className="font-bold text-primary">{item.confidence}%</span></p>
                 </div>
                 <div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Evaluación</p>
-                  <p className="text-[11px] font-data font-bold">
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Evaluacion</p>
+                  <p className="font-data text-[11px] font-bold">
                     <span className="text-foreground/70">{item.realLabel}</span>
-                    <span className="text-muted-foreground font-normal"> → </span>
+                    <span className="font-normal text-muted-foreground"> {"->"} </span>
                     <span className={item.realLabel === item.predicted ? "text-success" : "text-anomaly"}>{item.predicted}</span>
                   </p>
                 </div>

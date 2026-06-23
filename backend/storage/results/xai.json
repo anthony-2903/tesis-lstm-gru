@@ -1,0 +1,520 @@
+{
+  "dataset": "pipeline_sample_phishtank_mef_opsd",
+  "method": "local_permutation_proxy",
+  "feature_count": 12,
+  "sequence_length": 12,
+  "global_feature_importance": [
+    {
+      "feature": "phish_id",
+      "importance": 1.0
+    },
+    {
+      "feature": "url",
+      "importance": 0.5
+    },
+    {
+      "feature": "verified",
+      "importance": 0.3333
+    },
+    {
+      "feature": "online",
+      "importance": 0.25
+    },
+    {
+      "feature": "target",
+      "importance": 0.2
+    },
+    {
+      "feature": "label",
+      "importance": 0.1667
+    },
+    {
+      "feature": "entidad",
+      "importance": 0.1429
+    },
+    {
+      "feature": "sector",
+      "importance": 0.125
+    },
+    {
+      "feature": "rol",
+      "importance": 0.1111
+    },
+    {
+      "feature": "departamento",
+      "importance": 0.1
+    },
+    {
+      "feature": "servicio",
+      "importance": 0.0909
+    },
+    {
+      "feature": "indicador",
+      "importance": 0.0833
+    }
+  ],
+  "global_temporal_importance": [
+    {
+      "step": "t-1",
+      "importance": 0.5
+    },
+    {
+      "step": "t-2",
+      "importance": 0.3333
+    },
+    {
+      "step": "t-3",
+      "importance": 0.25
+    },
+    {
+      "step": "t-4",
+      "importance": 0.2
+    },
+    {
+      "step": "t-5",
+      "importance": 0.1667
+    },
+    {
+      "step": "t-6",
+      "importance": 0.1429
+    },
+    {
+      "step": "t-7",
+      "importance": 0.125
+    },
+    {
+      "step": "t-8",
+      "importance": 0.1111
+    },
+    {
+      "step": "t-9",
+      "importance": 0.1
+    },
+    {
+      "step": "t-10",
+      "importance": 0.0909
+    },
+    {
+      "step": "t-11",
+      "importance": 0.0833
+    },
+    {
+      "step": "t-12",
+      "importance": 0.0769
+    }
+  ],
+  "model_comparison": [
+    {
+      "model_key": "lstm",
+      "model": "LSTM",
+      "top_feature": "phish_id",
+      "top_step": "t-1"
+    },
+    {
+      "model_key": "gru",
+      "model": "GRU",
+      "top_feature": "phish_id",
+      "top_step": "t-1"
+    },
+    {
+      "model_key": "brnn",
+      "model": "BRNN",
+      "top_feature": "phish_id",
+      "top_step": "t-1"
+    },
+    {
+      "model_key": "transformer",
+      "model": "Transformer",
+      "top_feature": "phish_id",
+      "top_step": "t-1"
+    },
+    {
+      "model_key": "tcn",
+      "model": "TCN",
+      "top_feature": "phish_id",
+      "top_step": "t-1"
+    }
+  ],
+  "models": {
+    "lstm": {
+      "model_key": "lstm",
+      "model": "LSTM",
+      "method": "permutation_importance_proxy",
+      "description": "Importancia aproximada generada por el pipeline local.",
+      "top_feature": "phish_id",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "phish_id",
+          "importance": 1.0
+        },
+        {
+          "feature": "url",
+          "importance": 0.5
+        },
+        {
+          "feature": "verified",
+          "importance": 0.3333
+        },
+        {
+          "feature": "online",
+          "importance": 0.25
+        },
+        {
+          "feature": "target",
+          "importance": 0.2
+        },
+        {
+          "feature": "label",
+          "importance": 0.1667
+        },
+        {
+          "feature": "entidad",
+          "importance": 0.1429
+        },
+        {
+          "feature": "sector",
+          "importance": 0.125
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 0.5
+        },
+        {
+          "step": "t-2",
+          "importance": 0.3333
+        },
+        {
+          "step": "t-3",
+          "importance": 0.25
+        },
+        {
+          "step": "t-4",
+          "importance": 0.2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.1667
+        },
+        {
+          "step": "t-6",
+          "importance": 0.1429
+        },
+        {
+          "step": "t-7",
+          "importance": 0.125
+        },
+        {
+          "step": "t-8",
+          "importance": 0.1111
+        }
+      ]
+    },
+    "gru": {
+      "model_key": "gru",
+      "model": "GRU",
+      "method": "permutation_importance_proxy",
+      "description": "Importancia aproximada generada por el pipeline local.",
+      "top_feature": "phish_id",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "phish_id",
+          "importance": 1.0
+        },
+        {
+          "feature": "url",
+          "importance": 0.5
+        },
+        {
+          "feature": "verified",
+          "importance": 0.3333
+        },
+        {
+          "feature": "online",
+          "importance": 0.25
+        },
+        {
+          "feature": "target",
+          "importance": 0.2
+        },
+        {
+          "feature": "label",
+          "importance": 0.1667
+        },
+        {
+          "feature": "entidad",
+          "importance": 0.1429
+        },
+        {
+          "feature": "sector",
+          "importance": 0.125
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 0.5
+        },
+        {
+          "step": "t-2",
+          "importance": 0.3333
+        },
+        {
+          "step": "t-3",
+          "importance": 0.25
+        },
+        {
+          "step": "t-4",
+          "importance": 0.2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.1667
+        },
+        {
+          "step": "t-6",
+          "importance": 0.1429
+        },
+        {
+          "step": "t-7",
+          "importance": 0.125
+        },
+        {
+          "step": "t-8",
+          "importance": 0.1111
+        }
+      ]
+    },
+    "brnn": {
+      "model_key": "brnn",
+      "model": "BRNN",
+      "method": "permutation_importance_proxy",
+      "description": "Importancia aproximada generada por el pipeline local.",
+      "top_feature": "phish_id",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "phish_id",
+          "importance": 1.0
+        },
+        {
+          "feature": "url",
+          "importance": 0.5
+        },
+        {
+          "feature": "verified",
+          "importance": 0.3333
+        },
+        {
+          "feature": "online",
+          "importance": 0.25
+        },
+        {
+          "feature": "target",
+          "importance": 0.2
+        },
+        {
+          "feature": "label",
+          "importance": 0.1667
+        },
+        {
+          "feature": "entidad",
+          "importance": 0.1429
+        },
+        {
+          "feature": "sector",
+          "importance": 0.125
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 0.5
+        },
+        {
+          "step": "t-2",
+          "importance": 0.3333
+        },
+        {
+          "step": "t-3",
+          "importance": 0.25
+        },
+        {
+          "step": "t-4",
+          "importance": 0.2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.1667
+        },
+        {
+          "step": "t-6",
+          "importance": 0.1429
+        },
+        {
+          "step": "t-7",
+          "importance": 0.125
+        },
+        {
+          "step": "t-8",
+          "importance": 0.1111
+        }
+      ]
+    },
+    "transformer": {
+      "model_key": "transformer",
+      "model": "Transformer",
+      "method": "permutation_importance_proxy",
+      "description": "Importancia aproximada generada por el pipeline local.",
+      "top_feature": "phish_id",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "phish_id",
+          "importance": 1.0
+        },
+        {
+          "feature": "url",
+          "importance": 0.5
+        },
+        {
+          "feature": "verified",
+          "importance": 0.3333
+        },
+        {
+          "feature": "online",
+          "importance": 0.25
+        },
+        {
+          "feature": "target",
+          "importance": 0.2
+        },
+        {
+          "feature": "label",
+          "importance": 0.1667
+        },
+        {
+          "feature": "entidad",
+          "importance": 0.1429
+        },
+        {
+          "feature": "sector",
+          "importance": 0.125
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 0.5
+        },
+        {
+          "step": "t-2",
+          "importance": 0.3333
+        },
+        {
+          "step": "t-3",
+          "importance": 0.25
+        },
+        {
+          "step": "t-4",
+          "importance": 0.2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.1667
+        },
+        {
+          "step": "t-6",
+          "importance": 0.1429
+        },
+        {
+          "step": "t-7",
+          "importance": 0.125
+        },
+        {
+          "step": "t-8",
+          "importance": 0.1111
+        }
+      ]
+    },
+    "tcn": {
+      "model_key": "tcn",
+      "model": "TCN",
+      "method": "permutation_importance_proxy",
+      "description": "Importancia aproximada generada por el pipeline local.",
+      "top_feature": "phish_id",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "phish_id",
+          "importance": 1.0
+        },
+        {
+          "feature": "url",
+          "importance": 0.5
+        },
+        {
+          "feature": "verified",
+          "importance": 0.3333
+        },
+        {
+          "feature": "online",
+          "importance": 0.25
+        },
+        {
+          "feature": "target",
+          "importance": 0.2
+        },
+        {
+          "feature": "label",
+          "importance": 0.1667
+        },
+        {
+          "feature": "entidad",
+          "importance": 0.1429
+        },
+        {
+          "feature": "sector",
+          "importance": 0.125
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 0.5
+        },
+        {
+          "step": "t-2",
+          "importance": 0.3333
+        },
+        {
+          "step": "t-3",
+          "importance": 0.25
+        },
+        {
+          "step": "t-4",
+          "importance": 0.2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.1667
+        },
+        {
+          "step": "t-6",
+          "importance": 0.1429
+        },
+        {
+          "step": "t-7",
+          "importance": 0.125
+        },
+        {
+          "step": "t-8",
+          "importance": 0.1111
+        }
+      ]
+    }
+  }
+}

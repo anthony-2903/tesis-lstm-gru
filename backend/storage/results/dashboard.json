@@ -1,0 +1,169 @@
+{
+  "dataset": {
+    "filename": "pipeline_sample_phishtank_mef_opsd",
+    "originalRows": 257,
+    "cleanedRows": 217,
+    "rowsRemoved": 40,
+    "columns": [
+      "phish_id",
+      "url",
+      "verified",
+      "online",
+      "target",
+      "label",
+      "entidad",
+      "sector",
+      "rol",
+      "departamento",
+      "servicio",
+      "indicador",
+      "valor",
+      "anio",
+      "timestamp",
+      "DE_load_actual_entsoe_transparency",
+      "DE_load_forecast_entsoe_transparency",
+      "DE_solar_generation_actual",
+      "DE_wind_generation_actual"
+    ],
+    "dataTypes": {
+      "phish_id": "numero",
+      "url": "texto",
+      "verified": "texto",
+      "online": "texto",
+      "target": "texto",
+      "label": "numero",
+      "entidad": "texto",
+      "sector": "texto",
+      "rol": "texto",
+      "departamento": "texto",
+      "servicio": "texto",
+      "indicador": "texto",
+      "valor": "numero",
+      "anio": "numero",
+      "timestamp": "fecha",
+      "DE_load_actual_entsoe_transparency": "numero",
+      "DE_load_forecast_entsoe_transparency": "numero",
+      "DE_solar_generation_actual": "numero",
+      "DE_wind_generation_actual": "numero"
+    }
+  },
+  "typeDistribution": [
+    {
+      "name": "numero",
+      "value": 8
+    },
+    {
+      "name": "texto",
+      "value": 10
+    },
+    {
+      "name": "fecha",
+      "value": 1
+    }
+  ],
+  "columnBarData": [
+    {
+      "col": "phish_id",
+      "tipo": "numero",
+      "registros": 217
+    },
+    {
+      "col": "url",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "verified",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "online",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "target",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "label",
+      "tipo": "numero",
+      "registros": 217
+    },
+    {
+      "col": "entidad",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "sector",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "rol",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "departamento",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "servicio",
+      "tipo": "texto",
+      "registros": 217
+    },
+    {
+      "col": "indicador",
+      "tipo": "texto",
+      "registros": 217
+    }
+  ],
+  "numericDistribution": [
+    {
+      "rango": "1.0",
+      "cantidad": 5
+    },
+    {
+      "rango": "11.3",
+      "cantidad": 0
+    },
+    {
+      "rango": "21.6",
+      "cantidad": 0
+    },
+    {
+      "rango": "31.9",
+      "cantidad": 0
+    },
+    {
+      "rango": "42.2",
+      "cantidad": 0
+    },
+    {
+      "rango": "52.5",
+      "cantidad": 0
+    },
+    {
+      "rango": "62.8",
+      "cantidad": 0
+    },
+    {
+      "rango": "73.1",
+      "cantidad": 0
+    },
+    {
+      "rango": "83.4",
+      "cantidad": 0
+    },
+    {
+      "rango": "93.7",
+      "cantidad": 5
+    }
+  ],
+  "numericColumn": "phish_id"
+}

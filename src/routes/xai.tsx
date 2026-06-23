@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { BrainCircuit, FileJson, Network, Sparkles, UploadCloud } from "lucide-react";
+import { BrainCircuit, Network, Sparkles } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -14,7 +14,10 @@ import {
 } from "recharts";
 import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
-import { formatImportance, normalizeXaiReport, type XaiReport } from "@/lib/xai";
+import { formatImportance, normalizeXaiReport } from "@/lib/xai";
+import { BackendState } from "@/components/BackendState";
+import { fetchXaiData } from "@/lib/api";
+import { useApiData } from "@/hooks/useApiData";
 
 export const Route = createFileRoute("/xai")({
   head: () => ({
@@ -29,56 +32,18 @@ export const Route = createFileRoute("/xai")({
 const modelColors: Record<string, string> = {
   lstm: "var(--chart-1)",
   gru: "var(--chart-2)",
+  brnn: "var(--chart-3)",
   transformer: "var(--chart-4)",
   tcn: "var(--chart-5)",
 };
 
-function EmptyXaiState({ onFile }: { onFile: (file: File) => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex min-h-[64vh] flex-col items-center justify-center gap-6 text-center"
-    >
-      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
-        <BrainCircuit className="h-10 w-10" />
-      </div>
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Interpretabilidad XAI</h1>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Carga el archivo `xai.json` generado en Google Colab para visualizar las variables y pasos temporales que mas influyeron en las predicciones.
-        </p>
-      </div>
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
-        <UploadCloud className="h-4 w-4" />
-        Cargar xai.json
-        <input
-          type="file"
-          accept=".json,application/json"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) onFile(file);
-          }}
-        />
-      </label>
-    </motion.div>
-  );
-}
-
 function XaiPage() {
-  const [report, setReport] = useState<XaiReport | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading, reload } = useApiData(fetchXaiData);
 
-  const handleFile = async (file: File) => {
-    try {
-      setError(null);
-      const parsed = JSON.parse(await file.text());
-      setReport(normalizeXaiReport(parsed));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo leer el archivo XAI.");
-    }
-  };
+  if (isLoading) return <BackendState isLoading />;
+  if (error || !data) return <BackendState error={error} onRetry={reload} />;
+
+  const report = normalizeXaiReport(data);
 
   const topFeature = report?.global_feature_importance[0];
   const topStep = report?.global_temporal_importance[0];
@@ -105,18 +70,6 @@ function XaiPage() {
     [report],
   );
 
-  if (!report) {
-    return (
-      <div className="space-y-4">
-        {error && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive">
-            {error}
-          </div>
-        )}
-        <EmptyXaiState onFile={handleFile} />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -127,20 +80,6 @@ function XaiPage() {
             Dataset interpretado: <span className="font-semibold text-foreground">{report.dataset}</span>
           </p>
         </motion.div>
-
-        <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted">
-          <FileJson className="h-4 w-4 text-primary" />
-          Cambiar JSON
-          <input
-            type="file"
-            accept=".json,application/json"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) handleFile(file);
-            }}
-          />
-        </label>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -236,3 +175,4 @@ function XaiPage() {
     </div>
   );
 }
+

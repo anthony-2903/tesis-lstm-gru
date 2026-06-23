@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Resumen", path: "/", icon: Home },
-  { title: "Subir Datos", path: "/upload", icon: Database },
+  { title: "Datos", path: "/upload", icon: Database },
   { title: "Análisis", path: "/analysis", icon: Database },
   { title: "Comparativa", path: "/comparison", icon: GitCompare },
   { title: "XAI SHAP", path: "/xai", icon: BrainCircuit },
@@ -82,7 +82,7 @@ export function DashboardSidebar({
               className="flex flex-col whitespace-nowrap"
             >
               <h1 className="text-[10px] font-bold text-foreground tracking-tighter uppercase">
-                LSTM | GRU | TRF | TCN
+                LSTM | GRU | BRNN | TRF | TCN
               </h1>
               <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">
                 Plataforma de Investigación
