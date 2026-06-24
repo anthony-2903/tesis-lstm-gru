@@ -42,12 +42,12 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const location = useLocation();
 
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof document !== "undefined") {
-      return document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
-    }
-    return false;
-  });
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    setIsDark(document.documentElement.classList.contains("dark") || storedTheme === "dark");
+  }, []);
 
   useEffect(() => {
     if (isDark) {
