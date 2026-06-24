@@ -1,4 +1,22 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const LOCAL_API_URL = "http://localhost:8000/api";
+const PRODUCTION_API_URL = "https://name-tesis-lstm-gru-backend.onrender.com/api";
+
+function resolveApiUrl() {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      return LOCAL_API_URL;
+    }
+  }
+
+  return PRODUCTION_API_URL;
+}
+
+const API_URL = resolveApiUrl();
 
 export interface DashboardData {
   dataset: {
@@ -101,7 +119,7 @@ export interface HistoryData {
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`);
   if (!response.ok) {
-    throw new Error(`Backend local respondio ${response.status} en ${path}`);
+    throw new Error(`Backend respondio ${response.status} en ${path}`);
   }
   return response.json() as Promise<T>;
 }
