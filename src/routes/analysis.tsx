@@ -10,7 +10,8 @@ import {
 } from "recharts";
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
-import { fetchAnalysisData } from "@/lib/api";
+import { DomainId, fetchAnalysisData } from "@/lib/api";
+import { getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
 
 function toCsv(rows: Record<string, unknown>[]) {
@@ -66,8 +67,9 @@ function ConfusionMatrixViz({
 }
 
 function AnalysisPage() {
-  const [tab, setTab] = useState<"phishtank" | "energia" | "finanzas">("phishtank");
-  const { data: evaluated, error, isLoading, reload } = useApiData(fetchAnalysisData);
+  const [tab, setTab] = useState<DomainId>(getInitialDomain);
+  const selected = getDomainOption(tab);
+  const { data: evaluated, error, isLoading, reload } = useApiData(() => fetchAnalysisData(tab), [tab]);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !evaluated) return <BackendState error={error} onRetry={reload} />;
@@ -133,9 +135,9 @@ function AnalysisPage() {
       {/* Selector de Pestañas */}
       <div className="flex flex-wrap gap-2 bg-muted/30 p-1 rounded-xl w-fit border border-border">
         <button
-          onClick={() => setTab("phishtank")}
+          onClick={() => setTab("phishing")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-            tab === "phishtank" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+            tab === "phishing" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Shield className="h-3.5 w-3.5" />
@@ -162,8 +164,8 @@ function AnalysisPage() {
       </div>
 
       {/* ── SECCIÓN: PHISHTANK (TEXTO) ── */}
-      {tab === "phishtank" && (
-        <motion.div key="phishtank" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+      {tab === "phishing" && (
+        <motion.div key="phishing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <KpiCard title="F1-Score (Transformer)" value={models.transformer.f1.toFixed(3)} icon={Activity} variant="cyan" />
             <KpiCard title="Precisión Phishing" value={`${(models.transformer.precision * 100).toFixed(1)}%`} icon={Shield} variant="violet" delay={0.1} />
@@ -412,7 +414,7 @@ function AnalysisPage() {
         </motion.div>
       )}
 
-      <AiAnalysis type={tab} />
+      <AiAnalysis type={selected.aiType} />
     </div>
   );
 }

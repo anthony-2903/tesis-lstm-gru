@@ -11,6 +11,7 @@ from app.utils import read_json
 
 
 app = FastAPI(title="Tesis LSTM GRU Backend", version="0.1.0")
+VALID_DOMAINS = {"phishing", "energia", "finanzas"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,6 +32,17 @@ def load_artifact(name: str) -> dict:
     return read_json(path)
 
 
+def load_domain_artifact(name: str, domain: str | None = None) -> dict:
+    if not domain:
+        return load_artifact(name)
+    normalized = domain.strip().lower()
+    if normalized in {"phishtank", "phishing"}:
+        normalized = "phishing"
+    if normalized not in VALID_DOMAINS:
+        raise HTTPException(status_code=400, detail=f"Dominio no soportado: {domain}")
+    return load_artifact(f"{name}_{normalized}")
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -44,10 +56,14 @@ def api_index() -> dict[str, object]:
         "endpoints": [
             "/api/health",
             "/api/dashboard",
+            "/api/dashboard?domain=phishing",
             "/api/analysis",
+            "/api/analysis?domain=energia",
             "/api/comparison",
             "/api/history",
             "/api/xai",
+            "/api/xai?domain=finanzas",
+            "/api/domains",
             "/api/ai-analysis?type=general",
         ],
     }
@@ -60,28 +76,33 @@ def run_pipeline_endpoint(mode: Literal["sample", "remote"] = "sample") -> dict[
 
 
 @app.get("/api/dashboard")
-def dashboard() -> dict:
-    return load_artifact("dashboard")
+def dashboard(domain: str | None = Query(None)) -> dict:
+    return load_domain_artifact("dashboard", domain)
 
 
 @app.get("/api/analysis")
-def analysis() -> dict:
-    return load_artifact("analysis")
+def analysis(domain: str | None = Query(None)) -> dict:
+    return load_domain_artifact("analysis", domain)
 
 
 @app.get("/api/comparison")
-def comparison() -> dict:
-    return load_artifact("comparison")
+def comparison(domain: str | None = Query(None)) -> dict:
+    return load_domain_artifact("comparison", domain)
 
 
 @app.get("/api/history")
-def history() -> dict:
-    return load_artifact("history")
+def history(domain: str | None = Query(None)) -> dict:
+    return load_domain_artifact("history", domain)
 
 
 @app.get("/api/xai")
-def xai() -> dict:
-    return load_artifact("xai")
+def xai(domain: str | None = Query(None)) -> dict:
+    return load_domain_artifact("xai", domain)
+
+
+@app.get("/api/domains")
+def domains() -> dict:
+    return load_artifact("domains")
 
 
 @app.get("/api/ai-analysis")

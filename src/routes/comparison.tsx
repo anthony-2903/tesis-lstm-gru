@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChartCard } from "@/components/ChartCard";
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
-import { fetchComparisonData } from "@/lib/api";
+import { DomainId, fetchComparisonData } from "@/lib/api";
+import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
 import {
   Bar,
@@ -51,7 +53,9 @@ const modelColor = (model: string) => {
 };
 
 function ComparisonPage() {
-  const { data, error, isLoading, reload } = useApiData(fetchComparisonData);
+  const [domain, setDomain] = useState<DomainId>(getInitialDomain);
+  const selected = getDomainOption(domain);
+  const { data, error, isLoading, reload } = useApiData(() => fetchComparisonData(domain), [domain]);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
@@ -66,6 +70,20 @@ function ComparisonPage() {
           Dataset: <span className="font-semibold text-foreground">{filename}</span>
         </p>
       </motion.div>
+
+      <div className="flex flex-wrap gap-2 rounded-md border border-border bg-muted/30 p-1">
+        {DOMAIN_OPTIONS.map((option) => (
+          <button
+            key={option.id}
+            onClick={() => setDomain(option.id)}
+            className={`rounded-md px-3 py-2 text-xs font-bold transition-all ${
+              domain === option.id ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {option.shortTitle}
+          </button>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard title="Perfil Multidimensional" subtitle="Metricas normalizadas (0-1)" delay={0.1}>
@@ -142,7 +160,7 @@ function ComparisonPage() {
         </div>
       </ChartCard>
 
-      <AiAnalysis type="general" />
+      <AiAnalysis type={selected.aiType} />
     </div>
   );
 }

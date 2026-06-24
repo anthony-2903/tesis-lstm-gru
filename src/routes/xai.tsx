@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { BrainCircuit, Network, Sparkles } from "lucide-react";
 import {
@@ -16,7 +16,8 @@ import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
 import { formatImportance, normalizeXaiReport } from "@/lib/xai";
 import { BackendState } from "@/components/BackendState";
-import { fetchXaiData } from "@/lib/api";
+import { DomainId, fetchXaiData } from "@/lib/api";
+import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
 
 export const Route = createFileRoute("/xai")({
@@ -38,12 +39,10 @@ const modelColors: Record<string, string> = {
 };
 
 function XaiPage() {
-  const { data, error, isLoading, reload } = useApiData(fetchXaiData);
-
-  if (isLoading) return <BackendState isLoading />;
-  if (error || !data) return <BackendState error={error} onRetry={reload} />;
-
-  const report = normalizeXaiReport(data);
+  const [domain, setDomain] = useState<DomainId>(getInitialDomain);
+  const selected = getDomainOption(domain);
+  const { data, error, isLoading, reload } = useApiData(() => fetchXaiData(domain), [domain]);
+  const report = useMemo(() => (data ? normalizeXaiReport(data) : null), [data]);
 
   const topFeature = report?.global_feature_importance[0];
   const topStep = report?.global_temporal_importance[0];
@@ -70,6 +69,8 @@ function XaiPage() {
     [report],
   );
 
+  if (isLoading) return <BackendState isLoading />;
+  if (error || !report) return <BackendState error={error} onRetry={reload} />;
 
   return (
     <div className="space-y-6">
@@ -81,6 +82,28 @@ function XaiPage() {
           </p>
         </motion.div>
       </div>
+
+      <div className="flex flex-wrap gap-2 rounded-md border border-border bg-muted/30 p-1">
+        {DOMAIN_OPTIONS.map((option) => {
+          const Icon = option.icon;
+          return (
+            <button
+              key={option.id}
+              onClick={() => setDomain(option.id)}
+              className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-all ${
+                domain === option.id ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {option.shortTitle}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Fuente activa: <span className="font-semibold text-foreground">{selected.source}</span>. {selected.description}
+      </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <KpiCard title="Variable Principal" value={topFeature?.feature || "N/D"} icon={Sparkles} variant="cyan" />
@@ -150,12 +173,15 @@ function XaiPage() {
       <ChartCard title="Detalle por Modelo" subtitle="Top 8 variables explicativas por arquitectura" delay={0.5}>
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
           {Object.values(report.models).map((model) => {
-            const rows = model.feature_importance.slice(0, 8);
+            const rows = (model.feature_importance || []).slice(0, 8);
             return (
               <div key={model.model_key} className="rounded-md border border-border bg-card p-4">
                 <h3 className="text-sm font-bold text-foreground">{model.model}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">{model.description || "Importancia por enmascaramiento temporal."}</p>
                 <div className="mt-4 space-y-2">
+                  {rows.length === 0 && (
+                    <p className="text-xs text-muted-foreground">Este dominio no tiene variables de ese tipo para el modelo seleccionado.</p>
+                  )}
                   {rows.map((row) => (
                     <div key={`${model.model_key}-${row.feature}`} className="grid grid-cols-[minmax(0,1fr)_72px] items-center gap-3">
                       <span className="truncate text-xs font-medium text-muted-foreground" title={row.feature}>

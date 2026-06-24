@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import argparse
 
+import pandas as pd
+
 from app.cleaning.tabular_cleaner import clean_tabular
 from app.cleaning.text_cleaner import clean_phishtank
 from app.cleaning.timeseries_cleaner import clean_opsd
 from app.config import GOLD_DIR, RAW_DIR, RESULTS_DIR, SILVER_DIR, ensure_dirs
 from app.ingestion.sources import fetch_mef_brechas, fetch_mef_operadores, fetch_opsd, fetch_phishtank
 from app.reports import build_ai_analysis, build_analysis, build_comparison, build_dashboard, build_history
-from app.training.trainers import train_timeseries_models, train_url_models
+from app.training.trainers import train_tabular_models, train_timeseries_models, train_url_models
 from app.utils import write_json
 from app.xai.explainer import build_xai_report
 
@@ -37,6 +39,7 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
 
     url_result = train_url_models(phishtank)
     ts_result = train_timeseries_models(opsd)
+    finance_result = train_tabular_models(pd.concat([operadores, brechas], ignore_index=True, sort=False), domain="MEF")
 
     filename = f"pipeline_{mode}_phishtank_mef_opsd"
     merged_models = {}
@@ -68,6 +71,27 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
     xai = build_xai_report(filename, url_result.xai, ts_result.xai)
     ai_analysis = build_ai_analysis(filename, analysis)
 
+    domain_sources = {
+        "phishing": {
+            "label": "PhishTank - Deteccion de phishing",
+            "frames": [phishtank],
+            "result": url_result,
+            "xai": build_xai_report(f"{filename}_phishing", url_result.xai, {}),
+        },
+        "energia": {
+            "label": "OPSD - Energia y series temporales",
+            "frames": [opsd],
+            "result": ts_result,
+            "xai": build_xai_report(f"{filename}_energia", {}, ts_result.xai),
+        },
+        "finanzas": {
+            "label": "MEF - Finanzas publicas e indicadores",
+            "frames": [operadores, brechas],
+            "result": finance_result,
+            "xai": build_xai_report(f"{filename}_finanzas", finance_result.xai, {}),
+        },
+    }
+
     artifacts = {
         "dashboard": dashboard,
         "analysis": analysis,
@@ -75,7 +99,38 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
         "history": history,
         "xai": xai,
         "ai_analysis": ai_analysis,
+        "domains": {
+            "items": [
+                {
+                    "id": "phishing",
+                    "title": "Phishing",
+                    "source": "PhishTank",
+                    "description": "URLs verificadas, rasgos lexicales y deteccion de phishing.",
+                },
+                {
+                    "id": "energia",
+                    "title": "Energia",
+                    "source": "Open Power System Data",
+                    "description": "Series temporales de consumo/generacion y anomalias por ventana.",
+                },
+                {
+                    "id": "finanzas",
+                    "title": "Finanzas publicas",
+                    "source": "MEF Datos Abiertos",
+                    "description": "Indicadores de brechas y operadores Invierte.pe con limpieza tabular.",
+                },
+            ]
+        },
     }
+    for domain, source in domain_sources.items():
+        domain_filename = str(source["label"])
+        domain_analysis = build_analysis(domain_filename, source["result"])
+        artifacts[f"dashboard_{domain}"] = build_dashboard(domain_filename, source["frames"])
+        artifacts[f"analysis_{domain}"] = domain_analysis
+        artifacts[f"comparison_{domain}"] = build_comparison(domain_filename, source["result"].models)
+        artifacts[f"history_{domain}"] = build_history(domain_filename, domain_analysis["processedRecords"])
+        artifacts[f"xai_{domain}"] = source["xai"]
+
     for name, payload in artifacts.items():
         write_json(RESULTS_DIR / f"{name}.json", payload)
     return artifacts

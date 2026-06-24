@@ -17,6 +17,14 @@ function resolveApiUrl() {
 }
 
 const API_URL = resolveApiUrl();
+export type DomainId = "phishing" | "energia" | "finanzas";
+
+export interface DomainOption {
+  id: DomainId;
+  title: string;
+  source: string;
+  description: string;
+}
 
 export interface DashboardData {
   dataset: {
@@ -116,6 +124,12 @@ export interface HistoryData {
   items: HistoryItem[];
 }
 
+function withDomain(path: string, domain?: DomainId) {
+  if (!domain) return path;
+  const query = new URLSearchParams({ domain });
+  return `${path}?${query.toString()}`;
+}
+
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`);
   if (!response.ok) {
@@ -124,24 +138,28 @@ async function fetchJson<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function fetchDashboardData() {
-  return fetchJson<DashboardData>("/dashboard");
+export function fetchDomains() {
+  return fetchJson<{ items: DomainOption[] }>("/domains");
 }
 
-export function fetchAnalysisData() {
-  return fetchJson<EvaluatedData>("/analysis");
+export function fetchDashboardData(domain?: DomainId) {
+  return fetchJson<DashboardData>(withDomain("/dashboard", domain));
 }
 
-export function fetchComparisonData() {
-  return fetchJson<ComparisonData>("/comparison");
+export function fetchAnalysisData(domain?: DomainId) {
+  return fetchJson<EvaluatedData>(withDomain("/analysis", domain));
 }
 
-export function fetchHistoryData() {
-  return fetchJson<HistoryData>("/history");
+export function fetchComparisonData(domain?: DomainId) {
+  return fetchJson<ComparisonData>(withDomain("/comparison", domain));
 }
 
-export function fetchXaiData() {
-  return fetchJson<unknown>("/xai");
+export function fetchHistoryData(domain?: DomainId) {
+  return fetchJson<HistoryData>(withDomain("/history", domain));
+}
+
+export function fetchXaiData(domain?: DomainId) {
+  return fetchJson<unknown>(withDomain("/xai", domain));
 }
 
 export async function fetchAiAnalysis(type: "general" | "phishtank" | "energia" | "finanzas") {

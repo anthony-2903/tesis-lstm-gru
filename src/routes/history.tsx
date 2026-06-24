@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { BackendState } from "@/components/BackendState";
-import { fetchHistoryData } from "@/lib/api";
+import { DomainId, fetchHistoryData } from "@/lib/api";
+import { DOMAIN_OPTIONS, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
 import { Download, Filter } from "lucide-react";
 
@@ -17,7 +18,8 @@ export const Route = createFileRoute("/history")({
 });
 
 function HistoryPage() {
-  const { data, error, isLoading, reload } = useApiData(fetchHistoryData);
+  const [domain, setDomain] = useState<DomainId>(getInitialDomain);
+  const { data, error, isLoading, reload } = useApiData(() => fetchHistoryData(domain), [domain]);
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [modelFilter, setModelFilter] = useState<string>("all");
 
@@ -66,6 +68,16 @@ function HistoryPage() {
       </motion.div>
 
       <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:gap-8">
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dataset:</span>
+          <div className="flex flex-wrap gap-1">
+            {DOMAIN_OPTIONS.map((option) => (
+              <button key={option.id} onClick={() => setDomain(option.id)} className={`rounded-md px-3 py-1 text-[10px] font-bold transition-all ${domain === option.id ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
+                {option.shortTitle}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex items-center gap-3">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dominio:</span>

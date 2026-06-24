@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { KpiCard } from "@/components/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { BackendState } from "@/components/BackendState";
-import { fetchDashboardData } from "@/lib/api";
+import { DomainId, fetchDashboardData } from "@/lib/api";
+import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
-import { Columns, Database, FileSearch } from "lucide-react";
+import { ArrowRight, BarChart3, BrainCircuit, Columns, Database, FileSearch } from "lucide-react";
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -45,7 +47,9 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 function HomePage() {
-  const { data, error, isLoading, reload } = useApiData(fetchDashboardData);
+  const [selectedDomain, setSelectedDomain] = useState<DomainId>(getInitialDomain);
+  const selected = getDomainOption(selectedDomain);
+  const { data, error, isLoading, reload } = useApiData(() => fetchDashboardData(selectedDomain), [selectedDomain]);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
@@ -55,11 +59,62 @@ function HomePage() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-        <h1 className="text-2xl font-bold text-foreground">Resumen del Dataset</h1>
+        <h1 className="text-2xl font-bold text-foreground">Selecciona el dominio de analisis</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Fuente activa: <span className="font-medium text-foreground">{selected.source}</span>
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        {DOMAIN_OPTIONS.map((domain, index) => {
+          const Icon = domain.icon;
+          const isActive = selectedDomain === domain.id;
+          return (
+            <button
+              key={domain.id}
+              onClick={() => setSelectedDomain(domain.id)}
+              className={`group rounded-md border p-4 text-left transition-all ${
+                isActive
+                  ? "border-primary bg-primary/10 shadow-sm"
+                  : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{domain.title}</p>
+                    <p className="mt-1 text-xs font-semibold text-primary">{domain.source}</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase text-muted-foreground">Paso {index + 1}</span>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">{domain.description}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <a href={`/analysis?domain=${selectedDomain}`} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90">
+          <BarChart3 className="h-4 w-4" />
+          Ver graficas
+          <ArrowRight className="h-4 w-4" />
+        </a>
+        <a href={`/xai?domain=${selectedDomain}`} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-xs font-bold text-foreground transition-colors hover:bg-muted">
+          <BrainCircuit className="h-4 w-4" />
+          Ver XAI
+        </a>
+      </div>
+
+      <div>
+        <h2 className="text-lg font-bold text-foreground">Resumen de {selected.shortTitle}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Archivo procesado: <span className="font-medium text-foreground">{dataset.filename}</span>
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard title="Total de Registros" value={dataset.originalRows.toLocaleString("es-ES")} subtitle="Filas recibidas por backend" icon={Database} variant="cyan" />

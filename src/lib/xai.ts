@@ -46,6 +46,34 @@ export const normalizeXaiReport = (raw: unknown): XaiReport => {
     throw new Error("El archivo no contiene importancias XAI globales.");
   }
 
+  const models = Object.fromEntries(
+    Object.entries(report.models || {}).map(([key, model]) => {
+      const item = model as Partial<XaiModelExplanation>;
+      return [
+        key,
+        {
+          model_key: item.model_key || key,
+          model: item.model || key.toUpperCase(),
+          method: item.method || report.method || "permutation_importance",
+          description: item.description || "",
+          top_feature: item.top_feature || null,
+          top_step: item.top_step || null,
+          feature_importance: Array.isArray(item.feature_importance) ? item.feature_importance : [],
+          temporal_importance: Array.isArray(item.temporal_importance) ? item.temporal_importance : [],
+        },
+      ];
+    }),
+  );
+
+  const modelComparison = Array.isArray(report.model_comparison) && report.model_comparison.length
+    ? report.model_comparison
+    : Object.values(models).map((model) => ({
+        model_key: model.model_key,
+        model: model.model,
+        top_feature: model.top_feature,
+        top_step: model.top_step,
+      }));
+
   return {
     dataset: report.dataset || "dataset",
     method: report.method || "temporal_masking_shap_approximation",
@@ -53,7 +81,7 @@ export const normalizeXaiReport = (raw: unknown): XaiReport => {
     sequence_length: Number(report.sequence_length || 0),
     global_feature_importance: report.global_feature_importance,
     global_temporal_importance: report.global_temporal_importance,
-    model_comparison: Array.isArray(report.model_comparison) ? report.model_comparison : [],
-    models: report.models || {},
+    model_comparison: modelComparison,
+    models,
   };
 };
