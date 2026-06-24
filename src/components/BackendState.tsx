@@ -29,12 +29,12 @@ export function BackendState({
       </div>
       <div>
         <h2 className="text-2xl font-bold text-foreground">
-          {title || (isLoading ? "Conectando con backend local" : "Backend local no disponible")}
+          {title || (isLoading ? "Conectando con backend" : "Backend no disponible")}
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
           {message ||
             error ||
-            "Levanta el servicio local en http://localhost:8000/api para visualizar los resultados procesados."}
+            "Verifica que el backend de Render este activo para visualizar los resultados procesados."}
         </p>
       </div>
       {onRetry && !isLoading && (
