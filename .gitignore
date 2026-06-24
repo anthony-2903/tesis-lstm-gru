@@ -16,6 +16,13 @@ dist-ssr
 .nitro
 *.local
 
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+backend/.venv/
+backend/storage/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
