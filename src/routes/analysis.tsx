@@ -6,10 +6,11 @@ import { KpiCard } from "@/components/KpiCard";
 import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, Download } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area, Legend, Scatter
+  LineChart, Line, AreaChart, Area, Legend
 } from "recharts";
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
+import { MetricGuide } from "@/components/MetricGuide";
 import { DomainId, fetchAnalysisData } from "@/lib/api";
 import { getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -111,7 +112,7 @@ function AnalysisPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -125,7 +126,7 @@ function AnalysisPage() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={handleExport}
-          className="inline-flex items-center gap-2 bg-success text-success-foreground px-4 py-2 rounded-lg font-medium hover:bg-success/90 transition-colors shadow-sm"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-success px-4 py-2 font-medium text-success-foreground shadow-sm transition-colors hover:bg-success/90 sm:w-auto"
         >
           <Download className="w-4 h-4" />
           Exportar Resultados (CSV)
@@ -133,7 +134,7 @@ function AnalysisPage() {
       </div>
 
       {/* Selector de Pestañas */}
-      <div className="flex flex-wrap gap-2 bg-muted/30 p-1 rounded-xl w-fit border border-border">
+      <div className="flex w-full flex-wrap gap-2 rounded-xl border border-border bg-muted/30 p-1 sm:w-fit">
         <button
           onClick={() => setTab("phishing")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
@@ -163,6 +164,8 @@ function AnalysisPage() {
         </button>
       </div>
 
+      <MetricGuide />
+
       {/* ── SECCIÓN: PHISHTANK (TEXTO) ── */}
       {tab === "phishing" && (
         <motion.div key="phishing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -174,6 +177,8 @@ function AnalysisPage() {
 
           {/* Timeline ocupa ancho completo */}
           <ChartCard title="Frecuencia Temporal de Ataques" subtitle={`Detecciones sobre los ${evaluated.totalRows.toLocaleString("es-ES")} registros del dataset`} delay={0.3}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={500}>
               <AreaChart data={phishtankTimeline} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -188,9 +193,13 @@ function AnalysisPage() {
                 <Area type="monotone" dataKey="tcn" stroke="var(--chart-5)" fill="var(--chart-5)" fillOpacity={0.12} strokeWidth={2} name="TCN" />
               </AreaChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Eficacia de Detección (Total)" subtitle="Anomalías reales vs. detectadas por modelo" delay={0.4}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={420}>
               <BarChart data={phishtankBarData} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -200,10 +209,12 @@ function AnalysisPage() {
                 <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} label={{ position: "top", fontSize: 11, fill: "var(--color-muted-foreground)" }} />
               </BarChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Análisis de Matrices de Confusión" subtitle="VP=Verdadero Positivo · FP=Falso Positivo · FN=Falso Negativo · VN=Verdadero Negativo" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 py-4">
+            <div className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
               <ConfusionMatrixViz title="LSTM" matrix={models.lstm.confusionMatrix} colorClass="bg-primary/20 text-primary" />
               <ConfusionMatrixViz title="GRU" matrix={models.gru.confusionMatrix} colorClass="bg-secondary/20 text-secondary" />
               <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
@@ -213,7 +224,7 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Muestreo de Clasificación de Datos de Texto" subtitle={`${samples.length} registros representativos`} delay={0.6}>
-            <div className="overflow-x-auto max-h-[520px] overflow-y-auto">
+            <div className="responsive-table max-h-[520px] overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border bg-muted/20 text-muted-foreground">
@@ -259,6 +270,8 @@ function AnalysisPage() {
           </div>
 
           <ChartCard title="Predicción y Desviación de Consumo" subtitle={`Serie temporal completa — ${evaluated.totalRows.toLocaleString("es-ES")} registros agrupados en ${timeline.length} puntos`} delay={0.3}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={540}>
               <LineChart data={timeline} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -274,9 +287,13 @@ function AnalysisPage() {
                 <Line type="monotone" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} name="TCN" />
               </LineChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Distribución de Anomalías Detectadas" subtitle="Comparativa entre todos los modelos" delay={0.4}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={420}>
               <BarChart data={phishtankBarData} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -286,10 +303,12 @@ function AnalysisPage() {
                 <Bar dataKey="count" fill="var(--secondary)" radius={[6, 6, 0, 0]} label={{ position: "top", fontSize: 11, fill: "var(--color-muted-foreground)" }} />
               </BarChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Matrices de Validación" subtitle="VP · FP · FN · VN por cada arquitectura" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 py-4">
+            <div className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
               <ConfusionMatrixViz title="TCN (Mejor)" matrix={models.tcn.confusionMatrix} colorClass="bg-chart-5/20 text-chart-5" />
               <ConfusionMatrixViz title="Transformer" matrix={models.transformer.confusionMatrix} colorClass="bg-chart-4/20 text-chart-4" />
               <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
@@ -299,7 +318,7 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Registro de Mediciones Anómalas" subtitle={`${samples.length} registros con detalle de clasificación`} delay={0.6}>
-            <div className="overflow-x-auto max-h-[540px] overflow-y-auto">
+            <div className="responsive-table max-h-[540px] overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border bg-muted/20 text-muted-foreground">
@@ -343,6 +362,8 @@ function AnalysisPage() {
           </div>
 
           <ChartCard title="Timeline de Riesgo de Fraude" subtitle={`${evaluated.totalRows.toLocaleString("es-ES")} registros — variación del score de anomalía`} delay={0.3}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={460}>
               <LineChart data={timeline} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -355,9 +376,13 @@ function AnalysisPage() {
                 <Line type="stepAfter" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Score TCN" />
               </LineChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Volumen de Fraude Clasificado" subtitle="Comparativa de eficiencia arquitectónica" delay={0.4}>
+            <div className="chart-shell">
+            <div className="chart-min">
             <ResponsiveContainer width="100%" height={420}>
               <BarChart data={phishtankBarData} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -367,10 +392,12 @@ function AnalysisPage() {
                 <Bar dataKey="count" fill="var(--chart-3)" radius={[6, 6, 0, 0]} label={{ position: "top", fontSize: 11, fill: "var(--color-muted-foreground)" }} />
               </BarChart>
             </ResponsiveContainer>
+            </div>
+            </div>
           </ChartCard>
 
           <ChartCard title="Matrices de Confusión (Fraude Financiero)" delay={0.5}>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:gap-4">
               <ConfusionMatrixViz title="Transformer" matrix={models.transformer.confusionMatrix} colorClass="bg-chart-4/20 text-chart-4" />
               <ConfusionMatrixViz title="BRNN" matrix={models.brnn.confusionMatrix} colorClass="bg-chart-3/20 text-chart-3" />
               <ConfusionMatrixViz title="TCN" matrix={models.tcn.confusionMatrix} colorClass="bg-chart-5/20 text-chart-5" />
@@ -380,7 +407,7 @@ function AnalysisPage() {
           </ChartCard>
 
           <ChartCard title="Detección de Transacciones Fraudulentas" subtitle={`${samples.length} registros con clasificación completa`} delay={0.6}>
-            <div className="overflow-x-auto max-h-[540px] overflow-y-auto">
+            <div className="responsive-table max-h-[540px] overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border bg-muted/20 text-muted-foreground">

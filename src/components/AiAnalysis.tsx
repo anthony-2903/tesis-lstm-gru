@@ -86,9 +86,9 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
   return (
     <Card className="relative overflow-hidden border border-border bg-card shadow-sm">
       <CardHeader className="border-b border-border bg-muted/20">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <CardTitle className="text-lg flex items-center gap-2 font-bold tracking-tight">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-1">
+            <CardTitle className="flex items-center gap-2 text-base font-bold tracking-tight sm:text-lg">
               <div className="p-1.5 rounded-md bg-primary/10 text-primary">
                 <Brain className="h-4 w-4" />
               </div>
@@ -101,7 +101,7 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
           {!analysis && !isAnalyzing && (
             <Button 
               onClick={startAnalysis}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-9"
+              className="h-9 w-full bg-primary text-xs text-primary-foreground hover:bg-primary/90 sm:w-auto"
             >
               <Send className="mr-2 h-3.5 w-3.5" />
               Generar Análisis
@@ -110,7 +110,7 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="min-h-[100px] p-6 relative">
+      <CardContent className="relative min-h-[100px] p-4 sm:p-6">
         <AnimatePresence mode="wait">
           {isAnalyzing ? (
             <motion.div 
@@ -147,13 +147,13 @@ export function AiAnalysis({ type }: AiAnalysisProps) {
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mt-8 pt-6 border-t border-border flex items-center justify-between"
+                    className="mt-8 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                       <CheckCircle2 className="h-3 w-3 text-success" />
                       Documento generado electrónicamente
                     </div>
-                    <Button variant="outline" size="sm" onClick={startAnalysis} className="text-[10px] h-7 px-3">
+                    <Button variant="outline" size="sm" onClick={startAnalysis} className="h-7 w-full px-3 text-[10px] sm:w-auto">
                       Regenerar Reporte
                     </Button>
                   </motion.div>

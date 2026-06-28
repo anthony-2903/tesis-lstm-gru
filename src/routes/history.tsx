@@ -10,8 +10,8 @@ import { Download, Filter } from "lucide-react";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Historial de Anomalias - LSTM vs GRU vs BRNN" },
-      { name: "description", content: "Timeline de anomalias detectadas con filtros" },
+      { title: "Historial de Anomal?as - LSTM vs GRU vs BRNN" },
+      { name: "description", content: "Timeline de anomal?as detectadas con filtros" },
     ],
   }),
   component: HistoryPage,
@@ -36,7 +36,7 @@ function HistoryPage() {
 
   const exportCSV = () => {
     if (!filtered.length) return;
-    const headers = "Fecha,Dominio,Dato,Modelo,Confianza,Real,Prediccion\n";
+    const headers = "Fecha,Dominio,Dato,Modelo,Confianza,Real,Predicci?n\n";
     const rows = filtered
       .map((r) => `${r.date},${r.domain},"${r.data.replace(/"/g, '""')}",${r.model},${r.confidence},${r.realLabel},${r.predicted}`)
       .join("\n");
@@ -44,7 +44,7 @@ function HistoryPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `historial_anomalias_${data?.filename || "dataset"}.csv`;
+    a.download = `historial_anomal?as_${data?.filename || "dataset"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -53,12 +53,12 @@ function HistoryPage() {
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Historial de Anomalias</h1>
+          <h1 className="text-2xl font-bold text-foreground">Historial de Anomal?as</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Timeline de anomalias identificadas en <span className="font-semibold text-foreground">{data.filename}</span>
+            Timeline de anomal?as identificadas en <span className="font-semibold text-foreground">{data.filename}</span>
           </p>
         </div>
         <button onClick={exportCSV} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto">
@@ -67,8 +67,8 @@ function HistoryPage() {
         </button>
       </motion.div>
 
-      <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:gap-8">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:flex-wrap lg:gap-8">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dataset:</span>
           <div className="flex flex-wrap gap-1">
             {DOMAIN_OPTIONS.map((option) => (
@@ -78,7 +78,7 @@ function HistoryPage() {
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dominio:</span>
           <div className="flex flex-wrap gap-1">
@@ -89,7 +89,7 @@ function HistoryPage() {
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Modelo:</span>
           <div className="flex flex-wrap gap-1">
             {models.map((model) => (
@@ -113,13 +113,13 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.02, 0.4) }}
-              className="card-formal group flex gap-6 p-5"
+              className="card-formal group flex gap-4 p-4 sm:gap-6 sm:p-5"
             >
               <div className="flex flex-col items-center pt-1.5 font-sans">
                 <div className="h-2.5 w-2.5 rotate-45 rounded-sm bg-primary" />
                 {i < filtered.length - 1 && <div className="mt-3 w-px flex-1 bg-border transition-colors group-hover:bg-primary/20" />}
               </div>
-              <div className="grid flex-1 grid-cols-1 items-center gap-6 md:grid-cols-6">
+              <div className="grid min-w-0 flex-1 grid-cols-1 items-center gap-4 md:grid-cols-6 md:gap-6">
                 <div>
                   <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Registro / Fecha</p>
                   <p className="font-data text-xs font-medium text-foreground">{item.date}</p>
@@ -136,7 +136,7 @@ function HistoryPage() {
                   <p className="font-data text-[11px] text-foreground">{item.model} - <span className="font-bold text-primary">{item.confidence}%</span></p>
                 </div>
                 <div>
-                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Evaluacion</p>
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Evaluaci?n</p>
                   <p className="font-data text-[11px] font-bold">
                     <span className="text-foreground/70">{item.realLabel}</span>
                     <span className="font-normal text-muted-foreground"> {"->"} </span>

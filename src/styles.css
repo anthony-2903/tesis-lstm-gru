@@ -135,10 +135,15 @@
   * {
     border-color: var(--color-border);
   }
+  html {
+    overflow-x: hidden;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    min-width: 320px;
+    overflow-x: hidden;
   }
 }
 
@@ -154,5 +159,32 @@
   }
   .gradient-subtle {
     background: linear-gradient(180deg, var(--color-muted), var(--color-background));
+  }
+  .dashboard-page {
+    @apply mx-auto w-full max-w-[1600px] space-y-4 sm:space-y-5 lg:space-y-6;
+  }
+  .responsive-table {
+    @apply w-full overflow-x-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .responsive-table table {
+    @apply min-w-[680px];
+  }
+  .chart-shell {
+    @apply -mx-3 overflow-x-auto px-3 sm:mx-0 sm:px-0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chart-min {
+    min-width: 620px;
+  }
+  @media (max-width: 639px) {
+    .chart-min {
+      min-width: 520px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .chart-min {
+      min-width: 0;
+    }
   }
 }

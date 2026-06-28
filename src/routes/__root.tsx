@@ -1,7 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { BrainCircuit, Menu, X } from "lucide-react";
 import { useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -84,7 +84,7 @@ function RootComponent() {
         <header className="fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md md:hidden">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded bg-primary/10 text-primary">
-              <Menu className="h-4 w-4" />
+              <BrainCircuit className="h-4 w-4" />
             </div>
             <span className="text-xs font-bold tracking-tight text-foreground uppercase">LSTM <span className="text-primary">vs</span> GRU <span className="text-primary">vs</span> BRNN</span>
           </div>
@@ -112,7 +112,7 @@ function RootComponent() {
         />
         
         <main className={cn(
-          "flex-1 p-4 md:p-6 mt-14 md:mt-0 transition-all duration-300 overflow-x-hidden",
+          "min-w-0 flex-1 px-3 py-4 sm:px-4 md:p-6 mt-14 md:mt-0 transition-all duration-300 overflow-x-hidden",
           isCollapsed ? "md:ml-20" : "md:ml-64"
         )}>
           <Outlet />

@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { ChartCard } from "@/components/ChartCard";
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
+import { ConclusionPanel } from "@/components/ConclusionPanel";
+import { MetricGuide } from "@/components/MetricGuide";
 import { DomainId, fetchComparisonData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -31,7 +33,7 @@ export const Route = createFileRoute("/comparison")({
   head: () => ({
     meta: [
       { title: "Comparativa LSTM vs GRU vs BRNN vs Transformer vs TCN" },
-      { name: "description", content: "Analisis multidimensional de modelos avanzados" },
+      { name: "description", content: "Análisis multidimensional de modelos avanzados" },
     ],
   }),
   component: ComparisonPage,
@@ -63,7 +65,7 @@ function ComparisonPage() {
   const { filename, radarData, comparisonBarData, scatterData, comparisonTable } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <h1 className="text-2xl font-bold text-foreground">Comparativa Multimodelo</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -85,8 +87,12 @@ function ComparisonPage() {
         ))}
       </div>
 
+      <MetricGuide />
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ChartCard title="Perfil Multidimensional" subtitle="Metricas normalizadas (0-1)" delay={0.1}>
+        <ChartCard title="Perfil Multidimensional" subtitle="Métricas normalizadas (0-1)" delay={0.1}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
               <PolarGrid stroke="var(--color-border)" />
@@ -99,9 +105,13 @@ function ComparisonPage() {
               <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: "10px", paddingTop: "20px" }} />
             </RadarChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
 
         <ChartCard title="Eficiencia: Tiempo vs F1-Score" subtitle="Rendimiento consolidado" delay={0.2}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={320}>
             <ScatterChart>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -114,10 +124,14 @@ function ComparisonPage() {
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
       </div>
 
-      <ChartCard title="Metricas Comparativas de Clasificacion" delay={0.3}>
+      <ChartCard title="Métricas Comparativas de Clasificación" delay={0.3}>
+        <div className="chart-shell">
+        <div className="chart-min">
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={comparisonBarData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -129,14 +143,16 @@ function ComparisonPage() {
             ))}
           </BarChart>
         </ResponsiveContainer>
+        </div>
+        </div>
       </ChartCard>
 
-      <ChartCard title="Benchmarks de Arquitectura" subtitle="Desempeno final consolidado" delay={0.4}>
-        <div className="-mx-6 overflow-x-auto px-6">
+      <ChartCard title="Benchmarks de Arquitectura" subtitle="Desempeño final consolidado" delay={0.4}>
+        <div className="responsive-table -mx-4 px-4 sm:-mx-6 sm:px-6">
           <table className="w-full min-w-[720px] text-xs">
             <thead>
               <tr className="border-b border-border bg-muted/20">
-                {["Metrica", "LSTM", "GRU", "BRNN", "Transformer", "TCN", "Lider"].map((header) => (
+                {["Métrica", "LSTM", "GRU", "BRNN", "Transformer", "TCN", "Líder"].map((header) => (
                   <th key={header} className="px-4 py-3 text-center font-bold uppercase tracking-wider text-muted-foreground first:text-left">{header}</th>
                 ))}
               </tr>
@@ -159,6 +175,8 @@ function ComparisonPage() {
           </table>
         </div>
       </ChartCard>
+
+      <ConclusionPanel />
 
       <AiAnalysis type={selected.aiType} />
     </div>

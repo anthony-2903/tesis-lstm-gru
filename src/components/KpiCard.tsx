@@ -17,13 +17,13 @@ export function KpiCard({ title, value, subtitle, icon: Icon, variant = "default
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
-      className="card-formal p-5"
+      className="card-formal min-w-0 p-4 sm:p-5"
     >
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</p>
-          <div className="flex items-baseline gap-1 mt-1">
-            <p className="text-3xl font-bold font-data text-foreground">{value}</p>
+          <div className="mt-1 flex min-w-0 items-baseline gap-1">
+            <p className="break-words font-data text-2xl font-bold leading-tight text-foreground sm:text-3xl">{value}</p>
           </div>
           {subtitle && <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>}
         </div>

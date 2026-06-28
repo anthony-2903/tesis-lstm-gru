@@ -12,7 +12,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
 import { formatImportance, normalizeXaiReport } from "@/lib/xai";
 import { BackendState } from "@/components/BackendState";
@@ -24,7 +23,7 @@ export const Route = createFileRoute("/xai")({
   head: () => ({
     meta: [
       { title: "XAI - Interpretabilidad de Modelos" },
-      { name: "description", content: "Interpretacion XAI mediante permutacion y sensibilidad temporal" },
+      { name: "description", content: "Interpretaci?n XAI mediante permutaci?n y sensibilidad temporal" },
     ],
   }),
   component: XaiPage,
@@ -73,10 +72,10 @@ function XaiPage() {
   if (error || !report) return <BackendState error={error} onRetry={reload} />;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h1 className="text-2xl font-bold text-foreground">XAI con Permutacion y Sensibilidad Temporal</h1>
+          <h1 className="text-2xl font-bold text-foreground">XAI con Permutaci?n y Sensibilidad Temporal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Dataset interpretado: <span className="font-semibold text-foreground">{report.dataset}</span>
           </p>
@@ -113,6 +112,8 @@ function XaiPage() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <ChartCard title="Importancia Global de Variables" subtitle="Promedio de impacto XAI entre modelos" delay={0.2}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={470}>
             <BarChart data={featureData} layout="vertical" margin={{ top: 10, right: 28, left: 28, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
@@ -126,9 +127,13 @@ function XaiPage() {
               <Bar dataKey="importance" radius={[0, 4, 4, 0]} fill="var(--primary)" />
             </BarChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
 
-        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que mas alteran la prediccion del modelo" delay={0.3}>
+        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que m?s alteran la predicci?n del modelo" delay={0.3}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={470}>
             <BarChart data={temporalData} margin={{ top: 10, right: 28, left: 10, bottom: 35 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -141,10 +146,12 @@ function XaiPage() {
               <Bar dataKey="importance" fill="var(--secondary)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
       </div>
 
-      <ChartCard title="Comparacion XAI por Modelo" subtitle="Variable y paso temporal dominante en cada arquitectura" delay={0.4}>
+      <ChartCard title="Comparaci?n XAI por Modelo" subtitle="Variable y paso temporal dominante en cada arquitectura" delay={0.4}>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           {report.model_comparison.map((item) => (
             <div key={item.model_key} className="rounded-md border border-border bg-muted/20 p-4">

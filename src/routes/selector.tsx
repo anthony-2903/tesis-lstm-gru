@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChartCard } from "@/components/ChartCard";
+import { ConclusionPanel } from "@/components/ConclusionPanel";
 import { Brain, Cpu, Gauge, Scale } from "lucide-react";
 
 export const Route = createFileRoute("/selector")({
@@ -113,7 +113,7 @@ function SelectorPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <h1 className="text-2xl font-bold text-foreground">Método de Selección</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -128,7 +128,7 @@ function SelectorPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: oi * 0.1 }}
-            className="card-formal p-6"
+            className="card-formal p-4 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-4 border-b border-border pb-3">
               <opt.icon className="h-4 w-4 text-primary" />
@@ -158,7 +158,7 @@ function SelectorPage() {
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className={`px-10 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+          className={`w-full rounded-lg px-6 py-3 text-xs font-bold uppercase tracking-widest transition-all sm:w-auto sm:px-10 ${
             canSubmit
               ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/95 active:scale-95"
               : "bg-muted text-muted-foreground cursor-not-allowed border border-border"
@@ -173,15 +173,15 @@ function SelectorPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card-formal p-8 border-l-4 border-l-primary"
+          className="card-formal border-l-4 border-l-primary p-4 sm:p-8"
         >
-          <div className="flex items-start gap-4 mb-6">
+          <div className="mb-6 flex items-start gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
               <Brain className="h-6 w-6" />
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Modelo Recomendado</p>
-              <h2 className="text-3xl font-bold text-foreground">
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
                 Arquitectura <span className="text-primary">{result.model}</span>
               </h2>
             </div>
@@ -199,6 +199,8 @@ function SelectorPage() {
           </div>
         </motion.div>
       )}
+
+      <ConclusionPanel />
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { KpiCard } from "@/components/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { BackendState } from "@/components/BackendState";
+import { ExperimentProtocol } from "@/components/ExperimentProtocol";
+import { ResearchOverview } from "@/components/ResearchOverview";
 import { DomainId, fetchDashboardData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -26,7 +28,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard - Analisis de Dataset" },
-      { name: "description", content: "Visualizacion interactiva de resultados procesados por el backend local" },
+      { name: "description", content: "Visualización interactiva de resultados procesados por el backend local" },
     ],
   }),
   component: HomePage,
@@ -57,13 +59,16 @@ function HomePage() {
   const { dataset, typeDistribution, columnBarData, numericDistribution, numericColumn } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-        <h1 className="text-2xl font-bold text-foreground">Selecciona el dominio de analisis</h1>
+        <h1 className="text-2xl font-bold text-foreground">Selecciona el dominio de análisis</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Fuente activa: <span className="font-medium text-foreground">{selected.source}</span>
         </p>
       </motion.div>
+
+      <ResearchOverview />
+      <ExperimentProtocol />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         {DOMAIN_OPTIONS.map((domain, index) => {
@@ -100,7 +105,7 @@ function HomePage() {
       <div className="flex flex-wrap gap-2">
         <a href={`/analysis?domain=${selectedDomain}`} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90">
           <BarChart3 className="h-4 w-4" />
-          Ver graficas
+          Ver gráficas
           <ArrowRight className="h-4 w-4" />
         </a>
         <a href={`/xai?domain=${selectedDomain}`} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-xs font-bold text-foreground transition-colors hover:bg-muted">
@@ -125,6 +130,8 @@ function HomePage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard title="Tipos de Columna" delay={0.4}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie data={typeDistribution} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" stroke="none">
@@ -136,9 +143,13 @@ function HomePage() {
               <Legend iconSize={10} wrapperStyle={{ fontSize: "11px" }} />
             </PieChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
 
         <ChartCard title="Registros por Columna" delay={0.5}>
+          <div className="chart-shell">
+          <div className="chart-min">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={columnBarData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
@@ -152,11 +163,15 @@ function HomePage() {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         </ChartCard>
 
         {numericDistribution.length > 0 && (
           <div className="lg:col-span-2">
-            <ChartCard title={`Distribucion de valores${numericColumn ? `: ${numericColumn}` : ""}`} delay={0.6}>
+            <ChartCard title={`Distribución de valores${numericColumn ? `: ${numericColumn}` : ""}`} delay={0.6}>
+              <div className="chart-shell">
+              <div className="chart-min">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={numericDistribution}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
@@ -166,6 +181,8 @@ function HomePage() {
                   <Bar dataKey="cantidad" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              </div>
+              </div>
             </ChartCard>
           </div>
         )}

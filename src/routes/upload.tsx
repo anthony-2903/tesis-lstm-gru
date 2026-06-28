@@ -25,7 +25,7 @@ function DataStatusPage() {
   const { dataset } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <h1 className="text-2xl font-bold text-foreground">Datos Procesados</h1>
@@ -57,7 +57,7 @@ function DataStatusPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
           <h2 className="mb-4 text-lg font-bold text-foreground">Estructura de Columnas</h2>
           <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
             {dataset.columns.map((col) => (
@@ -71,7 +71,7 @@ function DataStatusPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
           <h2 className="mb-4 text-lg font-bold text-foreground">Flujo Actual</h2>
           <div className="space-y-4 text-sm text-muted-foreground">
             <p>

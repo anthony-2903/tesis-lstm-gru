@@ -14,9 +14,9 @@ export function ChartCard({ title, subtitle, children, delay = 0 }: ChartCardPro
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="card-formal p-6"
+      className="card-formal min-w-0 p-4 sm:p-6"
     >
-      <div className="mb-4">
+      <div className="mb-4 min-w-0">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
       </div>
