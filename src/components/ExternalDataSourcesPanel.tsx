@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AlertCircle, CheckCircle2, DatabaseZap, ExternalLink, KeyRound, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, DatabaseZap, ExternalLink, KeyRound, Loader2, Server, ShieldCheck } from "lucide-react";
 import type { DomainId, ExternalData, ExternalSourceResult } from "@/lib/api";
 import { fetchExternalData } from "@/lib/api";
 import { DOMAIN_OPTIONS } from "@/lib/domains";
@@ -99,6 +99,10 @@ function SourceCard({ result, index }: { result: ExternalSourceResult; index: nu
 export function ExternalDataSourcesPanel() {
   const [domain, setDomain] = useState<DomainId>("phishing");
   const { data, error, isLoading, reload } = useApiData<ExternalData>(() => fetchExternalData(domain), [domain]);
+  const totalRecords = data?.results.reduce((total, result) => total + result.count, 0) ?? 0;
+  const activeSources = data?.results.filter((result) => result.status === "ok" || result.status === "reference").length ?? 0;
+  const tokenSources = data?.results.filter((result) => result.status === "needs_key").length ?? 0;
+  const officialSources = data?.results.filter((result) => result.source.official).length ?? 0;
 
   return (
     <section className="card-formal p-4 sm:p-5">
@@ -150,11 +154,33 @@ export function ExternalDataSourcesPanel() {
       )}
 
       {data && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {data.results.map((result, index) => (
-            <SourceCard key={result.source.id} result={result} index={index} />
-          ))}
-        </div>
+        <>
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {[
+              { label: "Datos consumidos", value: totalRecords.toLocaleString("es-ES"), icon: DatabaseZap, tone: "text-primary" },
+              { label: "Fuentes activas", value: activeSources.toString(), icon: CheckCircle2, tone: "text-success" },
+              { label: "Fuentes oficiales", value: officialSources.toString(), icon: ShieldCheck, tone: "text-primary" },
+              { label: "Pendientes token", value: tokenSources.toString(), icon: Server, tone: tokenSources ? "text-warning" : "text-muted-foreground" },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="rounded-md border border-border bg-muted/20 p-3">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{item.label}</p>
+                    <Icon className={`h-4 w-4 ${item.tone}`} />
+                  </div>
+                  <p className="font-data text-2xl font-bold text-foreground">{item.value}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {data.results.map((result, index) => (
+              <SourceCard key={result.source.id} result={result} index={index} />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
