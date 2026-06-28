@@ -8,6 +8,8 @@ $paths = @(
   "/api/comparison",
   "/api/history",
   "/api/xai",
+  "/api/external-sources",
+  "/api/external-data?domain=phishing&limit=3",
   "/api/ai-analysis?type=general"
 )
 

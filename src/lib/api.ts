@@ -124,6 +124,31 @@ export interface HistoryData {
   items: HistoryItem[];
 }
 
+export interface ExternalSource {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  official: boolean;
+  requiresKey: boolean;
+  configured: boolean;
+  useCase: string;
+}
+
+export interface ExternalSourceResult {
+  source: ExternalSource;
+  status: "ok" | "error" | "needs_key" | "configured" | "reference";
+  count: number;
+  records: Record<string, unknown>[];
+  error?: string | null;
+}
+
+export interface ExternalData {
+  domain: DomainId;
+  updatedAt: string;
+  results: ExternalSourceResult[];
+}
+
 function withDomain(path: string, domain?: DomainId) {
   if (!domain) return path;
   const query = new URLSearchParams({ domain });
@@ -160,6 +185,11 @@ export function fetchHistoryData(domain?: DomainId) {
 
 export function fetchXaiData(domain?: DomainId) {
   return fetchJson<unknown>(withDomain("/xai", domain));
+}
+
+export function fetchExternalData(domain: DomainId, limit = 12) {
+  const query = new URLSearchParams({ domain, limit: String(limit) });
+  return fetchJson<ExternalData>(`/external-data?${query.toString()}`);
 }
 
 export async function fetchAiAnalysis(type: "general" | "phishtank" | "energia" | "finanzas") {

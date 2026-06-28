@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 
 
@@ -21,6 +22,10 @@ class SourceConfig:
     mef_datastore_url: str = "https://api.datosabiertos.mef.gob.pe/DatosAbiertos/v1/datastore_search"
     opsd_time_series_url: str = "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv"
     user_agent: str = "tesis-lstm-gru/0.1 local-research"
+    google_safe_browsing_api_key: str = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY", "")
+    eia_api_key: str = os.getenv("EIA_API_KEY", "")
+    entsoe_api_key: str = os.getenv("ENTSOE_API_KEY", "")
+    sec_user_agent: str = os.getenv("SEC_USER_AGENT", "tesis-lstm-gru academic-research contact@example.com")
 
 
 SOURCE_CONFIG = SourceConfig()

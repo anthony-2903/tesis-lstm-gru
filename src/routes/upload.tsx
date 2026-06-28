@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BackendState } from "@/components/BackendState";
+import { ExternalDataSourcesPanel } from "@/components/ExternalDataSourcesPanel";
 import { KpiCard } from "@/components/KpiCard";
 import { MethodologyFunnel } from "@/components/rosen/ResearchCharts";
 import { DashboardData, fetchDashboardData } from "@/lib/api";
@@ -69,6 +70,7 @@ function DataStatusPage() {
       </div>
       <MethodCards dataset={dataset} quality={quality} />
       <BackendOperationalPanel />
+      <ExternalDataSourcesPanel />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard title="Registros Originales" value={dataset.originalRows.toLocaleString("es-ES")} icon={Database} variant="cyan" />

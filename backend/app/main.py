@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import RESULTS_DIR, ensure_dirs
+from app.external_sources import fetch_external_data, get_source_catalog
 from app.pipeline import run_pipeline
 from app.utils import read_json
 
@@ -64,6 +65,8 @@ def api_index() -> dict[str, object]:
             "/api/xai",
             "/api/xai?domain=finanzas",
             "/api/domains",
+            "/api/external-sources",
+            "/api/external-data?domain=phishing",
             "/api/ai-analysis?type=general",
         ],
     }
@@ -103,6 +106,22 @@ def xai(domain: str | None = Query(None)) -> dict:
 @app.get("/api/domains")
 def domains() -> dict:
     return load_artifact("domains")
+
+
+@app.get("/api/external-sources")
+def external_sources(domain: str | None = Query(None)) -> dict:
+    try:
+        return get_source_catalog(domain)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/external-data")
+def external_data(domain: str = Query(...), limit: int = Query(25, ge=1, le=100)) -> dict:
+    try:
+        return fetch_external_data(domain, limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/api/ai-analysis")
