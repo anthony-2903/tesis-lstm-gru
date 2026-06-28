@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ConclusionPanel } from "@/components/ConclusionPanel";
+import { SelectorScenarioPanel } from "@/components/AcademicPanels";
 import { Brain, Cpu, Gauge, Scale } from "lucide-react";
 
 export const Route = createFileRoute("/selector")({
@@ -22,6 +23,8 @@ interface Recommendation {
   model: string;
   reasons: string[];
   score: number;
+  lstmScore: number;
+  gruScore: number;
 }
 
 function getRecommendation(seq: SeqType, res: Resources, pri: Priority): Recommendation {
@@ -60,7 +63,7 @@ function getRecommendation(seq: SeqType, res: Resources, pri: Priority): Recomme
     if (res === "bajo") reasons.push("GRU es ideal para entornos con recursos limitados");
   }
 
-  return { model, reasons, score };
+  return { model, reasons, score, lstmScore, gruScore };
 }
 
 function SelectorPage() {
@@ -154,6 +157,9 @@ function SelectorPage() {
         ))}
       </div>
 
+      <DecisionMatrix />
+      <SelectorScenarioPanel />
+
       <div className="flex justify-center py-4">
         <button
           onClick={handleSubmit}
@@ -188,6 +194,10 @@ function SelectorPage() {
           </div>
           <div className="space-y-4">
             <p className="text-[10px] font-bold text-foreground uppercase tracking-wider border-b border-border pb-2">Justificación Técnica Experimental:</p>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <ScoreBar label="LSTM" value={result.lstmScore} max={10} active={result.model === "LSTM"} />
+              <ScoreBar label="GRU" value={result.gruScore} max={10} active={result.model === "GRU"} />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {result.reasons.map((r, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 rounded-md bg-muted/30 border border-border/50">
@@ -201,6 +211,49 @@ function SelectorPage() {
       )}
 
       <ConclusionPanel />
+    </div>
+  );
+}
+
+function DecisionMatrix() {
+  const rows = [
+    ["Tipo textual", "LSTM", "Captura dependencias semánticas y patrones de URL."],
+    ["Serie temporal", "GRU", "Reduce costo sin perder estabilidad predictiva."],
+    ["Recursos bajos", "GRU", "Menor memoria y entrenamiento más rápido."],
+    ["Máxima precisión", "LSTM", "Favorece detección cuando el costo de error es alto."],
+  ];
+
+  return (
+    <section className="rounded-md border border-border bg-card p-4 shadow-sm sm:p-5">
+      <h2 className="text-sm font-bold text-foreground">Matriz de decisión</h2>
+      <p className="mt-1 text-xs text-muted-foreground">Criterios usados por el selector para justificar la recomendación técnica.</p>
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {rows.map(([criterion, model, reason]) => (
+          <div key={criterion} className="rounded-md border border-border bg-muted/20 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{criterion}</p>
+            <p className="mt-2 font-data text-sm font-bold text-primary">{model}</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{reason}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 rounded-md border border-border bg-background p-3 text-xs leading-5 text-muted-foreground">
+        Transformer, BRNN y TCN se mantienen en la comparación experimental general. Este selector se enfoca en LSTM vs GRU porque evalúa la decisión clásica entre memoria larga y eficiencia computacional.
+      </p>
+    </section>
+  );
+}
+
+function ScoreBar({ label, value, max, active }: { label: string; value: number; max: number; active: boolean }) {
+  const width = Math.min((value / max) * 100, 100);
+  return (
+    <div className={`rounded-md border p-3 ${active ? "border-primary bg-primary/5" : "border-border bg-muted/20"}`}>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="font-data text-xs font-bold text-foreground">{label}</span>
+        <span className="font-data text-xs font-bold text-primary">{value}/{max}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-primary/10">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${width}%` }} />
+      </div>
     </div>
   );
 }

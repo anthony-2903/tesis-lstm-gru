@@ -24,7 +24,7 @@ export const DOMAIN_OPTIONS: {
     title: "Energia",
     shortTitle: "Energia",
     source: "Open Power System Data",
-    description: "Series temporales de consumo/generaci?n y detecci?n de desviaciones.",
+    description: "Series temporales de consumo/generación y detección de desviaciones.",
     aiType: "energia",
     icon: Activity,
   },

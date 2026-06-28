@@ -5,6 +5,7 @@ import { ChartCard } from "@/components/ChartCard";
 import { BackendState } from "@/components/BackendState";
 import { ExperimentProtocol } from "@/components/ExperimentProtocol";
 import { ResearchOverview } from "@/components/ResearchOverview";
+import { DomainEvidenceTable, ResearchFramingPanel } from "@/components/AcademicPanels";
 import { DomainId, fetchDashboardData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -67,8 +68,10 @@ function HomePage() {
         </p>
       </motion.div>
 
+      <ResearchFramingPanel />
       <ResearchOverview />
       <ExperimentProtocol />
+      <DomainEvidenceTable activeDomain={selectedDomain} />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         {DOMAIN_OPTIONS.map((domain, index) => {

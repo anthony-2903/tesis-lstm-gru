@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { BackendState } from "@/components/BackendState";
+import { HistoryAuditSummary } from "@/components/AcademicPanels";
+import { AuditHeatmap } from "@/components/rosen/ResearchCharts";
 import { DomainId, fetchHistoryData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -10,8 +12,8 @@ import { Download, Filter } from "lucide-react";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Historial de Anomal?as - LSTM vs GRU vs BRNN" },
-      { name: "description", content: "Timeline de anomal?as detectadas con filtros" },
+      { title: "Historial de Anomalías - LSTM vs GRU vs BRNN" },
+      { name: "description", content: "Timeline de anomalías detectadas con filtros" },
     ],
   }),
   component: HistoryPage,
@@ -36,7 +38,7 @@ function HistoryPage() {
 
   const exportCSV = () => {
     if (!filtered.length) return;
-    const headers = "Fecha,Dominio,Dato,Modelo,Confianza,Real,Predicci?n\n";
+    const headers = "Fecha,Dominio,Dato,Modelo,Confianza,Real,Predicción\n";
     const rows = filtered
       .map((r) => `${r.date},${r.domain},"${r.data.replace(/"/g, '""')}",${r.model},${r.confidence},${r.realLabel},${r.predicted}`)
       .join("\n");
@@ -44,7 +46,7 @@ function HistoryPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `historial_anomal?as_${data?.filename || "dataset"}.csv`;
+    a.download = `historial_anomalias_${data?.filename || "dataset"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -56,9 +58,9 @@ function HistoryPage() {
     <div className="dashboard-page">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Historial de Anomal?as</h1>
+          <h1 className="text-2xl font-bold text-foreground">Historial de Anomalías</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Timeline de anomal?as identificadas en <span className="font-semibold text-foreground">{data.filename}</span>
+            Timeline de anomalías identificadas en <span className="font-semibold text-foreground">{data.filename}</span>
           </p>
         </div>
         <button onClick={exportCSV} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto">
@@ -66,6 +68,9 @@ function HistoryPage() {
           Exportar CSV
         </button>
       </motion.div>
+
+      <HistoryAuditSummary items={filtered} />
+      <AuditHeatmap items={filtered} />
 
       <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:flex-wrap lg:gap-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -136,7 +141,7 @@ function HistoryPage() {
                   <p className="font-data text-[11px] text-foreground">{item.model} - <span className="font-bold text-primary">{item.confidence}%</span></p>
                 </div>
                 <div>
-                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Evaluaci?n</p>
+                  <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Evaluación</p>
                   <p className="font-data text-[11px] font-bold">
                     <span className="text-foreground/70">{item.realLabel}</span>
                     <span className="font-normal text-muted-foreground"> {"->"} </span>

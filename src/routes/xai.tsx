@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
+import { XaiReadingPanel } from "@/components/AcademicPanels";
 import { formatImportance, normalizeXaiReport } from "@/lib/xai";
 import { BackendState } from "@/components/BackendState";
 import { DomainId, fetchXaiData } from "@/lib/api";
@@ -104,6 +105,8 @@ function XaiPage() {
       <p className="text-sm text-muted-foreground">
         Fuente activa: <span className="font-semibold text-foreground">{selected.source}</span>. {selected.description}
       </p>
+
+      <XaiReadingPanel topFeature={topFeature?.feature} topStep={topStep?.step} />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <KpiCard title="Variable Principal" value={topFeature?.feature || "N/D"} icon={Sparkles} variant="cyan" />

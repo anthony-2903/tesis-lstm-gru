@@ -6,6 +6,8 @@ import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
 import { ConclusionPanel } from "@/components/ConclusionPanel";
 import { MetricGuide } from "@/components/MetricGuide";
+import { ComparisonDecisionPanel, ModelStrengthsPanel, NoUniversalWinnerPanel, RadarGuidePanel } from "@/components/AcademicPanels";
+import { ModelBenchmarkChart } from "@/components/rosen/ResearchCharts";
 import { DomainId, fetchComparisonData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -88,6 +90,9 @@ function ComparisonPage() {
       </div>
 
       <MetricGuide />
+      <ComparisonDecisionPanel data={data} />
+      <ModelBenchmarkChart data={data} />
+      <RadarGuidePanel />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard title="Perfil Multidimensional" subtitle="Métricas normalizadas (0-1)" delay={0.1}>
@@ -177,6 +182,8 @@ function ComparisonPage() {
       </ChartCard>
 
       <ConclusionPanel />
+      <ModelStrengthsPanel />
+      <NoUniversalWinnerPanel />
 
       <AiAnalysis type={selected.aiType} />
     </div>

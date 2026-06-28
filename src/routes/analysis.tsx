@@ -11,6 +11,8 @@ import {
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
 import { MetricGuide } from "@/components/MetricGuide";
+import { AnalysisInterpretationPanel, ConfusionMatrixGuide, ModelRankingPanel } from "@/components/AcademicPanels";
+import { AnalysisPerformanceHeatmap, DetectionBalanceChart } from "@/components/rosen/ResearchCharts";
 import { DomainId, fetchAnalysisData } from "@/lib/api";
 import { getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
@@ -165,6 +167,13 @@ function AnalysisPage() {
       </div>
 
       <MetricGuide />
+      <AnalysisInterpretationPanel domain={tab} data={evaluated} />
+      <ModelRankingPanel domain={tab} data={evaluated} />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.8fr)]">
+        <AnalysisPerformanceHeatmap data={evaluated} />
+        <DetectionBalanceChart data={evaluated} />
+      </div>
+      <ConfusionMatrixGuide />
 
       {/* ── SECCIÓN: PHISHTANK (TEXTO) ── */}
       {tab === "phishing" && (

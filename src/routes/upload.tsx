@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { BackendState } from "@/components/BackendState";
 import { KpiCard } from "@/components/KpiCard";
+import { MethodologyFunnel } from "@/components/rosen/ResearchCharts";
 import { DashboardData, fetchDashboardData } from "@/lib/api";
 import { useApiData } from "@/hooks/useApiData";
 
@@ -61,6 +62,7 @@ function DataStatusPage() {
       </div>
 
       <PipelineFlow dataset={dataset} quality={quality} />
+      <MethodologyFunnel dataset={dataset} quality={quality} />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
         <DataStreamViz dataset={dataset} />
         <ProcessingMonitor dataset={dataset} quality={quality} removedRate={removedRate} />
@@ -97,18 +99,24 @@ function DataStatusPage() {
         </div>
 
         <div className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
-          <h2 className="mb-4 text-lg font-bold text-foreground">Flujo Actual</h2>
+          <h2 className="mb-4 text-lg font-bold text-foreground">Trazabilidad Experimental</h2>
           <div className="space-y-4 text-sm text-muted-foreground">
             <p>
-              El frontend ya no recibe archivos del usuario. Solo consulta los resultados que el backend local preparó previamente.
+              Los datos presentados corresponden a un artefacto procesado bajo el mismo protocolo experimental usado para comparar las arquitecturas de detección de anomalías.
             </p>
-            <p>
-              Endpoints esperados: <span className="font-data text-foreground">/api/dashboard</span>,{" "}
-              <span className="font-data text-foreground">/api/analysis</span>,{" "}
-              <span className="font-data text-foreground">/api/comparison</span>,{" "}
-              <span className="font-data text-foreground">/api/history</span> y{" "}
-              <span className="font-data text-foreground">/api/xai</span>.
-            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {[
+                ["Origen", "Dataset identificado y versionado para la evaluación."],
+                ["Preparación", "Limpieza, tipificación de columnas y control de registros no válidos."],
+                ["Consistencia", "Métricas calculadas sobre la misma base procesada."],
+                ["Evidencia", "Resultados disponibles para análisis, comparación, historial y XAI."],
+              ].map(([title, text]) => (
+                <div key={title} className="rounded-md border border-border bg-muted/20 p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-primary">{title}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

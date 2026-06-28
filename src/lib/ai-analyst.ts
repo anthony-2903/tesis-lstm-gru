@@ -6,8 +6,8 @@ export const generateAiAnalysis = async (type: "general" | "phishtank" | "energi
   } catch {
     return [
       "### Backend local pendiente",
-      "El frontend ya no genera an?lisis desde un dataset cargado en el navegador.",
-      "Cuando el backend exponga `/api/ai-analysis?type=...`, este bloque mostrar? la s?ntesis t?cnica generada con los resultados procesados.",
+      "El frontend ya no genera análisis desde un dataset cargado en el navegador.",
+      "Cuando el backend exponga `/api/ai-analysis?type=...`, este bloque mostrará la síntesis técnica generada con los resultados procesados.",
     ].join("\n");
   }
 };
