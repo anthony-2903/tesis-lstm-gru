@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
 import { formatImportance, normalizeXaiReport } from "@/lib/xai";
 import { BackendState } from "@/components/BackendState";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/xai")({
   head: () => ({
     meta: [
       { title: "XAI - Interpretabilidad de Modelos" },
-      { name: "description", content: "Interpretaci?n XAI mediante permutaci?n y sensibilidad temporal" },
+      { name: "description", content: "Interpretación XAI mediante permutación y sensibilidad temporal" },
     ],
   }),
   component: XaiPage,
@@ -75,7 +76,7 @@ function XaiPage() {
     <div className="dashboard-page">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h1 className="text-2xl font-bold text-foreground">XAI con Permutaci?n y Sensibilidad Temporal</h1>
+          <h1 className="text-2xl font-bold text-foreground">XAI con Permutación y Sensibilidad Temporal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Dataset interpretado: <span className="font-semibold text-foreground">{report.dataset}</span>
           </p>
@@ -112,46 +113,54 @@ function XaiPage() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <ChartCard title="Importancia Global de Variables" subtitle="Promedio de impacto XAI entre modelos" delay={0.2}>
-          <div className="chart-shell">
-          <div className="chart-min">
-          <ResponsiveContainer width="100%" height={470}>
-            <BarChart data={featureData} layout="vertical" margin={{ top: 10, right: 28, left: 28, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
-              <XAxis type="number" tick={{ fontSize: 10 }} />
-              <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 10 }} />
-              <Tooltip
-                formatter={(value) => [formatImportance(Number(value)), "Importancia"]}
-                labelFormatter={(_, payload) => payload?.[0]?.payload?.fullName || ""}
-                contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: 8, fontSize: 11 }}
-              />
-              <Bar dataKey="importance" radius={[0, 4, 4, 0]} fill="var(--primary)" />
-            </BarChart>
-          </ResponsiveContainer>
-          </div>
-          </div>
+          {featureData.length > 0 ? (
+            <div className="chart-shell">
+              <div className="chart-min">
+                <ResponsiveContainer width="100%" height={470}>
+                  <BarChart data={featureData} layout="vertical" margin={{ top: 10, right: 28, left: 28, bottom: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 10 }} />
+                    <Tooltip
+                      formatter={(value) => [formatImportance(Number(value)), "Importancia"]}
+                      labelFormatter={(_, payload) => payload?.[0]?.payload?.fullName || ""}
+                      contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: 8, fontSize: 11 }}
+                    />
+                    <Bar dataKey="importance" radius={[0, 4, 4, 0]} fill="var(--primary)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <EmptyXaiState message="Este dominio no genera importancia por variables; revisa la sensibilidad temporal del modelo." />
+          )}
         </ChartCard>
 
-        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que m?s alteran la predicci?n del modelo" delay={0.3}>
-          <div className="chart-shell">
-          <div className="chart-min">
-          <ResponsiveContainer width="100%" height={470}>
-            <BarChart data={temporalData} margin={{ top: 10, right: 28, left: 10, bottom: 35 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-              <XAxis dataKey="step" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={48} />
-              <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip
-                formatter={(value) => [formatImportance(Number(value)), "Importancia"]}
-                contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: 8, fontSize: 11 }}
-              />
-              <Bar dataKey="importance" fill="var(--secondary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-          </div>
-          </div>
+        <ChartCard title="Importancia Temporal" subtitle="Pasos previos que más alteran la predicción del modelo" delay={0.3}>
+          {temporalData.length > 0 ? (
+            <div className="chart-shell">
+              <div className="chart-min">
+                <ResponsiveContainer width="100%" height={470}>
+                  <BarChart data={temporalData} margin={{ top: 10, right: 28, left: 10, bottom: 35 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                    <XAxis dataKey="step" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={48} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip
+                      formatter={(value) => [formatImportance(Number(value)), "Importancia"]}
+                      contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: 8, fontSize: 11 }}
+                    />
+                    <Bar dataKey="importance" fill="var(--secondary)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <EmptyXaiState message="Este dominio no genera sensibilidad temporal; revisa la importancia global de variables." />
+          )}
         </ChartCard>
       </div>
 
-      <ChartCard title="Comparaci?n XAI por Modelo" subtitle="Variable y paso temporal dominante en cada arquitectura" delay={0.4}>
+      <ChartCard title="Comparación XAI por Modelo" subtitle="Variable y paso temporal dominante en cada arquitectura" delay={0.4}>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           {report.model_comparison.map((item) => (
             <div key={item.model_key} className="rounded-md border border-border bg-muted/20 p-4">
@@ -205,6 +214,14 @@ function XaiPage() {
           })}
         </div>
       </ChartCard>
+    </div>
+  );
+}
+
+function EmptyXaiState({ message }: { message: string }) {
+  return (
+    <div className="flex min-h-[260px] items-center justify-center rounded-md border border-dashed border-border bg-muted/10 p-6 text-center">
+      <p className="max-w-sm text-sm leading-6 text-muted-foreground">{message}</p>
     </div>
   );
 }

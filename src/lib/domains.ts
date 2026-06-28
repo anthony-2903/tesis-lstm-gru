@@ -21,8 +21,8 @@ export const DOMAIN_OPTIONS: {
   },
   {
     id: "energia",
-    title: "Energ?a",
-    shortTitle: "Energ?a",
+    title: "Energia",
+    shortTitle: "Energia",
     source: "Open Power System Data",
     description: "Series temporales de consumo/generaci?n y detecci?n de desviaciones.",
     aiType: "energia",
@@ -30,7 +30,7 @@ export const DOMAIN_OPTIONS: {
   },
   {
     id: "finanzas",
-    title: "Finanzas p?blicas",
+    title: "Finanzas publicas",
     shortTitle: "Finanzas",
     source: "MEF Datos Abiertos",
     description: "Indicadores de brechas y operadores Invierte.pe con limpieza tabular.",
