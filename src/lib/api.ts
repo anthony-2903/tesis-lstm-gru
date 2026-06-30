@@ -149,6 +149,30 @@ export interface ExternalData {
   results: ExternalSourceResult[];
 }
 
+export interface DataLakeDomainSummary {
+  domain: DomainId;
+  target: number;
+  updatedAt: string | null;
+  totalRecords: number;
+  sourceBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+}
+
+export interface DataLakeSummary {
+  updatedAt: string;
+  totalRecords: number;
+  domains: DataLakeDomainSummary[];
+}
+
+export interface DataLakeRecords {
+  domain: DomainId;
+  page: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  records: Record<string, unknown>[];
+}
+
 function withDomain(path: string, domain?: DomainId) {
   if (!domain) return path;
   const query = new URLSearchParams({ domain });
@@ -187,9 +211,27 @@ export function fetchXaiData(domain?: DomainId) {
   return fetchJson<unknown>(withDomain("/xai", domain));
 }
 
-export function fetchExternalData(domain: DomainId, limit = 12) {
+export function fetchExternalData(domain: DomainId, limit = 100) {
   const query = new URLSearchParams({ domain, limit: String(limit) });
   return fetchJson<ExternalData>(`/external-data?${query.toString()}`);
+}
+
+export function fetchDataLakeSummary() {
+  return fetchJson<DataLakeSummary>("/data-lake/summary");
+}
+
+export function fetchDataLakeRecords(domain: DomainId, page = 1, pageSize = 100) {
+  const query = new URLSearchParams({ domain, page: String(page), pageSize: String(pageSize) });
+  return fetchJson<DataLakeRecords>(`/data-lake/records?${query.toString()}`);
+}
+
+export async function ingestDataLake(domain: DomainId | "all" = "all", target = 5000) {
+  const query = new URLSearchParams({ domain, target: String(target) });
+  const response = await fetch(`${API_URL}/data-lake/ingest?${query.toString()}`, { method: "POST" });
+  if (!response.ok) {
+    throw new Error(`Backend respondio ${response.status} al actualizar data lake`);
+  }
+  return response.json() as Promise<DataLakeSummary>;
 }
 
 export async function fetchAiAnalysis(type: "general" | "phishtank" | "energia" | "finanzas") {

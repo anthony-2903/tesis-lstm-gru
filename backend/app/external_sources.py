@@ -148,9 +148,9 @@ def get_source_catalog(domain: str | None = None) -> dict[str, Any]:
     return {"updatedAt": _now(), "sources": SOURCE_CATALOG}
 
 
-def fetch_external_data(domain: str, limit: int = 25) -> dict[str, Any]:
+def fetch_external_data(domain: str, limit: int = 100) -> dict[str, Any]:
     normalized = _normalize_domain(domain)
-    safe_limit = max(1, min(limit, 100))
+    safe_limit = max(1, min(limit, 500))
     if normalized == "phishing":
         return _fetch_phishing(safe_limit)
     if normalized == "energia":

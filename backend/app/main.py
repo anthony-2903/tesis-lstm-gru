@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import RESULTS_DIR, ensure_dirs
+from app.data_lake import get_data_lake_records, get_data_lake_summary, ingest_data_lake
 from app.external_sources import fetch_external_data, get_source_catalog
 from app.pipeline import run_pipeline
 from app.utils import read_json
@@ -66,7 +67,9 @@ def api_index() -> dict[str, object]:
             "/api/xai?domain=finanzas",
             "/api/domains",
             "/api/external-sources",
-            "/api/external-data?domain=phishing",
+            "/api/external-data?domain=phishing&limit=100",
+            "/api/data-lake/summary",
+            "/api/data-lake/records?domain=phishing&page=1&pageSize=100",
             "/api/ai-analysis?type=general",
         ],
     }
@@ -117,9 +120,34 @@ def external_sources(domain: str | None = Query(None)) -> dict:
 
 
 @app.get("/api/external-data")
-def external_data(domain: str = Query(...), limit: int = Query(25, ge=1, le=100)) -> dict:
+def external_data(domain: str = Query(...), limit: int = Query(100, ge=1, le=500)) -> dict:
     try:
         return fetch_external_data(domain, limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/data-lake/ingest")
+def data_lake_ingest(domain: str = Query("all"), target: int = Query(5000, ge=100, le=20000)) -> dict:
+    try:
+        return ingest_data_lake(domain, target)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/data-lake/summary")
+def data_lake_summary() -> dict:
+    return get_data_lake_summary()
+
+
+@app.get("/api/data-lake/records")
+def data_lake_records(
+    domain: str = Query(...),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, alias="pageSize", ge=10, le=500),
+) -> dict:
+    try:
+        return get_data_lake_records(domain, page, page_size)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

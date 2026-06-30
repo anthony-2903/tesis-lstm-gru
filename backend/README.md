@@ -8,7 +8,10 @@ Este backend expone los endpoints que consume el frontend:
 - `GET /api/history`
 - `GET /api/xai`
 - `GET /api/external-sources`
-- `GET /api/external-data?domain=phishing`
+- `GET /api/external-data?domain=phishing&limit=100`
+- `POST /api/data-lake/ingest?domain=all&target=5000`
+- `GET /api/data-lake/summary`
+- `GET /api/data-lake/records?domain=phishing&page=1&pageSize=100`
 - `GET /api/ai-analysis?type=general`
 
 ## Instalacion
@@ -58,3 +61,19 @@ set EIA_API_KEY=tu_api_key
 set ENTSOE_API_KEY=tu_token
 set SEC_USER_AGENT="tu-proyecto tu-correo@example.com"
 ```
+
+## Data lake academico
+
+Para trabajar con miles de registros sin depender de consultas en vivo:
+
+```bash
+curl -X POST "http://localhost:8000/api/data-lake/ingest?domain=all&target=5000"
+curl "http://localhost:8000/api/data-lake/summary"
+curl "http://localhost:8000/api/data-lake/records?domain=phishing&page=1&pageSize=100"
+```
+
+Los lotes se guardan en:
+
+- `backend/storage/raw/external_<dominio>.json`
+- `backend/storage/silver/external_<dominio>.json`
+- `backend/storage/gold/external_<dominio>.json`

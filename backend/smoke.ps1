@@ -10,6 +10,8 @@ $paths = @(
   "/api/xai",
   "/api/external-sources",
   "/api/external-data?domain=phishing&limit=3",
+  "/api/data-lake/summary",
+  "/api/data-lake/records?domain=phishing&page=1&pageSize=10",
   "/api/ai-analysis?type=general"
 )
 

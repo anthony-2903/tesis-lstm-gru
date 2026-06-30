@@ -98,7 +98,7 @@ function SourceCard({ result, index }: { result: ExternalSourceResult; index: nu
 
 export function ExternalDataSourcesPanel() {
   const [domain, setDomain] = useState<DomainId>("phishing");
-  const { data, error, isLoading, reload } = useApiData<ExternalData>(() => fetchExternalData(domain), [domain]);
+  const { data, error, isLoading, reload } = useApiData<ExternalData>(() => fetchExternalData(domain, 100), [domain]);
   const totalRecords = data?.results.reduce((total, result) => total + result.count, 0) ?? 0;
   const activeSources = data?.results.filter((result) => result.status === "ok" || result.status === "reference").length ?? 0;
   const tokenSources = data?.results.filter((result) => result.status === "needs_key").length ?? 0;
