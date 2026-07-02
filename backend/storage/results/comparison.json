@@ -1,29 +1,29 @@
 {
-  "filename": "pipeline_sample_phishtank_mef_opsd",
+  "filename": "pipeline_remote_phishtank_mef_opsd",
   "radarData": [
     {
       "metric": "F1-Score",
-      "LSTM": 0.8,
-      "GRU": 1.0,
-      "BRNN": 0.8,
-      "Transformer": 0.8,
-      "TCN": 1.0
+      "LSTM": 0.9900990099009901,
+      "GRU": 0.9940085592011412,
+      "BRNN": 0.9931487296602912,
+      "Transformer": 0.9916929246634202,
+      "TCN": 0.9913585493695991
     },
     {
       "metric": "Precision",
-      "LSTM": 0.6666666666666666,
-      "GRU": 1.0,
-      "BRNN": 0.6666666666666666,
-      "Transformer": 0.6666666666666666,
-      "TCN": 1.0
+      "LSTM": 0.9803921568627451,
+      "GRU": 0.9925925925925926,
+      "BRNN": 0.9922989161437535,
+      "Transformer": 0.9942561746122918,
+      "TCN": 0.983141331834785
     },
     {
       "metric": "Recall",
       "LSTM": 1.0,
-      "GRU": 1.0,
-      "BRNN": 1.0,
-      "Transformer": 1.0,
-      "TCN": 1.0
+      "GRU": 0.9954285714285714,
+      "BRNN": 0.994,
+      "Transformer": 0.9891428571428571,
+      "TCN": 0.9997142857142857
     },
     {
       "metric": "Velocidad Inferencia",
@@ -45,91 +45,91 @@
   "comparisonBarData": [
     {
       "metric": "Precision",
-      "LSTM": 0.6666666666666666,
-      "GRU": 1.0,
-      "BRNN": 0.6666666666666666,
-      "Transformer": 0.6666666666666666,
-      "TCN": 1.0
+      "LSTM": 0.9803921568627451,
+      "GRU": 0.9925925925925926,
+      "BRNN": 0.9922989161437535,
+      "Transformer": 0.9942561746122918,
+      "TCN": 0.983141331834785
     },
     {
       "metric": "Recall",
       "LSTM": 1.0,
-      "GRU": 1.0,
-      "BRNN": 1.0,
-      "Transformer": 1.0,
-      "TCN": 1.0
+      "GRU": 0.9954285714285714,
+      "BRNN": 0.994,
+      "Transformer": 0.9891428571428571,
+      "TCN": 0.9997142857142857
     },
     {
       "metric": "F1",
-      "LSTM": 0.8,
-      "GRU": 1.0,
-      "BRNN": 0.8,
-      "Transformer": 0.8,
-      "TCN": 1.0
+      "LSTM": 0.9900990099009901,
+      "GRU": 0.9940085592011412,
+      "BRNN": 0.9931487296602912,
+      "Transformer": 0.9916929246634202,
+      "TCN": 0.9913585493695991
     }
   ],
   "scatterData": [
     {
       "model": "LSTM",
-      "time": 0.04172439999820199,
-      "accuracy": 0.8
+      "time": 0.03892700000005789,
+      "accuracy": 0.9900990099009901
     },
     {
       "model": "GRU",
-      "time": 0.34353460000420455,
-      "accuracy": 1.0
+      "time": 0.2853429000001597,
+      "accuracy": 0.9940085592011412
     },
     {
       "model": "BRNN",
-      "time": 0.1086683999892557,
-      "accuracy": 0.8
+      "time": 0.20696349999980157,
+      "accuracy": 0.9931487296602912
     },
     {
       "model": "Transformer",
-      "time": 0.16212320000340696,
-      "accuracy": 0.8
+      "time": 2.494943400000011,
+      "accuracy": 0.9916929246634202
     },
     {
       "model": "TCN",
-      "time": 0.21253230000729673,
-      "accuracy": 1.0
+      "time": 0.3317400999999336,
+      "accuracy": 0.9913585493695991
     }
   ],
   "comparisonTable": [
     {
       "metric": "Precision Global",
-      "lstm": 0.6666666666666666,
-      "gru": 1.0,
-      "brnn": 0.6666666666666666,
-      "transformer": 0.6666666666666666,
-      "tcn": 1.0,
-      "winner": "GRU"
+      "lstm": 0.9803921568627451,
+      "gru": 0.9925925925925926,
+      "brnn": 0.9922989161437535,
+      "transformer": 0.9942561746122918,
+      "tcn": 0.983141331834785,
+      "winner": "Transformer"
     },
     {
       "metric": "F1-Score Promedio",
-      "lstm": 0.8,
-      "gru": 1.0,
-      "brnn": 0.8,
-      "transformer": 0.8,
-      "tcn": 1.0,
+      "lstm": 0.9900990099009901,
+      "gru": 0.9940085592011412,
+      "brnn": 0.9931487296602912,
+      "transformer": 0.9916929246634202,
+      "tcn": 0.9913585493695991,
       "winner": "GRU"
     },
     {
       "metric": "Error RMSE",
-      "lstm": 1.2023931943513346,
-      "gru": 2.1493373314132027,
-      "brnn": 2.4007867169201482,
-      "transformer": 11.083901827687225,
-      "tcn": 2.982982536978296,
+      "lstm": 1224.0828880084189,
+      "gru": 1229.6489903489494,
+      "brnn": 1545.3576118105927,
+      "transformer": 1635.640326959926,
+      "tcn": 1484.9537690491481,
       "winner": "LSTM"
     },
     {
       "metric": "Tiempo Entrenamiento (s)",
-      "lstm": 0.04172439999820199,
-      "gru": 0.34353460000420455,
-      "brnn": 0.1086683999892557,
-      "transformer": 0.16212320000340696,
-      "tcn": 0.21253230000729673,
+      "lstm": 0.03892700000005789,
+      "gru": 0.2853429000001597,
+      "brnn": 0.20696349999980157,
+      "transformer": 2.494943400000011,
+      "tcn": 0.3317400999999336,
       "winner": "LSTM"
     },
     {

@@ -1,162 +1,162 @@
 {
-  "dataset": "pipeline_sample_phishtank_mef_opsd",
+  "dataset": "pipeline_remote_phishtank_mef_opsd",
   "method": "permutation_importance_and_temporal_sensitivity",
   "feature_count": 12,
   "sequence_length": 24,
   "global_feature_importance": [
     {
-      "feature": "host_length",
-      "importance": 1.0,
-      "feature_index": 1
-    },
-    {
-      "feature": "url_length",
-      "importance": 0.0,
-      "feature_index": 0
-    },
-    {
-      "feature": "path_length",
-      "importance": 0.0,
-      "feature_index": 2
-    },
-    {
       "feature": "dot_count",
-      "importance": 0.0,
+      "importance": 1.0,
       "feature_index": 3
     },
     {
-      "feature": "dash_count",
-      "importance": 0.0,
-      "feature_index": 4
+      "feature": "host_length",
+      "importance": 0.8125,
+      "feature_index": 1
     },
     {
-      "feature": "slash_count",
-      "importance": 0.0,
-      "feature_index": 5
-    },
-    {
-      "feature": "digit_count",
-      "importance": 0.0,
-      "feature_index": 6
-    },
-    {
-      "feature": "special_count",
-      "importance": 0.0,
-      "feature_index": 7
+      "feature": "path_length",
+      "importance": 0.7199,
+      "feature_index": 2
     },
     {
       "feature": "entropy",
-      "importance": 0.0,
+      "importance": 0.6344,
       "feature_index": 8
+    },
+    {
+      "feature": "dash_count",
+      "importance": 0.5952,
+      "feature_index": 4
+    },
+    {
+      "feature": "special_count",
+      "importance": 0.5372,
+      "feature_index": 7
+    },
+    {
+      "feature": "digit_count",
+      "importance": 0.4343,
+      "feature_index": 6
+    },
+    {
+      "feature": "url_length",
+      "importance": 0.4154,
+      "feature_index": 0
+    },
+    {
+      "feature": "slash_count",
+      "importance": 0.3713,
+      "feature_index": 5
+    },
+    {
+      "feature": "uses_https",
+      "importance": 0.0592,
+      "feature_index": 10
+    },
+    {
+      "feature": "query_length",
+      "importance": 0.0103,
+      "feature_index": 11
     },
     {
       "feature": "has_ip_host",
       "importance": 0.0,
       "feature_index": 9
-    },
-    {
-      "feature": "uses_https",
-      "importance": 0.0,
-      "feature_index": 10
-    },
-    {
-      "feature": "query_length",
-      "importance": 0.0,
-      "feature_index": 11
     }
   ],
   "global_temporal_importance": [
     {
-      "step": "t-24",
-      "importance": 1.0,
-      "step_index": 0
-    },
-    {
-      "step": "t-18",
-      "importance": 0.4031,
-      "step_index": 6
-    },
-    {
       "step": "t-1",
-      "importance": 0.3408,
+      "importance": 1.0,
       "step_index": 23
     },
     {
-      "step": "t-7",
-      "importance": 0.2934,
-      "step_index": 17
-    },
-    {
-      "step": "t-23",
-      "importance": 0.2511,
-      "step_index": 1
-    },
-    {
-      "step": "t-19",
-      "importance": 0.1816,
-      "step_index": 5
-    },
-    {
-      "step": "t-17",
-      "importance": 0.1567,
-      "step_index": 7
-    },
-    {
-      "step": "t-14",
-      "importance": 0.1145,
-      "step_index": 10
-    },
-    {
       "step": "t-2",
-      "importance": 0.1144,
+      "importance": 0.1276,
       "step_index": 22
     },
     {
+      "step": "t-23",
+      "importance": 0.1237,
+      "step_index": 1
+    },
+    {
+      "step": "t-24",
+      "importance": 0.0816,
+      "step_index": 0
+    },
+    {
+      "step": "t-3",
+      "importance": 0.0748,
+      "step_index": 21
+    },
+    {
+      "step": "t-6",
+      "importance": 0.0476,
+      "step_index": 18
+    },
+    {
+      "step": "t-12",
+      "importance": 0.0449,
+      "step_index": 12
+    },
+    {
+      "step": "t-11",
+      "importance": 0.0383,
+      "step_index": 13
+    },
+    {
+      "step": "t-13",
+      "importance": 0.0365,
+      "step_index": 11
+    },
+    {
+      "step": "t-15",
+      "importance": 0.0338,
+      "step_index": 9
+    },
+    {
+      "step": "t-7",
+      "importance": 0.0329,
+      "step_index": 17
+    },
+    {
       "step": "t-22",
-      "importance": 0.1062,
+      "importance": 0.0291,
       "step_index": 2
-    },
-    {
-      "step": "t-20",
-      "importance": 0.1058,
-      "step_index": 4
-    },
-    {
-      "step": "t-4",
-      "importance": 0.0842,
-      "step_index": 20
     }
   ],
   "model_comparison": [
     {
       "model_key": "lstm",
       "model": "LSTM",
-      "top_feature": "url_length",
-      "top_step": "t-24"
+      "top_feature": "dot_count",
+      "top_step": "t-1"
     },
     {
       "model_key": "gru",
       "model": "GRU",
-      "top_feature": "url_length",
-      "top_step": "t-24"
+      "top_feature": "dot_count",
+      "top_step": "t-1"
     },
     {
       "model_key": "brnn",
       "model": "BRNN",
-      "top_feature": "url_length",
-      "top_step": "t-24"
+      "top_feature": "dot_count",
+      "top_step": "t-1"
     },
     {
       "model_key": "transformer",
       "model": "Transformer",
-      "top_feature": "host_length",
+      "top_feature": "dash_count",
       "top_step": "t-1"
     },
     {
       "model_key": "tcn",
       "model": "TCN",
-      "top_feature": "url_length",
-      "top_step": "t-24"
+      "top_feature": "host_length",
+      "top_step": "t-1"
     }
   ],
   "models": {
@@ -165,9 +165,34 @@
       "model": "LSTM",
       "method": "permutation_importance",
       "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
-      "top_feature": "url_length",
-      "top_step": "t-24",
+      "top_feature": "dot_count",
+      "top_step": "t-1",
       "feature_importance": [
+        {
+          "feature": "dot_count",
+          "importance": 1.0,
+          "feature_index": 3
+        },
+        {
+          "feature": "path_length",
+          "importance": 0.2571,
+          "feature_index": 2
+        },
+        {
+          "feature": "special_count",
+          "importance": 0.0367,
+          "feature_index": 7
+        },
+        {
+          "feature": "digit_count",
+          "importance": 0.0041,
+          "feature_index": 6
+        },
+        {
+          "feature": "entropy",
+          "importance": 0.0041,
+          "feature_index": 8
+        },
         {
           "feature": "url_length",
           "importance": 0.0,
@@ -179,16 +204,6 @@
           "feature_index": 1
         },
         {
-          "feature": "path_length",
-          "importance": 0.0,
-          "feature_index": 2
-        },
-        {
-          "feature": "dot_count",
-          "importance": 0.0,
-          "feature_index": 3
-        },
-        {
           "feature": "dash_count",
           "importance": 0.0,
           "feature_index": 4
@@ -197,21 +212,6 @@
           "feature": "slash_count",
           "importance": 0.0,
           "feature_index": 5
-        },
-        {
-          "feature": "digit_count",
-          "importance": 0.0,
-          "feature_index": 6
-        },
-        {
-          "feature": "special_count",
-          "importance": 0.0,
-          "feature_index": 7
-        },
-        {
-          "feature": "entropy",
-          "importance": 0.0,
-          "feature_index": 8
         },
         {
           "feature": "has_ip_host",
@@ -231,64 +231,64 @@
       ],
       "temporal_importance": [
         {
-          "step": "t-24",
-          "importance": 1.0,
-          "step_index": 0
-        },
-        {
-          "step": "t-7",
-          "importance": 0.7477,
-          "step_index": 17
-        },
-        {
-          "step": "t-18",
-          "importance": 0.7331,
-          "step_index": 6
-        },
-        {
-          "step": "t-19",
-          "importance": 0.7163,
-          "step_index": 5
-        },
-        {
-          "step": "t-17",
-          "importance": 0.6268,
-          "step_index": 7
-        },
-        {
-          "step": "t-23",
-          "importance": 0.5752,
-          "step_index": 1
-        },
-        {
-          "step": "t-14",
-          "importance": 0.4429,
-          "step_index": 10
-        },
-        {
-          "step": "t-20",
-          "importance": 0.4232,
-          "step_index": 4
-        },
-        {
-          "step": "t-22",
-          "importance": 0.4045,
-          "step_index": 2
-        },
-        {
           "step": "t-1",
-          "importance": 0.2119,
+          "importance": 1.0,
           "step_index": 23
         },
         {
-          "step": "t-16",
-          "importance": 0.1866,
-          "step_index": 8
+          "step": "t-2",
+          "importance": 0.5556,
+          "step_index": 22
         },
         {
-          "step": "t-6",
-          "importance": 0.1019,
-          "step_index": 18
+          "step": "t-23",
+          "importance": 0.355,
+          "step_index": 1
+        },
+        {
+          "step": "t-24",
+          "importance": 0.2303,
+          "step_index": 0
+        },
+        {
+          "step": "t-3",
+          "importance": 0.1483,
+          "step_index": 21
+        },
+        {
+          "step": "t-14",
+          "importance": 0.1276,
+          "step_index": 10
+        },
+        {
+          "step": "t-13",
+          "importance": 0.1021,
+          "step_index": 11
+        },
+        {
+          "step": "t-22",
+          "importance": 0.099,
+          "step_index": 2
+        },
+        {
+          "step": "t-11",
+          "importance": 0.0974,
+          "step_index": 13
+        },
+        {
+          "step": "t-12",
+          "importance": 0.094,
+          "step_index": 12
+        },
+        {
+          "step": "t-15",
+          "importance": 0.0795,
+          "step_index": 9
+        },
+        {
+          "step": "t-10",
+          "importance": 0.0556,
+          "step_index": 14
         }
       ]
     },
@@ -297,53 +297,58 @@
       "model": "GRU",
       "method": "permutation_importance",
       "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
-      "top_feature": "url_length",
-      "top_step": "t-24",
+      "top_feature": "dot_count",
+      "top_step": "t-1",
       "feature_importance": [
         {
-          "feature": "url_length",
-          "importance": 0.0,
-          "feature_index": 0
-        },
-        {
-          "feature": "host_length",
-          "importance": 0.0,
-          "feature_index": 1
-        },
-        {
-          "feature": "path_length",
-          "importance": 0.0,
-          "feature_index": 2
-        },
-        {
           "feature": "dot_count",
-          "importance": 0.0,
+          "importance": 1.0,
           "feature_index": 3
         },
         {
-          "feature": "dash_count",
-          "importance": 0.0,
-          "feature_index": 4
-        },
-        {
-          "feature": "slash_count",
-          "importance": 0.0,
-          "feature_index": 5
-        },
-        {
-          "feature": "digit_count",
-          "importance": 0.0,
-          "feature_index": 6
-        },
-        {
-          "feature": "special_count",
-          "importance": 0.0,
-          "feature_index": 7
+          "feature": "host_length",
+          "importance": 0.8193,
+          "feature_index": 1
         },
         {
           "feature": "entropy",
-          "importance": 0.0,
+          "importance": 0.741,
           "feature_index": 8
+        },
+        {
+          "feature": "path_length",
+          "importance": 0.5723,
+          "feature_index": 2
+        },
+        {
+          "feature": "digit_count",
+          "importance": 0.4458,
+          "feature_index": 6
+        },
+        {
+          "feature": "dash_count",
+          "importance": 0.3916,
+          "feature_index": 4
+        },
+        {
+          "feature": "special_count",
+          "importance": 0.3133,
+          "feature_index": 7
+        },
+        {
+          "feature": "url_length",
+          "importance": 0.1928,
+          "feature_index": 0
+        },
+        {
+          "feature": "slash_count",
+          "importance": 0.1145,
+          "feature_index": 5
+        },
+        {
+          "feature": "query_length",
+          "importance": 0.012,
+          "feature_index": 11
         },
         {
           "feature": "has_ip_host",
@@ -354,73 +359,68 @@
           "feature": "uses_https",
           "importance": 0.0,
           "feature_index": 10
-        },
-        {
-          "feature": "query_length",
-          "importance": 0.0,
-          "feature_index": 11
         }
       ],
       "temporal_importance": [
         {
-          "step": "t-24",
-          "importance": 1.0,
-          "step_index": 0
-        },
-        {
-          "step": "t-23",
-          "importance": 0.2461,
-          "step_index": 1
-        },
-        {
           "step": "t-1",
-          "importance": 0.0756,
+          "importance": 1.0,
           "step_index": 23
         },
         {
+          "step": "t-2",
+          "importance": 0.0378,
+          "step_index": 22
+        },
+        {
+          "step": "t-23",
+          "importance": 0.0333,
+          "step_index": 1
+        },
+        {
+          "step": "t-24",
+          "importance": 0.0203,
+          "step_index": 0
+        },
+        {
           "step": "t-4",
-          "importance": 0.0495,
+          "importance": 0.02,
           "step_index": 20
         },
         {
-          "step": "t-7",
-          "importance": 0.0399,
-          "step_index": 17
-        },
-        {
-          "step": "t-11",
-          "importance": 0.0184,
-          "step_index": 13
-        },
-        {
-          "step": "t-18",
-          "importance": 0.0166,
-          "step_index": 6
-        },
-        {
-          "step": "t-14",
-          "importance": 0.012,
-          "step_index": 10
-        },
-        {
-          "step": "t-8",
-          "importance": 0.007,
-          "step_index": 16
-        },
-        {
-          "step": "t-19",
-          "importance": 0.004,
-          "step_index": 5
+          "step": "t-22",
+          "importance": 0.0179,
+          "step_index": 2
         },
         {
           "step": "t-12",
-          "importance": 0.0008,
+          "importance": 0.0165,
           "step_index": 12
         },
         {
-          "step": "t-22",
-          "importance": 0.0,
-          "step_index": 2
+          "step": "t-3",
+          "importance": 0.0156,
+          "step_index": 21
+        },
+        {
+          "step": "t-13",
+          "importance": 0.01,
+          "step_index": 11
+        },
+        {
+          "step": "t-6",
+          "importance": 0.009,
+          "step_index": 18
+        },
+        {
+          "step": "t-5",
+          "importance": 0.0071,
+          "step_index": 19
+        },
+        {
+          "step": "t-14",
+          "importance": 0.0056,
+          "step_index": 10
         }
       ]
     },
@@ -429,136 +429,268 @@
       "model": "BRNN",
       "method": "permutation_importance",
       "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
-      "top_feature": "url_length",
-      "top_step": "t-24",
+      "top_feature": "dot_count",
+      "top_step": "t-1",
       "feature_importance": [
         {
-          "feature": "url_length",
-          "importance": 0.0,
-          "feature_index": 0
+          "feature": "dot_count",
+          "importance": 1.0,
+          "feature_index": 3
+        },
+        {
+          "feature": "entropy",
+          "importance": 0.605,
+          "feature_index": 8
         },
         {
           "feature": "host_length",
-          "importance": 0.0,
+          "importance": 0.3908,
           "feature_index": 1
         },
         {
           "feature": "path_length",
-          "importance": 0.0,
+          "importance": 0.3739,
           "feature_index": 2
         },
         {
-          "feature": "dot_count",
-          "importance": 0.0,
-          "feature_index": 3
-        },
-        {
           "feature": "dash_count",
-          "importance": 0.0,
+          "importance": 0.3025,
           "feature_index": 4
         },
         {
-          "feature": "slash_count",
-          "importance": 0.0,
-          "feature_index": 5
-        },
-        {
           "feature": "digit_count",
-          "importance": 0.0,
+          "importance": 0.2437,
           "feature_index": 6
         },
         {
           "feature": "special_count",
-          "importance": 0.0,
+          "importance": 0.1849,
           "feature_index": 7
         },
         {
-          "feature": "entropy",
-          "importance": 0.0,
-          "feature_index": 8
+          "feature": "uses_https",
+          "importance": 0.1513,
+          "feature_index": 10
+        },
+        {
+          "feature": "url_length",
+          "importance": 0.1218,
+          "feature_index": 0
+        },
+        {
+          "feature": "slash_count",
+          "importance": 0.042,
+          "feature_index": 5
+        },
+        {
+          "feature": "query_length",
+          "importance": 0.0084,
+          "feature_index": 11
         },
         {
           "feature": "has_ip_host",
           "importance": 0.0,
           "feature_index": 9
-        },
-        {
-          "feature": "uses_https",
-          "importance": 0.0,
-          "feature_index": 10
-        },
-        {
-          "feature": "query_length",
-          "importance": 0.0,
-          "feature_index": 11
         }
       ],
       "temporal_importance": [
         {
-          "step": "t-24",
-          "importance": 1.0,
-          "step_index": 0
-        },
-        {
-          "step": "t-23",
-          "importance": 0.0876,
-          "step_index": 1
-        },
-        {
           "step": "t-1",
-          "importance": 0.0757,
+          "importance": 1.0,
           "step_index": 23
         },
         {
+          "step": "t-23",
+          "importance": 0.0318,
+          "step_index": 1
+        },
+        {
+          "step": "t-2",
+          "importance": 0.0234,
+          "step_index": 22
+        },
+        {
           "step": "t-4",
-          "importance": 0.0321,
+          "importance": 0.0233,
           "step_index": 20
         },
         {
-          "step": "t-7",
-          "importance": 0.0293,
-          "step_index": 17
+          "step": "t-24",
+          "importance": 0.0191,
+          "step_index": 0
         },
         {
-          "step": "t-11",
-          "importance": 0.0147,
-          "step_index": 13
+          "step": "t-22",
+          "importance": 0.0161,
+          "step_index": 2
         },
         {
-          "step": "t-18",
-          "importance": 0.0139,
-          "step_index": 6
+          "step": "t-12",
+          "importance": 0.0134,
+          "step_index": 12
         },
         {
-          "step": "t-8",
-          "importance": 0.0036,
-          "step_index": 16
+          "step": "t-3",
+          "importance": 0.0103,
+          "step_index": 21
         },
         {
-          "step": "t-21",
-          "importance": 0.0015,
-          "step_index": 3
+          "step": "t-13",
+          "importance": 0.0074,
+          "step_index": 11
         },
         {
-          "step": "t-19",
-          "importance": 0.0015,
-          "step_index": 5
-        },
-        {
-          "step": "t-16",
-          "importance": 0.0009,
-          "step_index": 8
+          "step": "t-6",
+          "importance": 0.0067,
+          "step_index": 18
         },
         {
           "step": "t-14",
-          "importance": 0.0005,
+          "importance": 0.0037,
           "step_index": 10
+        },
+        {
+          "step": "t-5",
+          "importance": 0.0037,
+          "step_index": 19
         }
       ]
     },
     "transformer": {
       "model_key": "transformer",
       "model": "Transformer",
+      "method": "permutation_importance",
+      "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
+      "top_feature": "dash_count",
+      "top_step": "t-1",
+      "feature_importance": [
+        {
+          "feature": "dash_count",
+          "importance": 1.0,
+          "feature_index": 4
+        },
+        {
+          "feature": "slash_count",
+          "importance": 0.9655,
+          "feature_index": 5
+        },
+        {
+          "feature": "host_length",
+          "importance": 0.9557,
+          "feature_index": 1
+        },
+        {
+          "feature": "dot_count",
+          "importance": 0.8966,
+          "feature_index": 3
+        },
+        {
+          "feature": "path_length",
+          "importance": 0.8768,
+          "feature_index": 2
+        },
+        {
+          "feature": "special_count",
+          "importance": 0.7833,
+          "feature_index": 7
+        },
+        {
+          "feature": "digit_count",
+          "importance": 0.4236,
+          "feature_index": 6
+        },
+        {
+          "feature": "url_length",
+          "importance": 0.4039,
+          "feature_index": 0
+        },
+        {
+          "feature": "entropy",
+          "importance": 0.197,
+          "feature_index": 8
+        },
+        {
+          "feature": "uses_https",
+          "importance": 0.0542,
+          "feature_index": 10
+        },
+        {
+          "feature": "query_length",
+          "importance": 0.0197,
+          "feature_index": 11
+        },
+        {
+          "feature": "has_ip_host",
+          "importance": 0.0,
+          "feature_index": 9
+        }
+      ],
+      "temporal_importance": [
+        {
+          "step": "t-1",
+          "importance": 1.0,
+          "step_index": 23
+        },
+        {
+          "step": "t-6",
+          "importance": 0.2028,
+          "step_index": 18
+        },
+        {
+          "step": "t-3",
+          "importance": 0.1718,
+          "step_index": 21
+        },
+        {
+          "step": "t-23",
+          "importance": 0.1594,
+          "step_index": 1
+        },
+        {
+          "step": "t-7",
+          "importance": 0.1407,
+          "step_index": 17
+        },
+        {
+          "step": "t-24",
+          "importance": 0.1206,
+          "step_index": 0
+        },
+        {
+          "step": "t-12",
+          "importance": 0.0986,
+          "step_index": 12
+        },
+        {
+          "step": "t-11",
+          "importance": 0.0907,
+          "step_index": 13
+        },
+        {
+          "step": "t-15",
+          "importance": 0.0859,
+          "step_index": 9
+        },
+        {
+          "step": "t-5",
+          "importance": 0.0715,
+          "step_index": 19
+        },
+        {
+          "step": "t-13",
+          "importance": 0.0565,
+          "step_index": 11
+        },
+        {
+          "step": "t-19",
+          "importance": 0.0354,
+          "step_index": 5
+        }
+      ]
+    },
+    "tcn": {
+      "model_key": "tcn",
+      "model": "TCN",
       "method": "permutation_importance",
       "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
       "top_feature": "host_length",
@@ -570,14 +702,44 @@
           "feature_index": 1
         },
         {
+          "feature": "entropy",
+          "importance": 0.925,
+          "feature_index": 8
+        },
+        {
           "feature": "url_length",
-          "importance": 0.0,
+          "importance": 0.9,
           "feature_index": 0
         },
         {
+          "feature": "special_count",
+          "importance": 0.775,
+          "feature_index": 7
+        },
+        {
           "feature": "path_length",
-          "importance": 0.0,
+          "importance": 0.725,
           "feature_index": 2
+        },
+        {
+          "feature": "dash_count",
+          "importance": 0.625,
+          "feature_index": 4
+        },
+        {
+          "feature": "digit_count",
+          "importance": 0.575,
+          "feature_index": 6
+        },
+        {
+          "feature": "slash_count",
+          "importance": 0.325,
+          "feature_index": 5
+        },
+        {
+          "feature": "uses_https",
+          "importance": 0.025,
+          "feature_index": 10
         },
         {
           "feature": "dot_count",
@@ -585,39 +747,9 @@
           "feature_index": 3
         },
         {
-          "feature": "dash_count",
-          "importance": 0.0,
-          "feature_index": 4
-        },
-        {
-          "feature": "slash_count",
-          "importance": 0.0,
-          "feature_index": 5
-        },
-        {
-          "feature": "digit_count",
-          "importance": 0.0,
-          "feature_index": 6
-        },
-        {
-          "feature": "special_count",
-          "importance": 0.0,
-          "feature_index": 7
-        },
-        {
-          "feature": "entropy",
-          "importance": 0.0,
-          "feature_index": 8
-        },
-        {
           "feature": "has_ip_host",
           "importance": 0.0,
           "feature_index": 9
-        },
-        {
-          "feature": "uses_https",
-          "importance": 0.0,
-          "feature_index": 10
         },
         {
           "feature": "query_length",
@@ -632,191 +764,59 @@
           "step_index": 23
         },
         {
-          "step": "t-18",
-          "importance": 0.8425,
-          "step_index": 6
-        },
-        {
-          "step": "t-2",
-          "importance": 0.3644,
-          "step_index": 22
-        },
-        {
-          "step": "t-7",
-          "importance": 0.3044,
-          "step_index": 17
-        },
-        {
-          "step": "t-12",
-          "importance": 0.2456,
-          "step_index": 12
-        },
-        {
-          "step": "t-4",
-          "importance": 0.166,
-          "step_index": 20
-        },
-        {
-          "step": "t-5",
-          "importance": 0.0762,
-          "step_index": 19
-        },
-        {
-          "step": "t-24",
-          "importance": 0.0,
-          "step_index": 0
-        },
-        {
           "step": "t-23",
-          "importance": 0.0,
+          "importance": 0.0388,
           "step_index": 1
         },
         {
-          "step": "t-22",
-          "importance": 0.0,
-          "step_index": 2
+          "step": "t-3",
+          "importance": 0.0282,
+          "step_index": 21
         },
         {
-          "step": "t-21",
-          "importance": 0.0,
-          "step_index": 3
+          "step": "t-24",
+          "importance": 0.0179,
+          "step_index": 0
         },
         {
           "step": "t-20",
-          "importance": 0.0,
+          "importance": 0.0082,
           "step_index": 4
-        }
-      ]
-    },
-    "tcn": {
-      "model_key": "tcn",
-      "model": "TCN",
-      "method": "permutation_importance",
-      "description": "Importancia calculada por permutacion sobre datos de validacion. Para series temporales, cada paso t-n mide sensibilidad del modelo al historial.",
-      "top_feature": "url_length",
-      "top_step": "t-24",
-      "feature_importance": [
-        {
-          "feature": "url_length",
-          "importance": 0.0,
-          "feature_index": 0
-        },
-        {
-          "feature": "host_length",
-          "importance": 0.0,
-          "feature_index": 1
-        },
-        {
-          "feature": "path_length",
-          "importance": 0.0,
-          "feature_index": 2
-        },
-        {
-          "feature": "dot_count",
-          "importance": 0.0,
-          "feature_index": 3
-        },
-        {
-          "feature": "dash_count",
-          "importance": 0.0,
-          "feature_index": 4
-        },
-        {
-          "feature": "slash_count",
-          "importance": 0.0,
-          "feature_index": 5
-        },
-        {
-          "feature": "digit_count",
-          "importance": 0.0,
-          "feature_index": 6
-        },
-        {
-          "feature": "special_count",
-          "importance": 0.0,
-          "feature_index": 7
-        },
-        {
-          "feature": "entropy",
-          "importance": 0.0,
-          "feature_index": 8
-        },
-        {
-          "feature": "has_ip_host",
-          "importance": 0.0,
-          "feature_index": 9
-        },
-        {
-          "feature": "uses_https",
-          "importance": 0.0,
-          "feature_index": 10
-        },
-        {
-          "feature": "query_length",
-          "importance": 0.0,
-          "feature_index": 11
-        }
-      ],
-      "temporal_importance": [
-        {
-          "step": "t-24",
-          "importance": 1.0,
-          "step_index": 0
-        },
-        {
-          "step": "t-23",
-          "importance": 0.0957,
-          "step_index": 1
-        },
-        {
-          "step": "t-4",
-          "importance": 0.0612,
-          "step_index": 20
-        },
-        {
-          "step": "t-7",
-          "importance": 0.0522,
-          "step_index": 17
-        },
-        {
-          "step": "t-21",
-          "importance": 0.0395,
-          "step_index": 3
-        },
-        {
-          "step": "t-22",
-          "importance": 0.0201,
-          "step_index": 2
-        },
-        {
-          "step": "t-11",
-          "importance": 0.0154,
-          "step_index": 13
-        },
-        {
-          "step": "t-18",
-          "importance": 0.0064,
-          "step_index": 6
-        },
-        {
-          "step": "t-19",
-          "importance": 0.0045,
-          "step_index": 5
         },
         {
           "step": "t-6",
-          "importance": 0.0041,
+          "importance": 0.0082,
           "step_index": 18
         },
         {
-          "step": "t-14",
-          "importance": 0.0025,
-          "step_index": 10
+          "step": "t-19",
+          "importance": 0.008,
+          "step_index": 5
         },
         {
-          "step": "t-9",
-          "importance": 0.0011,
-          "step_index": 15
+          "step": "t-13",
+          "importance": 0.0067,
+          "step_index": 11
+        },
+        {
+          "step": "t-22",
+          "importance": 0.0058,
+          "step_index": 2
+        },
+        {
+          "step": "t-5",
+          "importance": 0.0043,
+          "step_index": 19
+        },
+        {
+          "step": "t-4",
+          "importance": 0.0033,
+          "step_index": 20
+        },
+        {
+          "step": "t-10",
+          "importance": 0.0029,
+          "step_index": 14
         }
       ]
     }
