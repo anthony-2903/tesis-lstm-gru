@@ -21,6 +21,7 @@ from app.xai.explainer import explain_classifier, explain_regressor_temporal
 @dataclass
 class TrainResult:
     models: dict[str, dict[str, object]]
+    estimators: dict[str, object]
     samples: list[dict[str, object]]
     timeline: list[dict[str, object]]
     processed_records: list[dict[str, object]]
@@ -30,7 +31,8 @@ class TrainResult:
 
 
 def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
-    data = pd.concat([phish_frame, make_benign_urls()], ignore_index=True).drop_duplicates(subset=["url"])
+    benign_target = min(max(len(phish_frame) // 2, 500), 5000)
+    data = pd.concat([phish_frame, make_benign_urls(benign_target)], ignore_index=True).drop_duplicates(subset=["url"])
     x, y = build_url_features(data)
     stratify = y if y.nunique() > 1 and y.value_counts().min() > 1 else None
     x_train, x_test, y_train, y_test, meta_train, meta_test = train_test_split(
@@ -93,6 +95,7 @@ def train_url_models(phish_frame: pd.DataFrame) -> TrainResult:
 
     return TrainResult(
         models=models,
+        estimators=estimators,
         samples=samples[:30],
         timeline=timeline,
         processed_records=processed,
@@ -124,6 +127,7 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
     xai: dict[str, list[dict[str, object]]] = {}
     errors_by_tcn = None
     for key, estimator in estimators.items():
+        started = time.perf_counter()
         estimator.fit(x_train, y_train)
         pred = estimator.predict(x_test)
         preds[key] = pred
@@ -137,6 +141,7 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
         real = np.abs(y_test - np.mean(y_train)) > real_threshold
         class_metrics = classification_metrics(real.astype(int), anomaly_pred.astype(int))
         class_metrics["rmse"] = rmse
+        class_metrics["trainTime"] = float(time.perf_counter() - started)
         models[key] = class_metrics
         xai[key] = explain_regressor_temporal(estimator, x_test, y_test)
 
@@ -170,6 +175,7 @@ def train_timeseries_models(frame: pd.DataFrame) -> TrainResult:
         )
     return TrainResult(
         models=models,
+        estimators=estimators,
         samples=samples[:30],
         timeline=timeline,
         processed_records=samples,
@@ -270,6 +276,7 @@ def train_tabular_models(frame: pd.DataFrame, domain: str = "MEF") -> TrainResul
 
     return TrainResult(
         models=models,
+        estimators=estimators,
         samples=samples[:30],
         timeline=timeline,
         processed_records=processed,

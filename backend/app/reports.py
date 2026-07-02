@@ -16,8 +16,9 @@ MODEL_LABELS = {
 
 
 def build_dashboard(filename: str, frames: list[pd.DataFrame]) -> dict[str, object]:
-    combined = pd.concat([frame.head(200) for frame in frames], ignore_index=True, sort=False)
     original_rows = int(sum(len(frame) for frame in frames))
+    cleaned_rows = int(sum(len(frame.dropna(how="all")) for frame in frames))
+    combined = pd.concat([frame.head(1000) for frame in frames], ignore_index=True, sort=False)
     cleaned = combined.dropna(how="all")
     data_types = infer_data_types(cleaned)
     type_counts: dict[str, int] = {}
@@ -25,7 +26,7 @@ def build_dashboard(filename: str, frames: list[pd.DataFrame]) -> dict[str, obje
         type_counts[value] = type_counts.get(value, 0) + 1
     type_distribution = [{"name": key, "value": value} for key, value in type_counts.items()]
     column_bar_data = [
-        {"col": col[:14] + "..." if len(col) > 14 else col, "tipo": data_types[col], "registros": len(cleaned)}
+        {"col": col[:14] + "..." if len(col) > 14 else col, "tipo": data_types[col], "registros": cleaned_rows}
         for col in list(cleaned.columns)[:12]
     ]
     numeric_cols = [col for col in cleaned.columns if pd.api.types.is_numeric_dtype(cleaned[col])]
@@ -40,8 +41,8 @@ def build_dashboard(filename: str, frames: list[pd.DataFrame]) -> dict[str, obje
         "dataset": {
             "filename": filename,
             "originalRows": original_rows,
-            "cleanedRows": int(len(cleaned)),
-            "rowsRemoved": int(max(original_rows - len(cleaned), 0)),
+            "cleanedRows": cleaned_rows,
+            "rowsRemoved": int(max(original_rows - cleaned_rows, 0)),
             "columns": list(cleaned.columns),
             "dataTypes": data_types,
         },

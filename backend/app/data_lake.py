@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import csv
 from collections import Counter
 from datetime import datetime, timezone
 from math import ceil
+from io import StringIO
 from typing import Any
 
 from app.config import GOLD_DIR, RAW_DIR, SILVER_DIR
+from app.config import SOURCE_CONFIG
 from app.external_sources import _fetch_json, _fetch_sec_json, _fetch_text, _normalize_domain
 from app.utils import read_json, write_json
 
@@ -153,11 +156,42 @@ def _empty_gold(domain: str) -> dict[str, Any]:
 
 def _ingest_phishing(target: int) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
-    kev_quota = max(100, min(target // 3, 1200))
+    seen_ids: set[str] = set()
+    phishtank_quota = max(target // 2, min(target, 5000))
+    kev_quota = max(100, min(target // 4, 1500))
 
     try:
-        kev = _fetch_json("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
+        text = _fetch_text(SOURCE_CONFIG.phishtank_csv_url)
+        for row in csv.DictReader(StringIO(text)):
+            url = row.get("url")
+            phish_id = row.get("phish_id") or url
+            if not url or str(phish_id) in seen_ids:
+                continue
+            seen_ids.add(str(phish_id))
+            records.append(
+                _record(
+                    domain="phishing",
+                    source_id="phishtank",
+                    source_name="PhishTank Online Valid CSV",
+                    category="phishing_url",
+                    record_id=phish_id,
+                    label=url,
+                    date=row.get("submission_time") or row.get("verification_time"),
+                    raw=row,
+                )
+            )
+            if len(records) >= phishtank_quota:
+                break
+    except Exception:
+        pass
+
+    try:
+        kev = _fetch_json(SOURCE_CONFIG.cisa_kev_json_url)
         for item in kev.get("vulnerabilities", [])[:kev_quota]:
+            record_id = item.get("cveID")
+            if record_id and f"cisa_kev:{record_id}" in seen_ids:
+                continue
+            seen_ids.add(f"cisa_kev:{record_id}")
             records.append(
                 _record(
                     domain="phishing",
@@ -174,10 +208,13 @@ def _ingest_phishing(target: int) -> list[dict[str, Any]]:
         pass
 
     try:
-        text = _fetch_text("https://urlhaus.abuse.ch/downloads/text_recent/")
+        text = _fetch_text(SOURCE_CONFIG.urlhaus_text_recent_url)
         urls = [line for line in text.splitlines() if line and not line.startswith("#")]
         remaining = max(0, target - len(records))
         for index, url in enumerate(urls[:remaining], start=1):
+            if url in seen_ids:
+                continue
+            seen_ids.add(url)
             records.append(
                 _record(
                     domain="phishing",

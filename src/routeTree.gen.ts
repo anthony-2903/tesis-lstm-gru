@@ -13,6 +13,7 @@ import { Route as XaiRouteImport } from './routes/xai'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as SelectorRouteImport } from './routes/selector'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +38,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExperimentsRoute = ExperimentsRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComparisonRoute = ComparisonRouteImport.update({
   id: '/comparison',
   path: '/comparison',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/experiments': typeof ExperimentsRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/experiments': typeof ExperimentsRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/experiments': typeof ExperimentsRoute
   '/history': typeof HistoryRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/experiments'
     | '/history'
     | '/selector'
     | '/upload'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/experiments'
     | '/history'
     | '/selector'
     | '/upload'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/experiments'
     | '/history'
     | '/selector'
     | '/upload'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalysisRoute: typeof AnalysisRoute
   ComparisonRoute: typeof ComparisonRoute
+  ExperimentsRoute: typeof ExperimentsRoute
   HistoryRoute: typeof HistoryRoute
   SelectorRoute: typeof SelectorRoute
   UploadRoute: typeof UploadRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/experiments': {
+      id: '/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof ExperimentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/comparison': {
       id: '/comparison'
       path: '/comparison'
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalysisRoute: AnalysisRoute,
   ComparisonRoute: ComparisonRoute,
+  ExperimentsRoute: ExperimentsRoute,
   HistoryRoute: HistoryRoute,
   SelectorRoute: SelectorRoute,
   UploadRoute: UploadRoute,

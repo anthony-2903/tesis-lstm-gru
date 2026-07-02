@@ -12,11 +12,15 @@ SILVER_DIR = STORAGE_DIR / "silver"
 GOLD_DIR = STORAGE_DIR / "gold"
 RESULTS_DIR = STORAGE_DIR / "results"
 MODELS_DIR = STORAGE_DIR / "models"
+EXPERIMENTS_DIR = STORAGE_DIR / "experiments"
 
 
 @dataclass(frozen=True)
 class SourceConfig:
     phishtank_csv_url: str = "http://data.phishtank.com/data/online-valid.csv"
+    urlhaus_text_recent_url: str = "https://urlhaus.abuse.ch/downloads/text_recent/"
+    urlhaus_csv_recent_url: str = "https://urlhaus.abuse.ch/downloads/csv_recent/"
+    cisa_kev_json_url: str = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     mef_operadores_resource_id: str = "08daf6b7-0f81-421b-ad8d-f3ae2d777c5e"
     mef_brechas_resource_id: str = "4d32fbdb-b1a3-461a-8276-2386c09d8179"
     mef_datastore_url: str = "https://api.datosabiertos.mef.gob.pe/DatosAbiertos/v1/datastore_search"
@@ -32,5 +36,5 @@ SOURCE_CONFIG = SourceConfig()
 
 
 def ensure_dirs() -> None:
-    for directory in [RAW_DIR, SILVER_DIR, GOLD_DIR, RESULTS_DIR, MODELS_DIR]:
+    for directory in [RAW_DIR, SILVER_DIR, GOLD_DIR, RESULTS_DIR, MODELS_DIR, EXPERIMENTS_DIR]:
         directory.mkdir(parents=True, exist_ok=True)

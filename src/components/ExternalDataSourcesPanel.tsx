@@ -98,7 +98,7 @@ function SourceCard({ result, index }: { result: ExternalSourceResult; index: nu
 
 export function ExternalDataSourcesPanel() {
   const [domain, setDomain] = useState<DomainId>("phishing");
-  const { data, error, isLoading, reload } = useApiData<ExternalData>(() => fetchExternalData(domain, 100), [domain]);
+  const { data, error, isLoading, reload } = useApiData<ExternalData>(() => fetchExternalData(domain, 5000), [domain]);
   const totalRecords = data?.results.reduce((total, result) => total + result.count, 0) ?? 0;
   const activeSources = data?.results.filter((result) => result.status === "ok" || result.status === "reference").length ?? 0;
   const tokenSources = data?.results.filter((result) => result.status === "needs_key").length ?? 0;
@@ -113,7 +113,7 @@ export function ExternalDataSourcesPanel() {
           </div>
           <h2 className="text-sm font-bold text-foreground">Fuentes externas oficiales</h2>
           <p className="mt-1 max-w-3xl text-xs leading-5 text-muted-foreground">
-            APIs conectadas para ampliar la data experimental sin perder trazabilidad metodologica.
+            Consulta en vivo con limite de 5.000 registros por fuente; el data lake local conserva los lotes persistidos.
           </p>
         </div>
 

@@ -5,7 +5,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import RESULTS_DIR, ensure_dirs
+from app.config import EXPERIMENTS_DIR, RESULTS_DIR, ensure_dirs
 from app.data_lake import get_data_lake_records, get_data_lake_summary, ingest_data_lake
 from app.external_sources import fetch_external_data, get_source_catalog
 from app.pipeline import run_pipeline
@@ -70,15 +70,18 @@ def api_index() -> dict[str, object]:
             "/api/external-data?domain=phishing&limit=100",
             "/api/data-lake/summary",
             "/api/data-lake/records?domain=phishing&page=1&pageSize=100",
+            "/api/training-manifest",
+            "/api/metrics-summary",
+            "/api/experiments",
             "/api/ai-analysis?type=general",
         ],
     }
 
 
 @app.post("/api/pipeline/run")
-def run_pipeline_endpoint(mode: Literal["sample", "remote"] = "sample") -> dict[str, str]:
-    run_pipeline(mode=mode)
-    return {"status": "completed", "mode": mode}
+def run_pipeline_endpoint(mode: Literal["sample", "remote"] = "sample", limit: int = Query(10000, ge=100, le=50000)) -> dict[str, str | int]:
+    run_pipeline(mode=mode, limit=limit)
+    return {"status": "completed", "mode": mode, "limit": limit}
 
 
 @app.get("/api/dashboard")
@@ -120,7 +123,7 @@ def external_sources(domain: str | None = Query(None)) -> dict:
 
 
 @app.get("/api/external-data")
-def external_data(domain: str = Query(...), limit: int = Query(100, ge=1, le=500)) -> dict:
+def external_data(domain: str = Query(...), limit: int = Query(100, ge=1, le=20000)) -> dict:
     try:
         return fetch_external_data(domain, limit)
     except ValueError as exc:
@@ -150,6 +153,42 @@ def data_lake_records(
         return get_data_lake_records(domain, page, page_size)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/training-manifest")
+def training_manifest() -> dict:
+    return load_artifact("training_manifest")
+
+
+@app.get("/api/metrics-summary")
+def metrics_summary() -> dict:
+    return load_artifact("metrics_summary")
+
+
+@app.get("/api/experiments")
+def experiments() -> dict:
+    ensure_dirs()
+    items = []
+    for directory in sorted(EXPERIMENTS_DIR.iterdir(), key=lambda path: path.stat().st_mtime, reverse=True):
+        if not directory.is_dir():
+            continue
+        manifest_path = directory / "manifest.json"
+        if manifest_path.exists():
+            manifest = read_json(manifest_path)
+            metrics_path = directory / "metrics_summary.json"
+            metrics = read_json(metrics_path) if metrics_path.exists() else manifest.get("metricsSummary", {})
+            items.append(
+                {
+                    "runId": manifest.get("runId", directory.name),
+                    "mode": manifest.get("mode"),
+                    "limit": manifest.get("limit"),
+                    "createdAt": manifest.get("createdAt"),
+                    "domainTotals": manifest.get("domainTotals", {}),
+                    "metricsSummary": metrics,
+                    "path": str(directory),
+                }
+            )
+    return {"items": items}
 
 
 @app.get("/api/ai-analysis")

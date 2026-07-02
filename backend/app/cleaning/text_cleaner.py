@@ -17,7 +17,7 @@ def clean_phishtank(frame: pd.DataFrame) -> pd.DataFrame:
     return data.reset_index(drop=True)
 
 
-def make_benign_urls() -> pd.DataFrame:
+def make_benign_urls(target: int = 500) -> pd.DataFrame:
     domains = [
         "https://www.gob.pe",
         "https://www.mef.gob.pe",
@@ -29,8 +29,36 @@ def make_benign_urls() -> pd.DataFrame:
         "https://www.python.org",
         "https://pandas.pydata.org",
         "https://scikit-learn.org",
+        "https://www.cisa.gov",
+        "https://www.eia.gov",
+        "https://www.sec.gov",
+        "https://www.consumerfinance.gov",
+        "https://data.worldbank.org",
+        "https://transparency.entsoe.eu",
+        "https://www.entsoe.eu",
+        "https://openei.org",
+        "https://www.fdic.gov",
+        "https://www.fincen.gov",
     ]
-    return pd.DataFrame({"url": domains, "label": 0, "target": "benign"})
+    paths = [
+        "",
+        "/",
+        "/about",
+        "/data",
+        "/api",
+        "/docs",
+        "/research",
+        "/downloads",
+        "/contact",
+        "/reports",
+    ]
+    urls = []
+    for domain in domains:
+        for path in paths:
+            urls.append(f"{domain.rstrip('/')}{path}")
+            if len(urls) >= target:
+                return pd.DataFrame({"url": urls, "label": 0, "target": "benign"})
+    return pd.DataFrame({"url": urls, "label": 0, "target": "benign"})
 
 
 def build_url_features(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:

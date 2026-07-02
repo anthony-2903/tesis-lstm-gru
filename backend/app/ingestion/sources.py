@@ -12,10 +12,24 @@ from app.ingestion.samples import sample_mef_brechas, sample_mef_operadores, sam
 def fetch_phishtank(mode: str = "sample", limit: int = 5000) -> pd.DataFrame:
     if mode == "sample":
         return sample_phishtank()
-    response = requests.get(SOURCE_CONFIG.phishtank_csv_url, headers={"User-Agent": SOURCE_CONFIG.user_agent}, timeout=60)
-    response.raise_for_status()
-    frame = pd.read_csv(StringIO(response.text))
-    frame = frame.head(limit)
+    frames = []
+    try:
+        response = requests.get(SOURCE_CONFIG.phishtank_csv_url, headers={"User-Agent": SOURCE_CONFIG.user_agent}, timeout=60)
+        response.raise_for_status()
+        frames.append(pd.read_csv(StringIO(response.text)))
+    except Exception:
+        frames.append(sample_phishtank())
+
+    try:
+        response = requests.get(SOURCE_CONFIG.urlhaus_text_recent_url, headers={"User-Agent": SOURCE_CONFIG.user_agent}, timeout=60)
+        response.raise_for_status()
+        urls = [line.strip() for line in response.text.splitlines() if line.strip() and not line.startswith("#")]
+        frames.append(pd.DataFrame({"url": urls, "source": "urlhaus"}))
+    except Exception:
+        pass
+
+    frame = pd.concat(frames, ignore_index=True, sort=False)
+    frame = frame[frame["url"].notna()].drop_duplicates(subset=["url"]).head(limit)
     frame["label"] = 1
     return frame
 

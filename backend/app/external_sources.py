@@ -15,6 +15,16 @@ TIMEOUT_SECONDS = 8
 SOURCE_CATALOG: dict[str, list[dict[str, Any]]] = {
     "phishing": [
         {
+            "id": "phishtank",
+            "name": "PhishTank Online Valid CSV",
+            "provider": "OpenDNS / PhishTank",
+            "url": "http://data.phishtank.com/data/online-valid.csv",
+            "official": False,
+            "requiresKey": False,
+            "configured": True,
+            "useCase": "Recolectar URLs activas reportadas como phishing para entrenamiento local.",
+        },
+        {
             "id": "google_safe_browsing",
             "name": "Google Safe Browsing API",
             "provider": "Google",
@@ -23,6 +33,16 @@ SOURCE_CATALOG: dict[str, list[dict[str, Any]]] = {
             "requiresKey": True,
             "configured": bool(SOURCE_CONFIG.google_safe_browsing_api_key),
             "useCase": "Validar URLs contra listas de phishing, malware y sitios inseguros.",
+        },
+        {
+            "id": "cert_nz_phishing_disruption",
+            "name": "CERT NZ Phishing Disruption Service",
+            "provider": "CERT NZ / New Zealand Government",
+            "url": "https://portal.api.business.govt.nz/api/phishing-disruption-service",
+            "official": True,
+            "requiresKey": True,
+            "configured": False,
+            "useCase": "Reportar y coordinar disrupcion de phishing; requiere credenciales del portal.",
         },
         {
             "id": "cisa_kev",
@@ -150,7 +170,7 @@ def get_source_catalog(domain: str | None = None) -> dict[str, Any]:
 
 def fetch_external_data(domain: str, limit: int = 100) -> dict[str, Any]:
     normalized = _normalize_domain(domain)
-    safe_limit = max(1, min(limit, 500))
+    safe_limit = max(1, min(limit, 20000))
     if normalized == "phishing":
         return _fetch_phishing(safe_limit)
     if normalized == "energia":
@@ -207,7 +227,7 @@ def _fetch_phishing(limit: int) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
 
     try:
-        kev = _fetch_json("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
+        kev = _fetch_json(SOURCE_CONFIG.cisa_kev_json_url)
         vulnerabilities = kev.get("vulnerabilities", [])[:limit]
         results.append(
             _source_result(
@@ -230,7 +250,21 @@ def _fetch_phishing(limit: int) -> dict[str, Any]:
         results.append(_source_result("cisa_kev", "error", [], str(exc)))
 
     try:
-        text = _fetch_text("https://urlhaus.abuse.ch/downloads/text_recent/")
+        text = _fetch_text(SOURCE_CONFIG.phishtank_csv_url)
+        records = []
+        for line in text.splitlines()[1:]:
+            parts = line.split(",", 2)
+            if len(parts) < 2:
+                continue
+            records.append({"id": parts[0].strip('"'), "url": parts[1].strip('"'), "category": "phishing_url"})
+            if len(records) >= limit:
+                break
+        results.append(_source_result("phishtank", "ok", records))
+    except Exception as exc:
+        results.append(_source_result("phishtank", "error", [], str(exc)))
+
+    try:
+        text = _fetch_text(SOURCE_CONFIG.urlhaus_text_recent_url)
         urls = [line for line in text.splitlines() if line and not line.startswith("#")][:limit]
         results.append(
             _source_result(
@@ -241,6 +275,15 @@ def _fetch_phishing(limit: int) -> dict[str, Any]:
         )
     except Exception as exc:
         results.append(_source_result("urlhaus", "error", [], str(exc)))
+
+    results.append(
+        _source_result(
+            "cert_nz_phishing_disruption",
+            "needs_key",
+            [],
+            "Requiere credenciales del portal API de Business.govt.nz.",
+        )
+    )
 
     return {"domain": "phishing", "updatedAt": _now(), "results": results}
 

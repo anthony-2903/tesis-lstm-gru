@@ -4,6 +4,7 @@ import argparse
 
 import pandas as pd
 
+from app.artifacts import build_metrics_summary, make_run_id, persist_models, snapshot_experiment
 from app.cleaning.tabular_cleaner import clean_tabular
 from app.cleaning.text_cleaner import clean_phishtank
 from app.cleaning.timeseries_cleaner import clean_opsd
@@ -11,16 +12,17 @@ from app.config import GOLD_DIR, RAW_DIR, RESULTS_DIR, SILVER_DIR, ensure_dirs
 from app.ingestion.sources import fetch_mef_brechas, fetch_mef_operadores, fetch_opsd, fetch_phishtank
 from app.reports import build_ai_analysis, build_analysis, build_comparison, build_dashboard, build_history
 from app.training.trainers import train_tabular_models, train_timeseries_models, train_url_models
-from app.utils import write_json
+from app.utils import read_json, write_json
 from app.xai.explainer import build_xai_report
 
 
-def run_pipeline(mode: str = "sample") -> dict[str, object]:
+def run_pipeline(mode: str = "sample", limit: int = 10000) -> dict[str, object]:
     ensure_dirs()
-    phishtank_raw = fetch_phishtank(mode=mode)
-    operadores_raw = fetch_mef_operadores(mode=mode)
-    brechas_raw = fetch_mef_brechas(mode=mode)
-    opsd_raw = fetch_opsd(mode=mode)
+    run_id = make_run_id(mode, limit)
+    phishtank_raw = fetch_phishtank(mode=mode, limit=limit)
+    operadores_raw = fetch_mef_operadores(mode=mode, limit=limit)
+    brechas_raw = fetch_mef_brechas(mode=mode, limit=limit)
+    opsd_raw = fetch_opsd(mode=mode, limit=limit)
 
     phishtank_raw.to_csv(RAW_DIR / "phishtank.csv", index=False)
     operadores_raw.to_csv(RAW_DIR / "mef_operadores.csv", index=False)
@@ -31,6 +33,9 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
     operadores = clean_tabular(operadores_raw)
     brechas = clean_tabular(brechas_raw)
     opsd = clean_opsd(opsd_raw)
+    finanzas = _load_data_lake_frame("finanzas")
+    if finanzas.empty:
+        finanzas = pd.concat([operadores, brechas], ignore_index=True, sort=False)
 
     phishtank.to_csv(SILVER_DIR / "phishtank.csv", index=False)
     operadores.to_csv(SILVER_DIR / "mef_operadores.csv", index=False)
@@ -39,7 +44,7 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
 
     url_result = train_url_models(phishtank)
     ts_result = train_timeseries_models(opsd)
-    finance_result = train_tabular_models(pd.concat([operadores, brechas], ignore_index=True, sort=False), domain="MEF")
+    finance_result = train_tabular_models(finanzas, domain="Finanzas")
 
     filename = f"pipeline_{mode}_phishtank_mef_opsd"
     merged_models = {}
@@ -85,8 +90,8 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
             "xai": build_xai_report(f"{filename}_energia", {}, ts_result.xai),
         },
         "finanzas": {
-            "label": "MEF - Finanzas publicas e indicadores",
-            "frames": [operadores, brechas],
+            "label": "Finanzas - Fraude y registros atipicos",
+            "frames": [finanzas],
             "result": finance_result,
             "xai": build_xai_report(f"{filename}_finanzas", finance_result.xai, {}),
         },
@@ -133,15 +138,50 @@ def run_pipeline(mode: str = "sample") -> dict[str, object]:
 
     for name, payload in artifacts.items():
         write_json(RESULTS_DIR / f"{name}.json", payload)
+    metrics_summary = build_metrics_summary(artifacts)
+    model_records = persist_models(
+        {
+            "phishing": url_result.estimators,
+            "energia": ts_result.estimators,
+            "finanzas": finance_result.estimators,
+        },
+        run_id,
+    )
+    manifest = snapshot_experiment(
+        run_id=run_id,
+        mode=mode,
+        limit=limit,
+        model_records=model_records,
+        artifact_names=list(artifacts),
+        domain_totals={
+            "phishing": url_result.total_rows,
+            "energia": ts_result.total_rows,
+            "finanzas": finance_result.total_rows,
+        },
+        metrics_summary=metrics_summary,
+    )
+    artifacts["training_manifest"] = manifest
     return artifacts
+
+
+def _load_data_lake_frame(domain: str) -> pd.DataFrame:
+    path = SILVER_DIR / f"external_{domain}.json"
+    if not path.exists():
+        return pd.DataFrame()
+    payload = read_json(path)
+    records = payload.get("records", [])
+    if not records:
+        return pd.DataFrame()
+    return pd.DataFrame(records)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["sample", "remote"], default="sample")
+    parser.add_argument("--limit", type=int, default=10000)
     args = parser.parse_args()
-    run_pipeline(mode=args.mode)
-    print(f"Pipeline completado en modo {args.mode}. Resultados en {RESULTS_DIR}")
+    run_pipeline(mode=args.mode, limit=args.limit)
+    print(f"Pipeline completado en modo {args.mode} con limite {args.limit}. Resultados en {RESULTS_DIR}")
 
 
 if __name__ == "__main__":

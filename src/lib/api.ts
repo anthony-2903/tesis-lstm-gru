@@ -173,6 +173,51 @@ export interface DataLakeRecords {
   records: Record<string, unknown>[];
 }
 
+export interface BestModelSummary {
+  model: string;
+  score: number;
+  f1: number;
+  precision: number;
+  recall: number;
+  rmse: number;
+  trainTime: number;
+}
+
+export interface DomainMetricsSummary {
+  domain: DomainId;
+  totalRows: number;
+  realAnomaliesCount: number;
+  bestModel: BestModelSummary;
+  models: Record<string, BestModelSummary & { detectedCount: number }>;
+}
+
+export interface MetricsSummary {
+  createdAt: string;
+  domains: DomainMetricsSummary[];
+  overallBest: (BestModelSummary & { domain: DomainId }) | null;
+}
+
+export interface TrainingManifest {
+  runId: string;
+  mode: string;
+  limit: number;
+  createdAt: string;
+  domainTotals: Record<DomainId, number>;
+  metricsSummary: MetricsSummary;
+  models: { domain: DomainId; model: string; latestPath: string; experimentPath: string }[];
+  paths: Record<string, string>;
+}
+
+export interface ExperimentListItem {
+  runId: string;
+  mode: string;
+  limit: number;
+  createdAt: string;
+  domainTotals: Record<DomainId, number>;
+  metricsSummary: MetricsSummary;
+  path: string;
+}
+
 function withDomain(path: string, domain?: DomainId) {
   if (!domain) return path;
   const query = new URLSearchParams({ domain });
@@ -211,7 +256,7 @@ export function fetchXaiData(domain?: DomainId) {
   return fetchJson<unknown>(withDomain("/xai", domain));
 }
 
-export function fetchExternalData(domain: DomainId, limit = 100) {
+export function fetchExternalData(domain: DomainId, limit = 5000) {
   const query = new URLSearchParams({ domain, limit: String(limit) });
   return fetchJson<ExternalData>(`/external-data?${query.toString()}`);
 }
@@ -232,6 +277,18 @@ export async function ingestDataLake(domain: DomainId | "all" = "all", target = 
     throw new Error(`Backend respondio ${response.status} al actualizar data lake`);
   }
   return response.json() as Promise<DataLakeSummary>;
+}
+
+export function fetchMetricsSummary() {
+  return fetchJson<MetricsSummary>("/metrics-summary");
+}
+
+export function fetchTrainingManifest() {
+  return fetchJson<TrainingManifest>("/training-manifest");
+}
+
+export function fetchExperiments() {
+  return fetchJson<{ items: ExperimentListItem[] }>("/experiments");
 }
 
 export async function fetchAiAnalysis(type: "general" | "phishtank" | "energia" | "finanzas") {

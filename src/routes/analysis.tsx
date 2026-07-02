@@ -6,7 +6,7 @@ import { KpiCard } from "@/components/KpiCard";
 import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, Download } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area, Legend
+  LineChart, Line, Legend
 } from "recharts";
 import { AiAnalysis } from "@/components/AiAnalysis";
 import { BackendState } from "@/components/BackendState";
@@ -69,6 +69,50 @@ function ConfusionMatrixViz({
   );
 }
 
+function PredictionDeviationChart({
+  title,
+  subtitle,
+  data,
+  delay = 0.3,
+}: {
+  title: string;
+  subtitle: string;
+  data: {
+    date: string;
+    actual: number;
+    lstm: number;
+    gru: number;
+    brnn: number;
+    transformer: number;
+    tcn: number;
+  }[];
+  delay?: number;
+}) {
+  return (
+    <ChartCard title={title} subtitle={subtitle} delay={delay}>
+      <div className="chart-shell">
+      <div className="chart-min">
+      <ResponsiveContainer width="100%" height={540}>
+        <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+          <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--color-muted-foreground)" }} interval={Math.ceil(data.length / 12)} angle={-30} textAnchor="end" height={55} />
+          <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} width={60} />
+          <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", fontSize: "11px" }} />
+          <Legend iconType="circle" verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
+          <Line type="monotone" dataKey="brnn" stroke="var(--chart-3)" strokeWidth={1.5} dot={false} name="BRNN" />
+          <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={1.5} dot={false} name="GRU" />
+          <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={1.5} dot={false} name="LSTM" />
+          <Line type="monotone" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} name="TCN" />
+          <Line type="monotone" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={1.5} dot={false} name="Transformer" />
+          <Line type="monotone" dataKey="actual" stroke="var(--foreground)" strokeWidth={2} dot={false} name="Valor Real" />
+        </LineChart>
+      </ResponsiveContainer>
+      </div>
+      </div>
+    </ChartCard>
+  );
+}
+
 function AnalysisPage() {
   const [tab, setTab] = useState<DomainId>(getInitialDomain);
   const selected = getDomainOption(tab);
@@ -88,17 +132,6 @@ function AnalysisPage() {
     { name: "Detectado Transf.", count: models.transformer.detectedCount },
     { name: "Detectado TCN", count: models.tcn.detectedCount },
   ];
-
-  // 2. Mapeo del timeline para PhishTank (ocurrencias binarias)
-  const phishtankTimeline = timeline.map((t) => ({
-    date: t.date,
-    anomalies: t.anomalies,
-    lstm: t.lstm > t.actual ? 1 : 0,
-    gru: t.gru > t.actual ? 1 : 0,
-    brnn: t.brnn > t.actual ? 1 : 0,
-    transformer: t.transformer > t.actual ? 1 : 0,
-    tcn: t.tcn > t.actual ? 1 : 0,
-  }));
 
   const handleExport = () => {
     if (!evaluated) return;
@@ -184,27 +217,11 @@ function AnalysisPage() {
             <KpiCard title="Recall Phishing" value={`${(models.transformer.recall * 100).toFixed(1)}%`} icon={TrendingUp} variant="default" delay={0.2} />
           </div>
 
-          {/* Timeline ocupa ancho completo */}
-          <ChartCard title="Frecuencia Temporal de Ataques" subtitle={`Detecciones sobre los ${evaluated.totalRows.toLocaleString("es-ES")} registros del dataset`} delay={0.3}>
-            <div className="chart-shell">
-            <div className="chart-min">
-            <ResponsiveContainer width="100%" height={500}>
-              <AreaChart data={phishtankTimeline} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-                <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--color-muted-foreground)" }} interval={Math.ceil(phishtankTimeline.length / 12)} angle={-30} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} width={50} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", fontSize: "11px" }} />
-                <Legend verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
-                <Area type="monotone" dataKey="lstm" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.12} strokeWidth={2} name="LSTM" />
-                <Area type="monotone" dataKey="gru" stroke="var(--chart-2)" fill="var(--chart-2)" fillOpacity={0.12} strokeWidth={2} name="GRU" />
-                <Area type="monotone" dataKey="brnn" stroke="var(--chart-3)" fill="var(--chart-3)" fillOpacity={0.12} strokeWidth={2} name="BRNN" />
-                <Area type="monotone" dataKey="transformer" stroke="var(--chart-4)" fill="var(--chart-4)" fillOpacity={0.12} strokeWidth={2} name="Transformer" />
-                <Area type="monotone" dataKey="tcn" stroke="var(--chart-5)" fill="var(--chart-5)" fillOpacity={0.12} strokeWidth={2} name="TCN" />
-              </AreaChart>
-            </ResponsiveContainer>
-            </div>
-            </div>
-          </ChartCard>
+          <PredictionDeviationChart
+            title="Prediccion y Desviacion de URLs Phishing"
+            subtitle={`Senal lexical completa - ${evaluated.totalRows.toLocaleString("es-ES")} registros agrupados en ${timeline.length} puntos`}
+            data={timeline}
+          />
 
           <ChartCard title="Eficacia de Detección (Total)" subtitle="Anomalías reales vs. detectadas por modelo" delay={0.4}>
             <div className="chart-shell">
@@ -278,27 +295,11 @@ function AnalysisPage() {
             <KpiCard title="Detecciones Reales" value={`${models.tcn.confusionMatrix.tp} / ${realAnomaliesCount}`} icon={Activity} variant="default" delay={0.2} />
           </div>
 
-          <ChartCard title="Predicción y Desviación de Consumo" subtitle={`Serie temporal completa — ${evaluated.totalRows.toLocaleString("es-ES")} registros agrupados en ${timeline.length} puntos`} delay={0.3}>
-            <div className="chart-shell">
-            <div className="chart-min">
-            <ResponsiveContainer width="100%" height={540}>
-              <LineChart data={timeline} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-                <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--color-muted-foreground)" }} interval={Math.ceil(timeline.length / 12)} angle={-30} textAnchor="end" height={55} />
-                <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} width={60} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", fontSize: "11px" }} />
-                <Legend iconType="circle" verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
-                <Line type="monotone" dataKey="actual" stroke="var(--foreground)" strokeWidth={2} dot={false} name="Valor Real" />
-                <Line type="monotone" dataKey="lstm" stroke="var(--chart-1)" strokeWidth={1.5} dot={false} name="LSTM" />
-                <Line type="monotone" dataKey="gru" stroke="var(--chart-2)" strokeWidth={1.5} dot={false} name="GRU" />
-                <Line type="monotone" dataKey="brnn" stroke="var(--chart-3)" strokeWidth={1.5} dot={false} name="BRNN" />
-                <Line type="monotone" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={1.5} dot={false} name="Transformer" />
-                <Line type="monotone" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} name="TCN" />
-              </LineChart>
-            </ResponsiveContainer>
-            </div>
-            </div>
-          </ChartCard>
+          <PredictionDeviationChart
+            title="Prediccion y Desviacion de Consumo"
+            subtitle={`Serie temporal completa - ${evaluated.totalRows.toLocaleString("es-ES")} registros agrupados en ${timeline.length} puntos`}
+            data={timeline}
+          />
 
           <ChartCard title="Distribución de Anomalías Detectadas" subtitle="Comparativa entre todos los modelos" delay={0.4}>
             <div className="chart-shell">
@@ -370,24 +371,11 @@ function AnalysisPage() {
             <KpiCard title="Falsos Positivos" value={`${models.transformer.confusionMatrix.fp} (Mínimo)`} icon={AlertCircle} variant="default" delay={0.2} />
           </div>
 
-          <ChartCard title="Timeline de Riesgo de Fraude" subtitle={`${evaluated.totalRows.toLocaleString("es-ES")} registros — variación del score de anomalía`} delay={0.3}>
-            <div className="chart-shell">
-            <div className="chart-min">
-            <ResponsiveContainer width="100%" height={460}>
-              <LineChart data={timeline} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-                <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={Math.ceil(timeline.length / 12)} angle={-30} textAnchor="end" height={55} />
-                <YAxis tick={{ fontSize: 10 }} width={55} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", fontSize: "11px" }} />
-                <Legend verticalAlign="top" wrapperStyle={{ fontSize: "11px", paddingBottom: "12px" }} />
-                <Line type="stepAfter" dataKey="transformer" stroke="var(--chart-4)" strokeWidth={2.5} dot={false} name="Score Transf." />
-                <Line type="stepAfter" dataKey="brnn" stroke="var(--chart-3)" strokeWidth={2} dot={false} name="Score BRNN" />
-                <Line type="stepAfter" dataKey="tcn" stroke="var(--chart-5)" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Score TCN" />
-              </LineChart>
-            </ResponsiveContainer>
-            </div>
-            </div>
-          </ChartCard>
+          <PredictionDeviationChart
+            title="Prediccion y Desviacion de Riesgo Financiero"
+            subtitle={`Score de anomalia completo - ${evaluated.totalRows.toLocaleString("es-ES")} registros agrupados en ${timeline.length} puntos`}
+            data={timeline}
+          />
 
           <ChartCard title="Volumen de Fraude Clasificado" subtitle="Comparativa de eficiencia arquitectónica" delay={0.4}>
             <div className="chart-shell">
