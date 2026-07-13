@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    buildCommand: pip install -r requirements.txt && python -m app.pipeline --mode sample
+    buildCommand: pip install -r requirements.txt && python -m app.pipeline --mode remote --limit 10000
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
