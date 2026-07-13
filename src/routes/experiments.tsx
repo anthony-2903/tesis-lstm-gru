@@ -2,7 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Activity, Archive, BrainCircuit, Clock3, Database, Trophy } from "lucide-react";
 import { BackendState } from "@/components/BackendState";
-import { fetchExperiments, fetchTrainingManifest, type DomainId, type DomainMetricsSummary } from "@/lib/api";
+import {
+  ApiError,
+  fetchAnalysisData,
+  fetchExperiments,
+  fetchTrainingManifest,
+  type DomainId,
+  type DomainMetricsSummary,
+  type EvaluatedData,
+  type ExperimentListItem,
+  type MetricsSummary,
+  type TrainingManifest,
+} from "@/lib/api";
 import { useApiData } from "@/hooks/useApiData";
 import type { LucideIcon } from "lucide-react";
 
@@ -26,11 +37,93 @@ function formatPercent(value: number) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function ExperimentsPage() {
-  const { data, error, isLoading, reload } = useApiData(async () => {
+const DOMAINS: DomainId[] = ["phishing", "energia", "finanzas"];
+
+function summarizeDomain(domain: DomainId, data: EvaluatedData): DomainMetricsSummary {
+  const models = Object.entries(data.models).reduce<DomainMetricsSummary["models"]>((acc, [model, metrics]) => {
+    acc[model] = {
+      score: metrics.f1,
+      f1: metrics.f1,
+      precision: metrics.precision,
+      recall: metrics.recall,
+      rmse: metrics.rmse ?? 0,
+      trainTime: 0,
+      detectedCount: metrics.detectedCount,
+    };
+    return acc;
+  }, {});
+  const bestModel = Object.values(models).sort((a, b) => b.f1 - a.f1)[0];
+  const bestName = Object.entries(models).find(([, metrics]) => metrics === bestModel)?.[0] ?? "n/d";
+
+  return {
+    domain,
+    totalRows: data.totalRows,
+    realAnomaliesCount: data.realAnomaliesCount,
+    bestModel: { ...bestModel, model: bestName },
+    models,
+  };
+}
+
+async function fetchExperimentData(): Promise<{ manifest: TrainingManifest; experiments: { items: ExperimentListItem[] }; legacy: boolean }> {
+  try {
     const [manifest, experiments] = await Promise.all([fetchTrainingManifest(), fetchExperiments()]);
-    return { manifest, experiments };
-  });
+    return { manifest, experiments, legacy: false };
+  } catch (error) {
+    if (!(error instanceof ApiError) || error.status !== 404) {
+      throw error;
+    }
+  }
+
+  const analyses = await Promise.all(DOMAINS.map(async (domain) => [domain, await fetchAnalysisData(domain)] as const));
+  const domains = analyses.map(([domain, data]) => summarizeDomain(domain, data));
+  const overallBest =
+    domains
+      .map((domain) => ({ ...domain.bestModel, domain: domain.domain }))
+      .sort((a, b) => b.f1 - a.f1)[0] ?? null;
+  const metricsSummary: MetricsSummary = {
+    createdAt: new Date().toISOString(),
+    domains,
+    overallBest,
+  };
+  const domainTotals = analyses.reduce<Record<DomainId, number>>(
+    (acc, [domain, data]) => {
+      acc[domain] = data.totalRows;
+      return acc;
+    },
+    { phishing: 0, energia: 0, finanzas: 0 },
+  );
+  const manifest: TrainingManifest = {
+    runId: "backend_legacy",
+    mode: "legacy",
+    limit: Object.values(domainTotals).reduce((max, value) => Math.max(max, value), 0),
+    createdAt: metricsSummary.createdAt,
+    domainTotals,
+    metricsSummary,
+    models: [],
+    paths: {},
+  };
+
+  return {
+    manifest,
+    experiments: {
+      items: [
+        {
+          runId: manifest.runId,
+          mode: manifest.mode,
+          limit: manifest.limit,
+          createdAt: manifest.createdAt,
+          domainTotals: manifest.domainTotals,
+          metricsSummary,
+          path: "legacy-backend",
+        },
+      ],
+    },
+    legacy: true,
+  };
+}
+
+function ExperimentsPage() {
+  const { data, error, isLoading, reload } = useApiData(fetchExperimentData);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
@@ -47,6 +140,11 @@ function ExperimentsPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Ultima corrida: <span className="font-data font-semibold text-foreground">{latest.runId}</span>
           </p>
+          {data.legacy && (
+            <p className="mt-1 text-xs text-warning">
+              Backend desplegado en modo compatible: faltan endpoints de manifiesto hasta que Render publique el ultimo commit.
+            </p>
+          )}
         </div>
         <button
           type="button"

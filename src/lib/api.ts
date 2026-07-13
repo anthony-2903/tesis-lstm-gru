@@ -19,6 +19,17 @@ function resolveApiUrl() {
 const API_URL = resolveApiUrl();
 export type DomainId = "phishing" | "energia" | "finanzas";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public path: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 export interface DomainOption {
   id: DomainId;
   title: string;
@@ -227,7 +238,7 @@ function withDomain(path: string, domain?: DomainId) {
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`);
   if (!response.ok) {
-    throw new Error(`Backend respondio ${response.status} en ${path}`);
+    throw new ApiError(`Backend respondio ${response.status} en ${path}`, response.status, path);
   }
   return response.json() as Promise<T>;
 }
@@ -256,9 +267,17 @@ export function fetchXaiData(domain?: DomainId) {
   return fetchJson<unknown>(withDomain("/xai", domain));
 }
 
-export function fetchExternalData(domain: DomainId, limit = 5000) {
+export async function fetchExternalData(domain: DomainId, limit = 5000) {
   const query = new URLSearchParams({ domain, limit: String(limit) });
-  return fetchJson<ExternalData>(`/external-data?${query.toString()}`);
+  try {
+    return await fetchJson<ExternalData>(`/external-data?${query.toString()}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422 && limit > 100) {
+      const fallbackQuery = new URLSearchParams({ domain, limit: "100" });
+      return fetchJson<ExternalData>(`/external-data?${fallbackQuery.toString()}`);
+    }
+    throw error;
+  }
 }
 
 export function fetchDataLakeSummary() {
