@@ -229,6 +229,39 @@ export interface ExperimentListItem {
   path: string;
 }
 
+export interface ScientificDataDomainSummary {
+  id: DomainId;
+  label: string;
+  unit: string;
+  available: boolean;
+  datasetId: string | null;
+  source: string | null;
+  originalRows: number;
+  usableRows: number;
+  developmentRows: number;
+  trainingRows: number | null;
+  validationRows: number;
+  lockedTestRows: number;
+  oofUniqueRows: number;
+  testSetLocked: boolean;
+  testSetUsed: boolean;
+  classDistribution?: { negative: number; positive: number };
+  range?: [string | null, string | null];
+}
+
+export interface ScientificDataSummary {
+  schemaVersion: string;
+  generatedAt: string;
+  available: boolean;
+  availableDomains: number;
+  totalDomains: number;
+  totalUsableObservations: number;
+  domains: ScientificDataDomainSummary[];
+  countingPolicy: string;
+  demoExcluded: boolean;
+  finalTestUsed: boolean;
+}
+
 export interface EnergyComparisonRow {
   predictorId: string;
   displayName: string;
@@ -1790,6 +1823,10 @@ export function fetchTrainingManifest() {
 
 export function fetchExperiments() {
   return fetchJson<{ items: ExperimentListItem[] }>("/experiments");
+}
+
+export function fetchScientificDataSummary() {
+  return fetchJson<ScientificDataSummary>("/scientific-data-summary");
 }
 
 export function fetchLatestEnergyExperiment() {

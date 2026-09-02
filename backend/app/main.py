@@ -59,6 +59,7 @@ from app.phishing.stacking import get_latest_phishing_stacking, run_phishing_sta
 from app.phishing.thesis_orchestrator import phishing_thesis_orchestrator
 from app.phishing.validation import get_latest_phishing_external_validation
 from app.phishing.validation_jobs import phishing_validation_job_manager
+from app.scientific_data_summary import get_scientific_data_summary
 from app.pipeline import run_pipeline
 from app.thesis_status import get_thesis_status
 from app.thesis_results import get_thesis_results_summary
@@ -381,6 +382,11 @@ def thesis_status() -> dict:
 @app.get("/api/thesis/results-summary")
 def thesis_results_summary() -> dict:
     return get_thesis_results_summary()
+
+
+@app.get("/api/scientific-data-summary")
+def scientific_data_summary() -> dict:
+    return get_scientific_data_summary()
 
 
 @app.get("/api/external-sources")

@@ -9,6 +9,19 @@ from app.main import app
 
 
 class ApiSecurityTests(unittest.TestCase):
+    def test_local_loopback_origin_is_allowed(self) -> None:
+        with TestClient(app) as client:
+            response = client.get(
+                "/api/health",
+                headers={"origin": "http://127.0.0.1:5173"},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["access-control-allow-origin"],
+            "http://127.0.0.1:5173",
+        )
+
     def test_write_token_blocks_mutation_but_not_health_read(self) -> None:
         with patch("app.main.API_WRITE_TOKEN", "correct-secret"):
             with TestClient(app) as client:

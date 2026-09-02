@@ -44,7 +44,7 @@ CORS_ALLOWED_ORIGINS = tuple(
     value.strip()
     for value in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:3000,http://localhost:5173,https://tesis-lstm-gru.anthonyjanampacalderon10.workers.dev",
+        "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,https://tesis-lstm-gru.anthonyjanampacalderon10.workers.dev",
     ).split(",")
     if value.strip()
 )

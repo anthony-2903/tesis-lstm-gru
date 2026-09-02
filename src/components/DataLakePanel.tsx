@@ -35,9 +35,9 @@ export function DataLakePanel() {
           <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
             <Archive className="h-4 w-4" />
           </div>
-          <h2 className="text-sm font-bold text-foreground">Data lake academico</h2>
+          <h2 className="text-sm font-bold text-foreground">Data lake operativo</h2>
           <p className="mt-1 max-w-3xl text-xs leading-5 text-muted-foreground">
-            Almacenamiento local por lotes para trabajar con miles de registros sin cargar todo en vivo.
+            Lotes de ingesta rápida para probar la aplicación. Estas cantidades no representan el corpus científico de la tesis.
           </p>
         </div>
         <button
@@ -73,7 +73,7 @@ export function DataLakePanel() {
                 <Database className="h-4 w-4 text-primary" />
               </div>
               <p className="font-data text-3xl font-bold text-foreground">{data.totalRecords.toLocaleString("es-ES")}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">Registros listos para paginacion y procesamiento.</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">Registros operativos; excluidos del conteo científico.</p>
             </div>
             {data.domains.map((domain) => (
               <div key={domain.domain} className="rounded-md border border-border bg-muted/20 p-4">

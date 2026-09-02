@@ -11,17 +11,24 @@ import {
   Filter,
   GitBranch,
   Layers3,
+  Landmark,
   RefreshCw,
   Server,
   ShieldCheck,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { BackendState } from "@/components/BackendState";
 import { DataLakePanel } from "@/components/DataLakePanel";
 import { ExternalDataSourcesPanel } from "@/components/ExternalDataSourcesPanel";
 import { KpiCard } from "@/components/KpiCard";
 import { MethodologyFunnel } from "@/components/rosen/ResearchCharts";
-import { DashboardData, fetchDashboardData } from "@/lib/api";
+import {
+  DashboardData,
+  ScientificDataSummary,
+  fetchDashboardData,
+  fetchScientificDataSummary,
+} from "@/lib/api";
 import { useApiData } from "@/hooks/useApiData";
 
 export const Route = createFileRoute("/upload")({
@@ -36,6 +43,7 @@ export const Route = createFileRoute("/upload")({
 
 function DataStatusPage() {
   const { data, error, isLoading, reload } = useApiData(fetchDashboardData);
+  const scientific = useApiData(fetchScientificDataSummary);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
@@ -50,17 +58,34 @@ function DataStatusPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <h1 className="text-2xl font-bold text-foreground">Datos Procesados</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Fuente actual del backend local: <span className="font-semibold text-foreground">{dataset.filename}</span>
+            Cantidades científicas auditadas por dominio, separadas de las muestras técnicas.
           </p>
         </motion.div>
         <button
           type="button"
-          onClick={reload}
+          onClick={() => {
+            reload();
+            scientific.reload();
+          }}
           className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted"
         >
           <RefreshCw className="h-4 w-4 text-primary" />
           Actualizar
         </button>
+      </div>
+
+      <ScientificDatasetOverview
+        data={scientific.data}
+        error={scientific.error}
+        isLoading={scientific.isLoading}
+        onRetry={scientific.reload}
+      />
+
+      <div className="rounded-md border border-primary/20 bg-primary/5 px-4 py-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-primary">Muestra técnica del pipeline</p>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          Los bloques siguientes usan <span className="font-semibold text-foreground">{dataset.filename}</span> para visualizar limpieza y flujo. Sus {dataset.cleanedRows.toLocaleString("es-ES")} filas no representan el tamaño de los datasets de tesis.
+        </p>
       </div>
 
       <PipelineFlow dataset={dataset} quality={quality} />
@@ -75,11 +100,11 @@ function DataStatusPage() {
       <ExternalDataSourcesPanel />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard title="Registros Originales" value={dataset.originalRows.toLocaleString("es-ES")} icon={Database} variant="cyan" />
-        <KpiCard title="Registros Limpios" value={dataset.cleanedRows.toLocaleString("es-ES")} icon={FileCheck2} variant="violet" delay={0.1} />
-        <KpiCard title="Columnas" value={dataset.columns.length.toLocaleString("es-ES")} icon={Server} variant="cyan" delay={0.2} />
+        <KpiCard title="Muestra: originales" value={dataset.originalRows.toLocaleString("es-ES")} icon={Database} variant="cyan" />
+        <KpiCard title="Muestra: limpios" value={dataset.cleanedRows.toLocaleString("es-ES")} icon={FileCheck2} variant="violet" delay={0.1} />
+        <KpiCard title="Muestra: columnas" value={dataset.columns.length.toLocaleString("es-ES")} icon={Server} variant="cyan" delay={0.2} />
         <KpiCard
-          title="Calidad de Datos"
+          title="Calidad de la muestra"
           value={`${quality.toFixed(1)}%`}
           icon={FileCheck2}
           variant="default"
@@ -129,6 +154,118 @@ function DataStatusPage() {
 }
 
 type Dataset = DashboardData["dataset"];
+
+function ScientificDatasetOverview({
+  data,
+  error,
+  isLoading,
+  onRetry,
+}: {
+  data: ScientificDataSummary | null;
+  error: string | null;
+  isLoading: boolean;
+  onRetry: () => void;
+}) {
+  if (isLoading) {
+    return (
+      <section className="rounded-md border border-border bg-card p-5 text-sm text-muted-foreground shadow-sm">
+        Cargando conteos científicos auditados…
+      </section>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <section className="rounded-md border border-anomaly/20 bg-anomaly/10 p-5 shadow-sm">
+        <p className="text-sm font-bold text-anomaly">No se pudo leer el resumen científico.</p>
+        <p className="mt-1 text-xs text-muted-foreground">{error || "El backend no devolvió los manifiestos de datos."}</p>
+        <button type="button" onClick={onRetry} className="mt-3 rounded-md border border-border bg-card px-3 py-2 text-xs font-bold text-foreground">
+          Reintentar
+        </button>
+      </section>
+    );
+  }
+
+  const icons = { phishing: ShieldCheck, energia: Zap, finanzas: Landmark } as const;
+  const colors = {
+    phishing: "text-cyan-500 bg-cyan-500/10",
+    energia: "text-amber-500 bg-amber-500/10",
+    finanzas: "text-violet-500 bg-violet-500/10",
+  } as const;
+
+  return (
+    <section className="rounded-md border border-border bg-card p-4 shadow-sm sm:p-5">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Corpus científico</p>
+          <h2 className="mt-1 text-lg font-bold text-foreground">Observaciones únicas y auditadas</h2>
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-muted-foreground">
+            No se suman como datos nuevos las repeticiones producidas por modelos, folds o semillas.
+          </p>
+        </div>
+        <div className="rounded-md border border-primary/20 bg-primary/5 px-4 py-3 text-right">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total depurado</p>
+          <p className="font-data text-3xl font-bold text-primary">{data.totalUsableObservations.toLocaleString("es-ES")}</p>
+          <p className="text-[10px] text-muted-foreground">observaciones en {data.availableDomains}/{data.totalDomains} dominios</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        {data.domains.map((domain) => {
+          const Icon = icons[domain.id];
+          return (
+            <article key={domain.id} className="rounded-md border border-border bg-muted/10 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-md ${colors[domain.id]}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">{domain.label}</h3>
+                    <p className="text-[11px] text-muted-foreground">{domain.source || "Manifiesto no disponible"}</p>
+                  </div>
+                </div>
+                <span className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase ${domain.available ? "bg-success/10 text-success" : "bg-anomaly/10 text-anomaly"}`}>
+                  {domain.available ? "Auditado" : "No disponible"}
+                </span>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <CountCell label="Datos originales" value={domain.originalRows} unit={domain.unit} />
+                <CountCell label="Datos depurados" value={domain.usableRows} unit={domain.unit} emphasize />
+                <CountCell label="Desarrollo" value={domain.developmentRows} unit={domain.unit} />
+                <CountCell label="OOF únicas" value={domain.oofUniqueRows} unit={domain.unit} />
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Prueba final bloqueada</span>
+                <span className="font-data text-sm font-bold text-foreground">{domain.lockedTestRows.toLocaleString("es-ES")}</span>
+              </div>
+              <p className="mt-2 truncate font-data text-[9px] text-muted-foreground" title={domain.datasetId || undefined}>
+                ID: {domain.datasetId || "sin manifiesto"}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 flex flex-col gap-2 rounded-md border border-success/20 bg-success/5 px-4 py-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <span>La muestra técnica y el data lake operativo están excluidos de estas cantidades.</span>
+        <span className="font-bold text-success">Prueba final usada: {data.finalTestUsed ? "Sí" : "No"}</span>
+      </div>
+    </section>
+  );
+}
+
+function CountCell({ label, value, unit, emphasize = false }: { label: string; value: number; unit: string; emphasize?: boolean }) {
+  return (
+    <div className={`rounded-md border p-3 ${emphasize ? "border-primary/20 bg-primary/5" : "border-border bg-card"}`}>
+      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`mt-1 font-data text-xl font-bold ${emphasize ? "text-primary" : "text-foreground"}`}>{value.toLocaleString("es-ES")}</p>
+      <p className="text-[9px] text-muted-foreground">{unit}</p>
+    </div>
+  );
+}
 
 function PipelineFlow({ dataset, quality }: { dataset: Dataset; quality: number }) {
   const steps = [

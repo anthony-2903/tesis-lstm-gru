@@ -18,12 +18,14 @@ import {
   Zap,
   ShieldCheck,
   Landmark,
+  BookOpenCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Resumen", path: "/", icon: Home },
   { title: "Datos", path: "/upload", icon: Database },
+  { title: "Metodolog�a", path: "/metodologia", icon: BookOpenCheck },
   { title: "Experimentos", path: "/experiments", icon: FlaskConical },
   { title: "Energía OOF", path: "/energy", icon: Zap },
   { title: "Phishing", path: "/phishing", icon: ShieldCheck },

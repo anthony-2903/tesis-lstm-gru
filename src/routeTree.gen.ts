@@ -16,6 +16,7 @@ import { Route as EnergyRouteImport } from './routes/energy'
 import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as PhishingRouteImport } from './routes/phishing'
 import { Route as SelectorRouteImport } from './routes/selector'
 import { Route as UploadRouteImport } from './routes/upload'
@@ -56,6 +57,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhishingRoute = PhishingRouteImport.update({
   id: '/phishing',
   path: '/phishing',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/experiments': typeof ExperimentsRoute
   '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/metodologia': typeof MetodologiaRoute
   '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/experiments': typeof ExperimentsRoute
   '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/metodologia': typeof MetodologiaRoute
   '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/experiments': typeof ExperimentsRoute
   '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/metodologia': typeof MetodologiaRoute
   '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/finance'
     | '/history'
+    | '/metodologia'
     | '/phishing'
     | '/selector'
     | '/upload'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/finance'
     | '/history'
+    | '/metodologia'
     | '/phishing'
     | '/selector'
     | '/upload'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/finance'
     | '/history'
+    | '/metodologia'
     | '/phishing'
     | '/selector'
     | '/upload'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   ExperimentsRoute: typeof ExperimentsRoute
   FinanceRoute: typeof FinanceRoute
   HistoryRoute: typeof HistoryRoute
+  MetodologiaRoute: typeof MetodologiaRoute
   PhishingRoute: typeof PhishingRoute
   SelectorRoute: typeof SelectorRoute
   UploadRoute: typeof UploadRoute
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/phishing': {
       id: '/phishing'
       path: '/phishing'
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExperimentsRoute: ExperimentsRoute,
   FinanceRoute: FinanceRoute,
   HistoryRoute: HistoryRoute,
+  MetodologiaRoute: MetodologiaRoute,
   PhishingRoute: PhishingRoute,
   SelectorRoute: SelectorRoute,
   UploadRoute: UploadRoute,
