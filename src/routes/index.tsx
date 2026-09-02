@@ -5,6 +5,7 @@ import { ChartCard } from "@/components/ChartCard";
 import { BackendState } from "@/components/BackendState";
 import { ExperimentProtocol } from "@/components/ExperimentProtocol";
 import { ResearchOverview } from "@/components/ResearchOverview";
+import { ThesisExecutionRoadmap } from "@/components/ThesisExecutionRoadmap";
 import { DomainEvidenceTable, ResearchFramingPanel } from "@/components/AcademicPanels";
 import { DomainId, fetchDashboardData } from "@/lib/api";
 import { DOMAIN_OPTIONS, getDomainOption, getInitialDomain } from "@/lib/domains";
@@ -52,7 +53,7 @@ const TYPE_COLORS: Record<string, string> = {
 function HomePage() {
   const [selectedDomain, setSelectedDomain] = useState<DomainId>(getInitialDomain);
   const selected = getDomainOption(selectedDomain);
-  const { data, error, isLoading, reload } = useApiData(() => fetchDashboardData(selectedDomain), [selectedDomain]);
+  const { data, error, isLoading, reload } = useApiData(() => fetchDashboardData(selectedDomain), selectedDomain);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;
@@ -70,6 +71,7 @@ function HomePage() {
 
       <ResearchFramingPanel />
       <ResearchOverview />
+      <ThesisExecutionRoadmap />
       <ExperimentProtocol />
       <DomainEvidenceTable activeDomain={selectedDomain} />
 

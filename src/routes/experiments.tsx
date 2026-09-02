@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Activity, Archive, BrainCircuit, Clock3, Database, Trophy } from "lucide-react";
 import { BackendState } from "@/components/BackendState";
+import { ThesisResultsSummary } from "@/components/ThesisResultsSummary";
 import {
   ApiError,
   fetchAnalysisData,
@@ -155,6 +156,8 @@ function ExperimentsPage() {
           Actualizar
         </button>
       </div>
+
+      <ThesisResultsSummary />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Modo" value={latest.mode} icon={Archive} />

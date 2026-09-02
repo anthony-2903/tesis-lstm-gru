@@ -100,8 +100,8 @@ export function AnalysisInterpretationPanel({ domain, data }: { domain: DomainId
     <section className="grid grid-cols-1 gap-3 xl:grid-cols-3">
       <InsightCard
         icon={Trophy}
-        title="Interpretación del resultado"
-        text={`Para ${getDomainOption(domain).shortTitle}, el modelo con mejor lectura global es ${best.label}. La conclusión debe contrastarse con la matriz de confusión y el costo del error.`}
+        title="Interpretación exploratoria"
+        text={`En esta muestra demo de ${getDomainOption(domain).shortTitle}, ${best.label} obtiene el mayor puntaje legado. No constituye el ganador de tesis; debe contrastarse con PR-AUC o RMSE, folds, semillas y Stacking en la revalidación independiente.`}
       />
       <InsightCard
         icon={Gauge}
@@ -123,7 +123,7 @@ export function ModelRankingPanel({ domain, data }: { domain: DomainId; data: Ev
     <section className="rounded-md border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex items-center gap-2">
         <Trophy className="h-4 w-4 text-primary" />
-        <h2 className="text-sm font-bold text-foreground">Ranking de modelos por dominio</h2>
+        <h2 className="text-sm font-bold text-foreground">Ranking exploratorio de modelos base</h2>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-5">
         {ranking.map((item, index) => (
@@ -134,6 +134,7 @@ export function ModelRankingPanel({ domain, data }: { domain: DomainId; data: Ev
           </div>
         ))}
       </div>
+      <p className="mt-3 text-xs font-semibold text-warning">Vista demo: no incluye Stacking, intervalos de confianza ni el protocolo 5×5.</p>
     </section>
   );
 }

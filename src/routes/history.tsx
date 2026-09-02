@@ -21,7 +21,7 @@ export const Route = createFileRoute("/history")({
 
 function HistoryPage() {
   const [domain, setDomain] = useState<DomainId>(getInitialDomain);
-  const { data, error, isLoading, reload } = useApiData(() => fetchHistoryData(domain), [domain]);
+  const { data, error, isLoading, reload } = useApiData(() => fetchHistoryData(domain), domain);
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [modelFilter, setModelFilter] = useState<string>("all");
 

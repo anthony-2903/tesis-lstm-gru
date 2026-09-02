@@ -9,43 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as XaiRouteImport } from './routes/xai'
-import { Route as UploadRouteImport } from './routes/upload'
-import { Route as SelectorRouteImport } from './routes/selector'
-import { Route as HistoryRouteImport } from './routes/history'
-import { Route as ExperimentsRouteImport } from './routes/experiments'
-import { Route as ComparisonRouteImport } from './routes/comparison'
-import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalysisRouteImport } from './routes/analysis'
+import { Route as ComparisonRouteImport } from './routes/comparison'
+import { Route as EnergyRouteImport } from './routes/energy'
+import { Route as ExperimentsRouteImport } from './routes/experiments'
+import { Route as FinanceRouteImport } from './routes/finance'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as PhishingRouteImport } from './routes/phishing'
+import { Route as SelectorRouteImport } from './routes/selector'
+import { Route as UploadRouteImport } from './routes/upload'
+import { Route as XaiRouteImport } from './routes/xai'
 
-const XaiRoute = XaiRouteImport.update({
-  id: '/xai',
-  path: '/xai',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UploadRoute = UploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SelectorRoute = SelectorRouteImport.update({
-  id: '/selector',
-  path: '/selector',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HistoryRoute = HistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExperimentsRoute = ExperimentsRouteImport.update({
-  id: '/experiments',
-  path: '/experiments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ComparisonRoute = ComparisonRouteImport.update({
-  id: '/comparison',
-  path: '/comparison',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalysisRoute = AnalysisRouteImport.update({
@@ -53,9 +31,49 @@ const AnalysisRoute = AnalysisRouteImport.update({
   path: '/analysis',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ComparisonRoute = ComparisonRouteImport.update({
+  id: '/comparison',
+  path: '/comparison',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnergyRoute = EnergyRouteImport.update({
+  id: '/energy',
+  path: '/energy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsRoute = ExperimentsRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhishingRoute = PhishingRouteImport.update({
+  id: '/phishing',
+  path: '/phishing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SelectorRoute = SelectorRouteImport.update({
+  id: '/selector',
+  path: '/selector',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const XaiRoute = XaiRouteImport.update({
+  id: '/xai',
+  path: '/xai',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -63,8 +81,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/energy': typeof EnergyRoute
   '/experiments': typeof ExperimentsRoute
+  '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
   '/xai': typeof XaiRoute
@@ -73,8 +94,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/energy': typeof EnergyRoute
   '/experiments': typeof ExperimentsRoute
+  '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
   '/xai': typeof XaiRoute
@@ -84,8 +108,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/comparison': typeof ComparisonRoute
+  '/energy': typeof EnergyRoute
   '/experiments': typeof ExperimentsRoute
+  '/finance': typeof FinanceRoute
   '/history': typeof HistoryRoute
+  '/phishing': typeof PhishingRoute
   '/selector': typeof SelectorRoute
   '/upload': typeof UploadRoute
   '/xai': typeof XaiRoute
@@ -96,8 +123,11 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/energy'
     | '/experiments'
+    | '/finance'
     | '/history'
+    | '/phishing'
     | '/selector'
     | '/upload'
     | '/xai'
@@ -106,8 +136,11 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/energy'
     | '/experiments'
+    | '/finance'
     | '/history'
+    | '/phishing'
     | '/selector'
     | '/upload'
     | '/xai'
@@ -116,8 +149,11 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/comparison'
+    | '/energy'
     | '/experiments'
+    | '/finance'
     | '/history'
+    | '/phishing'
     | '/selector'
     | '/upload'
     | '/xai'
@@ -127,8 +163,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalysisRoute: typeof AnalysisRoute
   ComparisonRoute: typeof ComparisonRoute
+  EnergyRoute: typeof EnergyRoute
   ExperimentsRoute: typeof ExperimentsRoute
+  FinanceRoute: typeof FinanceRoute
   HistoryRoute: typeof HistoryRoute
+  PhishingRoute: typeof PhishingRoute
   SelectorRoute: typeof SelectorRoute
   UploadRoute: typeof UploadRoute
   XaiRoute: typeof XaiRoute
@@ -136,46 +175,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/xai': {
-      id: '/xai'
-      path: '/xai'
-      fullPath: '/xai'
-      preLoaderRoute: typeof XaiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/upload': {
-      id: '/upload'
-      path: '/upload'
-      fullPath: '/upload'
-      preLoaderRoute: typeof UploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/selector': {
-      id: '/selector'
-      path: '/selector'
-      fullPath: '/selector'
-      preLoaderRoute: typeof SelectorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/history': {
-      id: '/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof HistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/experiments': {
-      id: '/experiments'
-      path: '/experiments'
-      fullPath: '/experiments'
-      preLoaderRoute: typeof ExperimentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/comparison': {
-      id: '/comparison'
-      path: '/comparison'
-      fullPath: '/comparison'
-      preLoaderRoute: typeof ComparisonRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analysis': {
@@ -185,11 +189,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalysisRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/comparison': {
+      id: '/comparison'
+      path: '/comparison'
+      fullPath: '/comparison'
+      preLoaderRoute: typeof ComparisonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/energy': {
+      id: '/energy'
+      path: '/energy'
+      fullPath: '/energy'
+      preLoaderRoute: typeof EnergyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experiments': {
+      id: '/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof ExperimentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phishing': {
+      id: '/phishing'
+      path: '/phishing'
+      fullPath: '/phishing'
+      preLoaderRoute: typeof PhishingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/selector': {
+      id: '/selector'
+      path: '/selector'
+      fullPath: '/selector'
+      preLoaderRoute: typeof SelectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/xai': {
+      id: '/xai'
+      path: '/xai'
+      fullPath: '/xai'
+      preLoaderRoute: typeof XaiRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -199,8 +259,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalysisRoute: AnalysisRoute,
   ComparisonRoute: ComparisonRoute,
+  EnergyRoute: EnergyRoute,
   ExperimentsRoute: ExperimentsRoute,
+  FinanceRoute: FinanceRoute,
   HistoryRoute: HistoryRoute,
+  PhishingRoute: PhishingRoute,
   SelectorRoute: SelectorRoute,
   UploadRoute: UploadRoute,
   XaiRoute: XaiRoute,

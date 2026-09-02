@@ -15,6 +15,9 @@ import {
   Sun,
   Moon,
   FlaskConical,
+  Zap,
+  ShieldCheck,
+  Landmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +25,9 @@ const navItems = [
   { title: "Resumen", path: "/", icon: Home },
   { title: "Datos", path: "/upload", icon: Database },
   { title: "Experimentos", path: "/experiments", icon: FlaskConical },
+  { title: "Energía OOF", path: "/energy", icon: Zap },
+  { title: "Phishing", path: "/phishing", icon: ShieldCheck },
+  { title: "Finanzas", path: "/finance", icon: Landmark },
   { title: "Análisis", path: "/analysis", icon: Database },
   { title: "Comparativa", path: "/comparison", icon: GitCompare },
   { title: "XAI", path: "/xai", icon: BrainCircuit },

@@ -59,7 +59,7 @@ const modelColor = (model: string) => {
 function ComparisonPage() {
   const [domain, setDomain] = useState<DomainId>(getInitialDomain);
   const selected = getDomainOption(domain);
-  const { data, error, isLoading, reload } = useApiData(() => fetchComparisonData(domain), [domain]);
+  const { data, error, isLoading, reload } = useApiData(() => fetchComparisonData(domain), domain);
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !data) return <BackendState error={error} onRetry={reload} />;

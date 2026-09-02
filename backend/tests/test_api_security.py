@@ -1,0 +1,42 @@
+from __future__ import annotations
+
+import unittest
+from unittest.mock import patch
+
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+
+class ApiSecurityTests(unittest.TestCase):
+    def test_write_token_blocks_mutation_but_not_health_read(self) -> None:
+        with patch("app.main.API_WRITE_TOKEN", "correct-secret"):
+            with TestClient(app) as client:
+                denied = client.post("/api/pipeline/run")
+                self.assertEqual(denied.status_code, 401)
+                self.assertEqual(denied.headers["x-content-type-options"], "nosniff")
+                self.assertEqual(denied.headers["referrer-policy"], "no-referrer")
+                health = client.get("/api/health")
+                self.assertEqual(health.status_code, 200)
+                self.assertEqual(health.headers["x-content-type-options"], "nosniff")
+
+    def test_thesis_pause_routes_require_token_and_delegate_by_domain(self) -> None:
+        cases = (
+            ("/api/phishing/thesis/phishing-job/pause", "phishing-job", "app.main.phishing_thesis_orchestrator"),
+            ("/api/energy/thesis/energy-job/pause", "energy-job", "app.main.energy_thesis_orchestrator"),
+            ("/api/finance/thesis/finance-job/pause", "finance-job", "app.main.finance_thesis_orchestrator"),
+        )
+        with patch("app.main.API_WRITE_TOKEN", "correct-secret"), TestClient(app) as client:
+            for route, job_id, manager_path in cases:
+                with self.subTest(route=route):
+                    denied = client.post(route)
+                    self.assertEqual(denied.status_code, 401)
+                    with patch(f"{manager_path}.pause", return_value={"jobId": "job", "status": "running", "pauseRequested": True}) as pause:
+                        accepted = client.post(route, headers={"x-api-key": "correct-secret"})
+                    self.assertEqual(accepted.status_code, 200)
+                    self.assertTrue(accepted.json()["pauseRequested"])
+                    pause.assert_called_once_with(job_id)
+
+
+if __name__ == "__main__":
+    unittest.main()

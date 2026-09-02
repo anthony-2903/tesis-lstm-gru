@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChartCard } from "@/components/ChartCard";
 import { KpiCard } from "@/components/KpiCard";
-import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, Download } from "lucide-react";
+import { Shield, Zap, TrendingUp, AlertCircle, Landmark, Activity, BarChart3, CheckCircle2, Download, LockKeyhole, Trophy } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend
@@ -13,7 +13,7 @@ import { BackendState } from "@/components/BackendState";
 import { MetricGuide } from "@/components/MetricGuide";
 import { AnalysisInterpretationPanel, ConfusionMatrixGuide, ModelRankingPanel } from "@/components/AcademicPanels";
 import { AnalysisPerformanceHeatmap, DetectionBalanceChart } from "@/components/rosen/ResearchCharts";
-import { DomainId, fetchAnalysisData } from "@/lib/api";
+import { DomainId, fetchAnalysisData, fetchFinanceDatasetStatus, fetchLatestFinanceExperiment, fetchLatestFinanceStacking, fetchLatestFinanceValidation, type FinanceDatasetStatus } from "@/lib/api";
 import { getDomainOption, getInitialDomain } from "@/lib/domains";
 import { useApiData } from "@/hooks/useApiData";
 
@@ -113,10 +113,97 @@ function PredictionDeviationChart({
   );
 }
 
+function FinanceAnalysisGate({ data, onTabChange }: { data: FinanceDatasetStatus; onTabChange: (domain: DomainId) => void }) {
+  const { data: experiment, error: experimentError, isLoading: experimentLoading } = useApiData(fetchLatestFinanceExperiment);
+  const { data: stacking } = useApiData(fetchLatestFinanceStacking);
+  const { data: temporalValidation } = useApiData(fetchLatestFinanceValidation);
+  const result = experiment?.available ? experiment : null;
+  const stackingResult = stacking?.available ? stacking : null;
+  const validationResult = temporalValidation?.available ? temporalValidation : null;
+  const ranking = validationResult
+    ? validationResult.comparison.map((row) => ({ id: row.candidateId, name: analysisFinanceCandidateName(row.candidateId, row.sourceCandidateId ?? undefined), prAucMean: row.prAuc, prAucStd: 0, rocAucMean: row.rocAuc, f1Mean: row.f1, recallMean: row.recall, mccMean: row.mcc, brierScoreMean: row.brierScore, falsePositiveRateMean: row.falsePositiveRate }))
+    : stackingResult
+      ? stackingResult.sixModelComparison.map((row) => ({ ...row, id: row.candidateId, name: analysisFinanceCandidateName(row.candidateId, row.sourceCandidateId) }))
+      : result?.comparison.map((row) => ({ ...row, id: row.modelId, name: row.displayName })) ?? [];
+  const coverageRows = validationResult?.selection.rows ?? stackingResult?.validation.coverageRows ?? result?.dataset.oofRowsUsedPerSeed ?? 0;
+  const testUsed = validationResult?.validation.testSetUsed ?? stackingResult?.validation.testSetUsed ?? result?.validation.testSetUsed ?? false;
+  return (
+    <div className="dashboard-page space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Análisis financiero</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Detección temporal de fraude por transacción. Las tablas administrativas ya no se presentan como fraude etiquetado.</p>
+      </div>
+      <div className="flex w-full flex-wrap gap-2 rounded-xl border border-border bg-muted/30 p-1 sm:w-fit">
+        <button onClick={() => onTabChange("phishing")} className="flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"><Shield className="h-3.5 w-3.5" />Phishing</button>
+        <button onClick={() => onTabChange("energia")} className="flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"><Zap className="h-3.5 w-3.5" />Energía</button>
+        <button className="flex items-center gap-2 rounded-lg bg-card px-4 py-2 text-xs font-bold text-primary shadow-sm"><Landmark className="h-3.5 w-3.5" />Finanzas</button>
+      </div>
+      <section className="rounded-md border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-start gap-3">
+          {data.readyForPipelinePilot ? <CheckCircle2 className="mt-0.5 h-5 w-5 text-success" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-warning" />}
+          <div>
+            <h2 className="text-sm font-bold text-foreground">{data.readyForPipelinePilot ? "Benchmark listo para secuencias y OOF" : "Preparación financiera pendiente"}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">{data.message}</p>
+          </div>
+        </div>
+        {data.available && <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-md border border-border p-3"><p className="text-[10px] font-bold text-muted-foreground">TRANSACCIONES</p><p className="mt-1 text-lg font-bold">{(data.audit?.rows ?? 0).toLocaleString("es-ES")}</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-[10px] font-bold text-muted-foreground">FRAUDES</p><p className="mt-1 text-lg font-bold">{(data.audit?.fraudRows ?? 0).toLocaleString("es-ES")}</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-[10px] font-bold text-muted-foreground">TASA DE FRAUDE</p><p className="mt-1 text-lg font-bold">{((data.audit?.fraudRate ?? 0) * 100).toFixed(2)}%</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-[10px] font-bold text-muted-foreground">TEST</p><p className="mt-1 flex items-center gap-1 text-sm font-bold"><LockKeyhole className="h-4 w-4" />Bloqueado</p></div>
+        </div>}
+      </section>
+      {ranking.length ? <section className="rounded-md border border-border bg-card p-5 shadow-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-sm font-bold text-foreground">{stackingResult ? "Ranking financiero: cinco modelos base + Stacking" : "Ranking financiero de modelos base"}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Comparación temporal OOF ordenada por PR-AUC sobre las mismas transacciones y folds evaluables.</p>
+          </div>
+          <span className="rounded-full border border-warning/30 bg-warning/5 px-3 py-1 text-[10px] font-bold text-warning">PILOTO TÉCNICO</span>
+        </div>
+        <div className="mt-4 overflow-x-auto rounded-md border border-border">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b border-border text-muted-foreground"><tr><th className="px-3 py-2">Posición</th><th className="px-3 py-2">Modelo</th><th className="px-3 py-2">PR-AUC</th><th className="px-3 py-2">ROC-AUC</th><th className="px-3 py-2">F1</th><th className="px-3 py-2">Recall</th><th className="px-3 py-2">MCC</th><th className="px-3 py-2">Brier ↓</th><th className="px-3 py-2">FPR</th></tr></thead>
+            <tbody>{ranking.map((row, index) => <tr key={row.id} className={`border-b border-border/50 ${row.id === "stacking" ? "bg-primary/5" : ""}`}><td className="px-3 py-2 font-bold">{index + 1}</td><td className="px-3 py-2 font-bold">{index === 0 && <Trophy className="mr-1 inline h-3.5 w-3.5 text-warning" />}{row.name}</td><td className="px-3 py-2">{row.prAucMean.toFixed(4)} ± {row.prAucStd.toFixed(4)}</td><td className="px-3 py-2">{row.rocAucMean.toFixed(4)}</td><td className="px-3 py-2">{row.f1Mean.toFixed(4)}</td><td className="px-3 py-2">{row.recallMean.toFixed(4)}</td><td className="px-3 py-2">{row.mccMean.toFixed(4)}</td><td className="px-3 py-2">{row.brierScoreMean.toFixed(4)}</td><td className="px-3 py-2">{row.falsePositiveRateMean.toFixed(4)}</td></tr>)}</tbody>
+          </table>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">Cobertura común: {coverageRows.toLocaleString("es-ES")} transacciones · test utilizado: {testUsed ? "sí" : "no"} · cross-fitting temporal: {stackingResult?.validation.strictTemporalCrossFit ? "verificado" : "pendiente"}.</p>
+        <p className="mt-3 rounded-md border border-warning/30 bg-warning/5 p-3 text-xs text-muted-foreground">{stackingResult ? (stackingResult.recommendation.stackingBeatsBestBaseOnMeanPrAuc ? "Stacking supera provisionalmente al mejor modelo base; falta validación externa." : "Stacking no supera al mejor modelo base en este piloto. El resultado se conserva sin modificar el ranking.") : result?.methodology.warning}</p>
+      </section> : <section className="rounded-md border border-warning/30 bg-warning/5 p-4">
+        <h2 className="text-sm font-bold text-foreground">Ranking financiero pendiente</h2>
+        <p className="mt-2 text-xs text-muted-foreground">{experimentLoading ? "Consultando experimentos..." : experimentError ?? "Ejecute los cinco modelos base desde el módulo financiero para construir una comparación OOF válida."}</p>
+      </section>}
+      <a href="/finance" className="inline-flex rounded-md bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">Abrir preparación financiera</a>
+    </div>
+  );
+}
+
+function analysisFinanceCandidateName(candidateId: string, sourceCandidateId?: string) {
+  const names: Record<string, string> = {
+    lstm: "LSTM",
+    gru: "GRU",
+    brnn: "BiRNN",
+    tcn: "TCN",
+    transformer: "Transformer",
+    stacking: "Stacking",
+    stacking_logistic: "Stacking logístico",
+    stacking_gradient_boosting: "Stacking Gradient Boosting",
+  };
+  if (candidateId === "stacking" && sourceCandidateId) return `Stacking (${names[sourceCandidateId] ?? sourceCandidateId})`;
+  return names[candidateId] ?? candidateId;
+}
+
 function AnalysisPage() {
   const [tab, setTab] = useState<DomainId>(getInitialDomain);
   const selected = getDomainOption(tab);
-  const { data: evaluated, error, isLoading, reload } = useApiData(() => fetchAnalysisData(tab), [tab]);
+  const { data: evaluated, error, isLoading, reload } = useApiData(() => fetchAnalysisData(tab), tab);
+  const { data: financeStatus, error: financeError, isLoading: financeLoading, reload: reloadFinance } = useApiData(fetchFinanceDatasetStatus);
+
+  if (tab === "finanzas") {
+    if (financeLoading) return <BackendState isLoading />;
+    if (financeError || !financeStatus) return <BackendState error={financeError} onRetry={reloadFinance} />;
+    return <FinanceAnalysisGate data={financeStatus} onTabChange={setTab} />;
+  }
 
   if (isLoading) return <BackendState isLoading />;
   if (error || !evaluated) return <BackendState error={error} onRetry={reload} />;
@@ -198,6 +285,21 @@ function AnalysisPage() {
           Finanzas (Fraude / Transacciones)
         </button>
       </div>
+
+      <section className="rounded-md border border-warning/40 bg-warning/10 p-4">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+          <div>
+            <h2 className="text-sm font-bold text-foreground">Vista histórica de demostración</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              Estas métricas verifican la visualización del pipeline legado y no son resultados finales de tesis: no representan la matriz 5×5, no incluyen Stacking como sexto candidato ni una revalidación independiente. Las conclusiones defendibles se generan en el protocolo sellado de cada dominio.
+            </p>
+            <a href={tab === "phishing" ? "/phishing" : "/energy"} className="mt-3 inline-flex rounded-md bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">
+              Abrir protocolo científico de {tab === "phishing" ? "phishing" : "energía"}
+            </a>
+          </div>
+        </div>
+      </section>
 
       <MetricGuide />
       <AnalysisInterpretationPanel domain={tab} data={evaluated} />

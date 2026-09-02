@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { extname, join } from "node:path";
 
 const root = process.cwd();
@@ -45,10 +46,16 @@ for (const dir of sourceRoots) {
   });
 }
 
+// Runtime Python processes legitimately create __pycache__ while this verifier
+// is running. Repository hygiene depends on those files being ignored and not
+// versioned, rather than on an empty working directory at one instant.
+const gitignore = readFileSync(join(root, ".gitignore"), "utf8");
+if (!gitignore.includes("__pycache__/") || !gitignore.includes("*.py[cod]")) {
+  failures.push(".gitignore debe excluir __pycache__/ y *.py[cod].");
+}
 for (const dir of generatedDirs) {
-  if (existsSync(join(root, dir))) {
-    failures.push(`Directorio generado presente: ${dir}`);
-  }
+  const tracked = execFileSync("git", ["ls-files", "--", dir], { cwd: root, encoding: "utf8" }).trim();
+  if (tracked) failures.push(`Directorio generado versionado: ${dir}`);
 }
 
 for (const file of resultFiles) {

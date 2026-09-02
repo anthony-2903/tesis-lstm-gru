@@ -42,7 +42,7 @@ const modelColors: Record<string, string> = {
 function XaiPage() {
   const [domain, setDomain] = useState<DomainId>(getInitialDomain);
   const selected = getDomainOption(domain);
-  const { data, error, isLoading, reload } = useApiData(() => fetchXaiData(domain), [domain]);
+  const { data, error, isLoading, reload } = useApiData(() => fetchXaiData(domain), domain);
   const report = useMemo(() => (data ? normalizeXaiReport(data) : null), [data]);
 
   const topFeature = report?.global_feature_importance[0];

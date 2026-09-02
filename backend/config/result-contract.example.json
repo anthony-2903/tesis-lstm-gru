@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "YYYYMMDD_HHMMSS_domain_protocol",
+  "protocolVersion": "1.0.0",
+  "domain": "energia",
+  "dataset": {
+    "id": "dataset_identifier",
+    "version": "content_hash_or_release",
+    "rows": 0,
+    "features": [],
+    "target": "load_at_forecast_horizon"
+  },
+  "split": {
+    "strategy": "chronological_expanding_window",
+    "foldId": "outer_test",
+    "trainRows": 0,
+    "validationRows": 0,
+    "testRows": 0,
+    "trainRange": null,
+    "validationRange": null,
+    "testRange": null
+  },
+  "models": [
+    {
+      "modelId": "lstm",
+      "family": "base",
+      "seed": 42,
+      "hyperparameters": {},
+      "metrics": {},
+      "operationalMetrics": {
+        "train_time_seconds": 0.0,
+        "inference_time_ms_per_sample": 0.0,
+        "model_size_bytes": 0
+      },
+      "predictionsArtifact": "predictions/lstm.parquet",
+      "modelArtifact": "models/lstm.keras"
+    },
+    {
+      "modelId": "stacking",
+      "family": "meta_model",
+      "seed": 42,
+      "baseModels": ["lstm", "gru", "brnn", "tcn", "transformer"],
+      "metaLearner": "ridge_or_logistic",
+      "oofVerified": true,
+      "hyperparameters": {},
+      "metrics": {},
+      "operationalMetrics": {
+        "train_time_seconds": 0.0,
+        "inference_time_ms_per_sample": 0.0,
+        "model_size_bytes": 0
+      },
+      "predictionsArtifact": "predictions/stacking.parquet",
+      "modelArtifact": "models/stacking.joblib"
+    }
+  ],
+  "aggregate": {
+    "primaryMetric": "rmse",
+    "winner": null,
+    "confidenceIntervals": {},
+    "statisticalTests": [],
+    "testSetEvaluatedOnce": true
+  }
+}

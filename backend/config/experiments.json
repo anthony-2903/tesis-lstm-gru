@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "thesis_protocol",
+  "common": {
+    "baseModels": ["lstm", "gru", "brnn", "tcn", "transformer"],
+    "ensembleBaselines": ["mean", "weighted_mean", "voting"],
+    "candidateMetaLearners": ["linear", "ridge_or_logistic", "gradient_boosting"],
+    "randomSeeds": [42, 101, 202, 303, 404],
+    "minimumRepetitions": 5,
+    "selectionRule": "Select hyperparameters and the meta-learner using validation data only; evaluate the selected pipeline once on the locked test set.",
+    "leakageRules": [
+      "Fit imputers, tokenizers, encoders and scalers using training data only.",
+      "Generate stacking training features exclusively from out-of-fold predictions.",
+      "Calibrate decision and anomaly thresholds using validation predictions only.",
+      "Keep the final test set unavailable to model and meta-model selection.",
+      "Apply identical outer splits to every competing model."
+    ],
+    "resultLevels": ["run", "fold", "model", "domain", "aggregate"],
+    "requiredOperationalMetrics": [
+      "train_time_seconds",
+      "inference_time_ms_per_sample",
+      "model_size_bytes"
+    ]
+  },
+  "domains": {
+    "phishing": {
+      "readiness": "ready_after_real_dataset_ingestion",
+      "researchQuestion": "Does stacking improve malicious URL detection over recurrent, convolutional and attention-based sequence models?",
+      "task": "binary_classification",
+      "unitOfAnalysis": "one URL",
+      "inputRepresentation": "character_or_subword_sequence",
+      "target": {
+        "name": "is_phishing",
+        "type": "binary",
+        "positiveClass": 1,
+        "required": true
+      },
+      "requiredFields": ["url", "is_phishing", "source", "collected_at"],
+      "groupKey": "registrable_domain",
+      "split": {
+        "strategy": "stratified_group_holdout",
+        "trainFraction": 0.7,
+        "validationFraction": 0.15,
+        "testFraction": 0.15,
+        "innerFolds": 5,
+        "shuffleGroups": true
+      },
+      "minimumData": {
+        "totalRows": 10000,
+        "positiveRows": 1000,
+        "negativeRows": 1000,
+        "uniqueGroups": 1000
+      },
+      "primaryMetric": "pr_auc",
+      "secondaryMetrics": [
+        "f1",
+        "precision",
+        "recall",
+        "roc_auc",
+        "mcc",
+        "balanced_accuracy",
+        "false_positive_rate"
+      ],
+      "thresholdPolicy": "Choose the threshold on validation data according to the documented false-positive cost; never optimize it on test data.",
+      "stackingFeatures": [
+        "base_probability_lstm",
+        "base_probability_gru",
+        "base_probability_brnn",
+        "base_probability_tcn",
+        "base_probability_transformer",
+        "probability_mean",
+        "probability_std",
+        "probability_range"
+      ]
+    },
+    "energia": {
+      "readiness": "real_pilot_completed_pending_tuning",
+      "researchQuestion": "Does stacking reduce forecast error and improve residual-based anomaly detection in electrical time series?",
+      "task": "forecasting_with_anomaly_detection",
+      "unitOfAnalysis": "one timestamped multivariate window",
+      "inputRepresentation": "chronological_multivariate_sequence",
+      "target": {
+        "name": "load_at_forecast_horizon",
+        "type": "continuous",
+        "positiveClass": null,
+        "required": true
+      },
+      "requiredFields": ["timestamp", "load", "series_id"],
+      "groupKey": "series_id",
+      "sequence": {
+        "candidateWindowLengths": [24, 48, 168],
+        "forecastHorizons": [1, 24],
+        "frequency": "hourly"
+      },
+      "split": {
+        "strategy": "chronological_expanding_window",
+        "trainFraction": 0.7,
+        "validationFraction": 0.15,
+        "testFraction": 0.15,
+        "innerFolds": 5,
+        "gapSteps": 24
+      },
+      "minimumData": {
+        "totalRowsPerSeries": 8760,
+        "seriesCount": 1,
+        "labeledAnomaliesForClassificationMetrics": 50
+      },
+      "primaryMetric": "rmse",
+      "secondaryMetrics": ["mae", "smape", "r2", "error_by_horizon"],
+      "conditionalAnomalyMetrics": ["pr_auc", "f1", "precision", "recall", "detection_delay"],
+      "thresholdPolicy": "Estimate the residual threshold from validation residuals. Report anomaly classification metrics only when independent labels exist.",
+      "stackingFeatures": [
+        "prediction_lstm",
+        "prediction_gru",
+        "prediction_brnn",
+        "prediction_tcn",
+        "prediction_transformer",
+        "prediction_mean",
+        "prediction_std",
+        "prediction_range",
+        "forecast_horizon"
+      ]
+    },
+    "finanzas": {
+      "readiness": "ready_after_public_mef_ingestion",
+      "researchQuestion": "Does stacking reduce next-session sovereign-index return forecast error and improve residual-based anomaly detection over recurrent, convolutional and attention-based models?",
+      "task": "forecasting_with_residual_anomaly_detection",
+      "unitOfAnalysis": "one observed sovereign-index financial session",
+      "inputRepresentation": "chronological_multivariate_market_sequence",
+      "source": {
+        "provider": "Ministerio de Economia y Finanzas del Peru",
+        "category": "Endeudamiento y Tesoro Publico",
+        "dataset": "Indices Soberanos",
+        "datasetId": "574f11cb-f196-4c78-9e35-5d881113fe5c",
+        "resourceId": "c32056c1-7f91-4d4e-bc76-0c4844ac25fe",
+        "licenseClass": "public_open_data"
+      },
+      "target": {
+        "name": "nominal_log_return_1d",
+        "type": "continuous",
+        "definition": "100 * ln(nominal_index_t / nominal_index_t_minus_1)",
+        "positiveClass": null,
+        "required": true
+      },
+      "requiredFields": ["timestamp", "nominal_index", "nominal_annual_yield", "real_index", "real_annual_yield"],
+      "groupKey": null,
+      "sequence": {
+        "windowLength": 20,
+        "forecastHorizon": 1,
+        "frequency": "irregular_business_day_observations"
+      },
+      "split": {
+        "strategy": "chronological_expanding_window",
+        "developmentFraction": 0.85,
+        "testFraction": 0.15,
+        "innerFolds": 5,
+        "gapSteps": 5
+      },
+      "minimumData": {
+        "totalRows": 1000
+      },
+      "primaryMetric": "rmse",
+      "secondaryMetrics": ["mae", "smape", "r2"],
+      "thresholdPolicy": "Estimate residual anomaly thresholds from development-fold residuals only. Do not report fraud or labeled-classification metrics without independent labels.",
+      "stackingFeatures": [
+        "prediction_lstm",
+        "prediction_gru",
+        "prediction_brnn",
+        "prediction_tcn",
+        "prediction_transformer",
+        "prediction_mean",
+        "prediction_std",
+        "prediction_range"
+      ],
+      "blockingConditions": [
+        "The locked final 15 percent cannot be used without explicit authorization after freezing.",
+        "Residual outliers are estimated anomalies and cannot be presented as confirmed fraud.",
+        "Imputers and scalers must be fitted inside each training fold only."
+      ]
+    }
+  }
+}

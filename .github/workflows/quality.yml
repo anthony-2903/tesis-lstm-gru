@@ -1,0 +1,52 @@
+name: Quality and security gates
+
+on:
+  push:
+    branches: [main, master, "codex/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend build and audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - run: npm run lint
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  backend:
+    name: Backend tests and audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: backend
+      TF_CPP_MIN_LOG_LEVEL: "3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - run: python -m unittest discover -s backend/tests
+      - run: pip-audit -r backend/requirements.txt
+      - run: pip-audit -r backend/requirements-dev.txt

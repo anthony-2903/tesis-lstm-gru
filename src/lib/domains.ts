@@ -30,10 +30,10 @@ export const DOMAIN_OPTIONS: {
   },
   {
     id: "finanzas",
-    title: "Finanzas publicas",
+    title: "Fraude financiero",
     shortTitle: "Finanzas",
-    source: "MEF Datos Abiertos",
-    description: "Indicadores de brechas y operadores Invierte.pe con limpieza tabular.",
+    source: "Fraud Detection Handbook - ULB",
+    description: "Transacciones temporales etiquetadas, desbalance de fraude y validación cronológica.",
     aiType: "finanzas",
     icon: Landmark,
   },
