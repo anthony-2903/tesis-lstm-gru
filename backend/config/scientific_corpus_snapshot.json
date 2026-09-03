@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotId": "scientific-corpus-2026-09-03",
+  "createdAt": "2026-09-03T13:28:39Z",
+  "provenance": "Derived from the audited local data manifests and latest accepted OOF manifests before production deployment.",
+  "finalTestUsed": false,
+  "domains": [
+    {
+      "id": "phishing",
+      "label": "Phishing",
+      "unit": "URL",
+      "available": true,
+      "datasetId": "phishing-l5qy4-1f64a3665102",
+      "source": "PhishTank + fuentes académicas verificadas",
+      "originalRows": 1153056,
+      "usableRows": 20000,
+      "developmentRows": 16996,
+      "trainingRows": 14000,
+      "validationRows": 2996,
+      "lockedTestRows": 3004,
+      "oofUniqueRows": 14000,
+      "testSetLocked": true,
+      "testSetUsed": false,
+      "classDistribution": {
+        "negative": 10000,
+        "positive": 10000
+      }
+    },
+    {
+      "id": "energia",
+      "label": "Energía",
+      "unit": "hora",
+      "available": true,
+      "datasetId": "opsd-2020-10-06-06e39000e99a",
+      "source": "Open Power System Data",
+      "originalRows": 50401,
+      "usableRows": 50400,
+      "developmentRows": 42840,
+      "trainingRows": null,
+      "validationRows": 21180,
+      "lockedTestRows": 7560,
+      "oofUniqueRows": 21180,
+      "testSetLocked": true,
+      "testSetUsed": false,
+      "range": [
+        "2015-01-01 00:00:00+00:00",
+        "2020-09-30 23:00:00+00:00"
+      ]
+    },
+    {
+      "id": "finanzas",
+      "label": "Finanzas",
+      "unit": "sesión financiera",
+      "available": true,
+      "datasetId": "mef-indices-soberanos-27b55217cc69",
+      "source": "MEF Perú · Índices soberanos",
+      "originalRows": 3463,
+      "usableRows": 3459,
+      "developmentRows": 2940,
+      "trainingRows": null,
+      "validationRows": 1345,
+      "lockedTestRows": 519,
+      "oofUniqueRows": 1345,
+      "testSetLocked": true,
+      "testSetUsed": false,
+      "range": [
+        "2012-08-29 00:00:00+00:00",
+        "2026-07-02 00:00:00+00:00"
+      ]
+    }
+  ]
+}

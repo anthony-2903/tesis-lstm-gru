@@ -202,6 +202,11 @@ function ScientificDatasetOverview({
           <p className="mt-1 max-w-3xl text-xs leading-5 text-muted-foreground">
             No se suman como datos nuevos las repeticiones producidas por modelos, folds o semillas.
           </p>
+          {data.dataOrigin === "versioned_snapshot" && (
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-amber-600">
+              Snapshot científico versionado · {data.snapshotId}
+            </p>
+          )}
         </div>
         <div className="rounded-md border border-primary/20 bg-primary/5 px-4 py-3 text-right">
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total depurado</p>
@@ -226,7 +231,7 @@ function ScientificDatasetOverview({
                   </div>
                 </div>
                 <span className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase ${domain.available ? "bg-success/10 text-success" : "bg-anomaly/10 text-anomaly"}`}>
-                  {domain.available ? "Auditado" : "No disponible"}
+                  {domain.summaryOrigin === "versioned_snapshot" ? "Snapshot auditado" : domain.available ? "Auditado" : "No disponible"}
                 </span>
               </div>
 

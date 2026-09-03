@@ -103,12 +103,57 @@ class ScientificDataSummaryTests(unittest.TestCase):
             summary = get_scientific_data_summary(
                 results_dir=root / "results",
                 experiments_dir=root / "experiments",
+                snapshot_path=None,
             )
 
         self.assertFalse(summary["available"])
         self.assertEqual(summary["availableDomains"], 0)
         self.assertEqual(summary["totalUsableObservations"], 0)
         self.assertTrue(all(item["available"] is False for item in summary["domains"]))
+
+    def test_uses_versioned_snapshot_when_runtime_storage_is_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            snapshot = root / "scientific_snapshot.json"
+            domains = []
+            for domain_id, label, unit, rows in (
+                ("phishing", "Phishing", "URL", 20_000),
+                ("energia", "Energía", "hora", 50_400),
+                ("finanzas", "Finanzas", "sesión financiera", 3_459),
+            ):
+                domains.append(
+                    {
+                        "id": domain_id,
+                        "label": label,
+                        "unit": unit,
+                        "available": True,
+                        "datasetId": f"{domain_id}-snapshot",
+                        "source": "audited fixture",
+                        "originalRows": rows,
+                        "usableRows": rows,
+                        "developmentRows": rows,
+                        "trainingRows": None,
+                        "validationRows": 0,
+                        "lockedTestRows": 0,
+                        "oofUniqueRows": 0,
+                        "testSetLocked": True,
+                        "testSetUsed": False,
+                    }
+                )
+            _write(snapshot, {"snapshotId": "snapshot-test", "domains": domains})
+
+            summary = get_scientific_data_summary(
+                results_dir=root / "missing-results",
+                experiments_dir=root / "missing-experiments",
+                snapshot_path=snapshot,
+            )
+
+        self.assertTrue(summary["available"])
+        self.assertEqual(summary["dataOrigin"], "versioned_snapshot")
+        self.assertEqual(summary["snapshotId"], "snapshot-test")
+        self.assertEqual(summary["totalUsableObservations"], 73_859)
+        self.assertFalse(summary["finalTestUsed"])
+        self.assertTrue(all(item["summaryOrigin"] == "versioned_snapshot" for item in summary["domains"]))
 
 
 if __name__ == "__main__":

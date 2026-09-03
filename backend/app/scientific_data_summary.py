@@ -7,23 +7,54 @@ from typing import Any
 from app.config import EXPERIMENTS_DIR, RESULTS_DIR
 from app.utils import read_json
 
+SCIENTIFIC_SNAPSHOT_PATH = Path(__file__).resolve().parents[1] / "config" / "scientific_corpus_snapshot.json"
+
 
 def get_scientific_data_summary(
     *,
     results_dir: Path = RESULTS_DIR,
     experiments_dir: Path = EXPERIMENTS_DIR,
+    snapshot_path: Path | None = SCIENTIFIC_SNAPSHOT_PATH,
 ) -> dict[str, Any]:
     """Summarize audited thesis datasets without mixing in demo/data-lake rows."""
 
-    domains = [
+    live_domains = [
         _phishing_summary(results_dir, experiments_dir),
         _energy_summary(results_dir, experiments_dir),
         _finance_summary(results_dir, experiments_dir),
     ]
+    snapshot = _optional_json(snapshot_path) if snapshot_path else None
+    snapshot_domains = {
+        str(domain.get("id")): domain
+        for domain in (snapshot or {}).get("domains", [])
+        if isinstance(domain, dict) and domain.get("available") is True
+    }
+    domains: list[dict[str, Any]] = []
+    origins: set[str] = set()
+    for live_domain in live_domains:
+        if live_domain["available"]:
+            domain = {**live_domain, "summaryOrigin": "live_manifest"}
+        elif live_domain["id"] in snapshot_domains:
+            domain = {**snapshot_domains[live_domain["id"]], "summaryOrigin": "versioned_snapshot"}
+        else:
+            domain = {**live_domain, "summaryOrigin": "unavailable"}
+        origins.add(str(domain["summaryOrigin"]))
+        domains.append(domain)
+
     available_domains = [domain for domain in domains if domain["available"]]
+    if origins == {"live_manifest"}:
+        data_origin = "live_manifests"
+    elif origins <= {"versioned_snapshot"}:
+        data_origin = "versioned_snapshot"
+    elif "unavailable" in origins and not available_domains:
+        data_origin = "unavailable"
+    else:
+        data_origin = "mixed"
     return {
         "schemaVersion": "1.0.0",
         "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "dataOrigin": data_origin,
+        "snapshotId": (snapshot or {}).get("snapshotId") if "versioned_snapshot" in origins else None,
         "available": len(available_domains) == len(domains),
         "availableDomains": len(available_domains),
         "totalDomains": len(domains),

@@ -245,6 +245,7 @@ export interface ScientificDataDomainSummary {
   oofUniqueRows: number;
   testSetLocked: boolean;
   testSetUsed: boolean;
+  summaryOrigin?: "live_manifest" | "versioned_snapshot" | "unavailable";
   classDistribution?: { negative: number; positive: number };
   range?: [string | null, string | null];
 }
@@ -252,6 +253,8 @@ export interface ScientificDataDomainSummary {
 export interface ScientificDataSummary {
   schemaVersion: string;
   generatedAt: string;
+  dataOrigin?: "live_manifests" | "versioned_snapshot" | "mixed" | "unavailable";
+  snapshotId?: string | null;
   available: boolean;
   availableDomains: number;
   totalDomains: number;
