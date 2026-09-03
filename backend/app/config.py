@@ -48,6 +48,10 @@ CORS_ALLOWED_ORIGINS = tuple(
     ).split(",")
     if value.strip()
 )
+CORS_ALLOWED_ORIGIN_REGEX = os.getenv(
+    "CORS_ALLOWED_ORIGIN_REGEX",
+    r"^https://[a-z0-9-]+\.anthonyjanampacalderon10\.workers\.dev$",
+).strip()
 
 
 def ensure_dirs() -> None:

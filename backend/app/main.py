@@ -8,7 +8,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from app.config import API_WRITE_TOKEN, CORS_ALLOWED_ORIGINS, EXPERIMENTS_DIR, RESULTS_DIR, ensure_dirs
+from app.config import (
+    API_WRITE_TOKEN,
+    CORS_ALLOWED_ORIGIN_REGEX,
+    CORS_ALLOWED_ORIGINS,
+    EXPERIMENTS_DIR,
+    RESULTS_DIR,
+    ensure_dirs,
+)
 from app.data_lake import get_data_lake_records, get_data_lake_summary, ingest_data_lake
 from app.external_sources import fetch_external_data, get_source_catalog
 from app.finance.benchmark import get_finance_dataset_status, prepare_finance_benchmark
@@ -208,6 +215,7 @@ class FinanceThesisProtocolRequest(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list(CORS_ALLOWED_ORIGINS),
+    allow_origin_regex=CORS_ALLOWED_ORIGIN_REGEX or None,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

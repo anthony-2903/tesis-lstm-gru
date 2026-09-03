@@ -22,6 +22,34 @@ class ApiSecurityTests(unittest.TestCase):
             "http://127.0.0.1:5173",
         )
 
+    def test_renamed_cloudflare_worker_origin_is_allowed(self) -> None:
+        origin = "https://tesis-recurrentes-staking.anthonyjanampacalderon10.workers.dev"
+        with TestClient(app) as client:
+            response = client.options(
+                "/api/health",
+                headers={
+                    "origin": origin,
+                    "access-control-request-method": "GET",
+                    "access-control-request-headers": "content-type",
+                },
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["access-control-allow-origin"], origin)
+
+    def test_unrelated_cloudflare_account_is_rejected(self) -> None:
+        with TestClient(app) as client:
+            response = client.options(
+                "/api/health",
+                headers={
+                    "origin": "https://untrusted.other-account.workers.dev",
+                    "access-control-request-method": "GET",
+                },
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertNotIn("access-control-allow-origin", response.headers)
+
     def test_write_token_blocks_mutation_but_not_health_read(self) -> None:
         with patch("app.main.API_WRITE_TOKEN", "correct-secret"):
             with TestClient(app) as client:
